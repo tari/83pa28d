@@ -1,0 +1,255 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 6 &mdash; Stacks</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day05.html">Previous</a>
+    &middot; <a href="day07.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 6. Stacks</h1>
+    <hr>
+    <b><font color=#006600>novice</font> <font color=#CCCCCC>intermediate advanced expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#def">What Is A Stack?</a><br>
+<li type="disc"><a href="#wrk">How A Stack Works</a><br>
+<li type="square"><a href="#mak">Making A Stack</a><br>
+<li type="disc"><a href="#sys">System Stack</a>
+</ul>
+    <hr>
+
+<a name="def"></a>
+    <h2>What Is A Stack?</h2>
+A stack is a type of data structure that is used to store items of data. Now the interesting thing about a stack is that it has no fixed size, it can shrink down until it comprises zero bytes, or it can grow until it takes up all of addressable memory. Stacks are usually confined to a smallish section of memory (since it wouldn't be a very good thing to have a stack overwrite your program, would it :-)<p>
+
+<a name="wrk"></a>
+    <h2>How A Stack Works</h2>
+All stacks operate in a Last-in-first-out manner. What that means is that the last item to be placed onto a stack ("pushed") is the first item that is taken off ("popped"). Think of it as like one of those dinner plate wells you see in buffets. Each plate is the value of a register pair. If you store a new plate on top of the stack, you have to push down all the others. If you remove a plate, the stack pops up. Now, if you wanted to remove a plate that wasn't the topmost one, you couldn't get it directly because the whole stack is sunken into the counter. You would first have to remove all the plates on top of it.<p>
+
+<a name="mak"></a>
+<h2>What You Need to Make A Stack</h2>
+Ok, you know how a stack works, and now you want to make one. To have a fully operational stack structure you need two things: a chunk of memory the stack can exist in, and a stack pointer. The stack pointer is a variable that tracks the address of the next free byte or the topmost entry, either will work fine.<br>
+A stack can change size in two ways. Either it can grow up (new stack entries exist at higher addresses than previous ones) or down (new stack entries exist at lower addresses than previous ones).<p>
+
+Here is a pictorial example of a stack that grows up. The top of the stack is currently address $1009 and this is also the value of the stack pointer. If we were to push an entry onto this stack, we would write to $1009. As this action would move the stack top one byte forward, the stack pointer must then be incremented so that it once again points to the top of the stack. On the flip side, if we wished to pop an entry off this stack, we first decrement the stack pointer because it currently points to nothing, then read from that address.<p>
+
+<table class=Info>
+<tr class=Heading>
+ <th>$1000</th>
+ <th>$1001</th>
+ <th>$1002</th>
+ <th>$1003</th>
+ <th>$1004</th>
+ <th>$1005</th>
+ <th>$1006</th>
+ <th>$1007</th>
+ <th>$1008</th>
+ <th>$1009</th>
+ <th>$100A</th>
+ <th>$100B</th>
+ <th>$100C</th>
+ <th>$100D</th>
+</tr>
+<tr>
+ <td colspan=9 class=Transparent></td>
+ <td span class=SubHeading>stack<br>pointer</td>
+ <td colspan=4 class=Transparent></td>
+</tr>
+<tr>
+ <td>8C</td>
+ <td>DB</td>
+ <td>FA</td>
+ <td>47</td>
+ <td>46</td>
+ <td>1F</td>
+ <td>0D</td>
+ <td>B8</td>
+ <td>03</td>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+</tr>
+</table>
+
+Example: Push the <span class=reg>DE</span> register onto a stack that grows up.
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(stack_ptr)</span>    <span class=cmt>; Load stack pointer</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=reg>E</span>            <span class=cmt>; Push the low-order byte</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>                <span class=cmt>; Move stack pointer to next byte of available space</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=reg>D</span>            <span class=cmt>; Push the high-order byte</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=mem>(stack_ptr)</span>, <span class=reg>HL</span>    <span class=cmt>; Save new stack pointer</span>
+</pre>
+
+Example: Pop into <span class=reg>DE</span> the top 16 bits off a stack that grows up.
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(stack_ptr)</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>                <span class=cmt>; Move stack pointer to next byte on stack</span>
+    <span class=ins>LD</span>     <span class=reg>D</span>, <span class=reg>(HL)</span>            <span class=cmt>; Pop the high-order byte</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>(HL)</span>            <span class=cmt>; Pop the low-order byte</span>
+    <span class=ins>LD</span>     <span class=mem>(stack_ptr)</span>, <span class=reg>HL</span>    <span class=cmt>; Save new stack pointer</span>
+</pre>
+
+What about a stack that grows down? The same rules apply, we just change the direction the stack pointer moves.
+In the picture the top of the stack is currently address $FF00 and this once again must be the value of the stack pointer.
+If we were to push an entry onto this stack, we would decrement the stack pointer so it pointed to an empty slot, then
+write to it.
+
+<table class=Info>
+<tr class=Heading>
+ <th>$FEFA</th>
+ <th>$FEFB</th>
+ <th>$FEFC</th>
+ <th>$FEFD</th>
+ <th>$FEFE</th>
+ <th>$FEFF</th>
+ <th>$FF00</th>
+ <th>$FF01</th>
+ <th>$FF02</th>
+ <th>$FF03</th>
+ <th>$FF04</th>
+ <th>$FF05</th>
+ <th>$FF06</th>
+ <th>$FF07</th>
+</tr>
+<tr>
+ <td colspan=6 class=Transparent></td>
+ <td span class=SubHeading>stack<br>pointer</td>
+ <td colspan=7 class=Transparent></td>
+</tr>
+<tr>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+ <td>8C</td>
+ <td>DB</td>
+ <td>FA</td>
+ <td>47</td>
+ <td>46</td>
+ <td>1F</td>
+ <td>0D</td>
+ <td>B8</td>
+</tr>
+</table>
+
+Example: Push the <span class=reg>DE</span> register onto a stack that grows down.
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(stack_ptr)</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>                <span class=cmt>; Move stack pointer to next byte of available space</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=reg>D</span>            <span class=cmt>; Push the high-order byte</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=reg>E</span>            <span class=cmt>; Push the low-order byte</span>
+    <span class=ins>LD</span>     <span class=mem>(stack_ptr)</span>, <span class=reg>HL</span>    <span class=cmt>; Save new stack pointer</span>
+</pre>
+
+Example: Pop the top 16 bits of a register that grows down into <span class=reg>DE</span>
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(stack_ptr)</span>
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>(HL)</span>            <span class=cmt>; Pop the low-order byte</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>D</span>, <span class=reg>(HL)</span>            <span class=cmt>; Pop the high-order byte</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=mem>(stack_ptr)</span>, <span class=reg>HL</span>    <span class=cmt>; Save new stack pointer</span>
+</pre>
+
+<a name="sys"></a>
+    <h2>The Z80's Stack</h2>
+Stacks are very useful data structures. So much so that almost every computer has specific instructions that
+operate with a stack mentality.
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>PUSH</b> reg<sub>16</sub></tt></td>
+    <td>Stores <tt>reg<sub>16</sub></tt> to the stack. <tt>reg<sub>16</sub></tt> is <i>any</i> 16-bit register.</td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>POP</b> reg<sub>16</sub></tt></td>
+    <td>Retrieves <tt>reg<sub>16</sub></tt> from the stack. <tt>reg<sub>16</sub></tt> is <i>any</i> 16-bit register.</td>
+</tr>
+</table>
+
+There is a special 16-bit register called <span class=reg>SP</span> that the Z80 uses as the hardware stack pointer. The hardware stack (or just "the stack" for short) is defined on the TI-83 Plus as a block of memory about 400 bytes in size. This stack usually starts at $0000 so as to place at the very end of memory (the first push to the stack decrements the stack pointer causing it to wrap around to $FFFF). From this you could determine that <span class=ins>PUSH</span> <span class=reg>HL</span> is equivalent to the discrete instructions (assuming for a second that we could do <span class=ins>LD</span> <span class=reg>(SP)</span>, <span class=reg>H</span>).
+
+<pre>
+    <span class=ins>DEC</span>   <span class=reg>SP</span>
+    <span class=ins>LD</span>    <span class=reg>(SP)</span>, <span class=reg>H</span>
+    <span class=ins>DEC</span>   <span class=reg>SP</span>
+    <span class=ins>LD</span>    <span class=reg>(SP)</span>, <span class=reg>L</span>
+</pre>
+
+    And that <span class=ins>POP </span> <span class=reg>HL</span> is identical to
+
+<pre>
+    <span class=ins>LD</span>    <span class=reg>L</span>, <span class=reg>(SP)</span>
+    <span class=ins>INC</span>   <span class=reg>SP</span>
+    <span class=ins>LD</span>    <span class=reg>H</span>, <span class=reg>(SP)</span>
+    <span class=ins>INC</span>   <span class=reg>SP</span>
+</pre>
+    
+    Note that you can only <span class=ins>PUSH</span>/<span class=ins>POP</span> registers
+    in pairs. So if you just want to store <span class=reg>E</span>, you would have to do
+    <span class=ins>PUSH</span> <span class=reg>DE</span>.<br>
+    Also, you're under no obligation to <span class=ins>POP</span> into the same register you 
+    <span class=ins>PUSH</span>ed. This is perfectly acceptable:
+
+<pre>
+    <span class=ins>PUSH</span>   <span class=reg>AF</span>
+    <span class=ins>POP</span>    <span class=reg>IX</span>
+</pre>
+
+    Here is a sample code fragment that manipulates the stack with a diagram showing how the
+    stack looks through operation.
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, $2145
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>            <span class=cmt>;1</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, $91FF
+    <span class=ins>PUSH</span>   <span class=reg>DE</span>            <span class=cmt>;2</span>
+    <span class=ins>LD</span>     <span class=reg>BC</span>, $0A33
+    <span class=ins>PUSH</span>   <span class=reg>BC</span>            <span class=cmt>;3</span>
+    <span class=ins>POP</span>    <span class=reg>AF</span>            <span class=cmt>;4</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>            <span class=cmt>;5</span>
+    <span class=ins>POP</span>    <span class=reg>BC</span>
+</pre>
+
+    <p align=center><img src="../img/stack.png" alt="[NO IMAGE]" width=564 height=114></p>
+
+Take care with the stack. Since the operating system also uses the stack, you really have less than 400 bytes
+of stack space to work with. Nevertheless, this should be sufficient for all your needs. What you should be
+more concerned about is leaving the stack in the exact same state is was as when the program started. I don't think
+I need to tell you the <a href="../ref/crash.html">ramifications</a> of not heeding this warning.<p>
+    
+    <hr>
+<div class=NavFooter>
+    <a href="day05.html">PREVIOUS - Day 5: Data Manipulation</a><p>
+    <a href="day07.html">NEXT - Day 7: Control Structures</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

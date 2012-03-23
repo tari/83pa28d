@@ -1,0 +1,76 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Format of This Guide</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+	<h1>Formatting of This Guide</h1>
+	<hr>
+<h2>Headings</h2>
+At the top of each page you will see four sections separated by horizontal lines. At the very top and tucked all the way to the right are some simple navigation links.<br>
+The next section will be the day number and the title in dark blue.<br>
+Next is a colorful indication of what skill level you should be at if you are reading this day. Novices are week 1, Intermediates are for week 2, the Advanced get week 3, and Experts can look at week 4 material.<br>
+The last strip is a mini table of contents or listing of the major topics covered. Each listing has a bullet next to it, the type of bullet indicating the relative difficulty of that topic (an entirely subjective decision on my part):
+<ul>
+<li type="disc">So simple you only need 10,000,000 times the intelligence of the average 14-year-old IM troll to comprehend.
+<li type="square">Some thinking required.
+<li type="circle">Cerebral annihilation.
+</ul>
+
+Furthermore, the more difficult a section, the more likely you should be able to skip it, advance to something easier, and then return when you want another go at it.<p>
+
+<h2>Bodies</h2>
+Hyperlinks are <a style="cursor: help" onClick="alert('Some idiots will click on ANYTHING. =&#222;'); return false">blue in a sans-serif font</a>. If the cursor changes to a question mark (maybe), the link is to a popup message box containing purely parenthetical matter.<p>
+	
+All assembly language is given in a monospaced font, sometimes it is colored. Fully working programs are on a gray background and titled with <b>Program <i>chapter</i>-X</b>.
+
+<div class=Program>
+<pre><span class=dir>.nolist
+#include</span> "ti83plus.inc"
+<span class=dir>#define</span>	<span class=mem>ProgStart</span>	$9D95
+<span class=dir>.list
+.org</span>	<span class=mem>ProgStart</span> - 2
+<span class=dir>.DB</span>	<span class=mem>t2ByteTok</span>,<span class=mem>tAsmCmp</span>
+	b_call(_ClrLCDFull)
+	<span class=ins>ld</span>	<span class=reg>hl</span>,0
+	<span class=ins>ld</span>	<span class=mem>(PenCol)</span>,<span class=reg>hl</span>
+	<span class=ins>ld</span>	<span class=reg>hl</span>,<span class=mem>msg</span>
+	b_call(_PutS)		<span class=cmt>; Display the text</span>
+	b_call(_NewLine)
+	<span class=ins>ret</span>
+<span class=mem>msg:</span>
+	<span class=dir>.db</span> "Hello world!",0
+<span class=dir>.end
+.end</span></pre></div><p>
+
+Details about an assembly instruction are given in a grayscale box:
+<div align=center><img src="../img/instrex.png" width=596 height=184 alt="[Instruction Details]"></div>
+
+	When the instruction gives operands in the form
+<pre>	{ foo | bar | baz }</pre>
+	then you choose one of the options delimited by the verical bars.<p>
+
+An operand of <tt>reg<sub>8</sub></tt> represents any 8-bit register except <span class=reg>F R I</span>.<br>
+An operand of <tt>reg<sub>16</sub></tt> represents any 16-bit register except <span class=reg>AF IX IY</span> (unless otherwise noted).<br>
+An operand of <tt>reg<sub>index</sub></tt> represents either <span class=reg>IX IY</span><br>
+An operand of <tt>imm</tt> represents an immediate value or constant.<p>
+
+Details about a ROM call are also given in a grayscale box:
+<div align=center><img src="../img/romex.png" width=622 height=194 alt="[ROM Call Details]"></div>
+
+<b>INPUTS</b> are the registers and memory locations that contain routine input parameter.<br>
+<b>OUTPUTS</b> are the registers and memory locations that contain routine results.<br>
+The <b>DESTROYS</b> line indicates which registers and variables are set to an unknown state. <tt>All</tt> is shorthand for the registers <span class=reg>AF BC DE HL</span>, and maybe <span class=reg>IX</span>. I'm not sure. (stupid TI...)<br>
+<b>REMARKS</b> are additional, helpful information.
+
+<hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

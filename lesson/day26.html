@@ -1,0 +1,593 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 26 &mdash; The LCD Driver</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day25.html">Previous</a>
+    &middot; <a href="day27.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 26. The LCD Driver</h1>
+    <hr>
+    <b><font color=#CCCCCC>novice intermediate advanced <font color=#CC0000>expert</font></font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#prt">Control Ports</a>
+<li type="disc"><a href="#ram">Driver RAM</a>
+<li type="disc"><a href="#aut">Auto Addressing</a>
+<li type="disc"><a href="#raw">Reading and Writing</a>
+<li type="disc"><a href="#con">Contrast</a>
+<li type="disc"><a href="#tst">Test Mode</a>
+<li type="disc"><a href="#pwr">Power</a>
+<li type="disc"><a href="#zad">Z-Address</a>
+<li type="disc"><a href="#wrd">Word Size</a>
+<li type="disc"><a href="#cso">Outputs</a>
+<li type="disc"><a href="#csi">Inputs</a>
+</ul>
+    <hr>
+
+The TI-85 and higher-number calculators have a memory mapped screen. That means a section of the calculator's RAM that holds a bit image of the screen is constantly being monitored. Whenever a byte in this area is changed, the display changes immediately. It is also possible to change the RAM area the driver looks at with a single port output. By switching the buffer location back and forth rapidly, you could create Game Boy-style flickerless 4- or 8-level grayscale.<p>
+
+Unfortunately, the "crap series" (everything lower than a TI-85) uses a driver that stores the screen image in its own RAM. In order to change the display, you have to send each byte in the image to the driver. It is also a very slow driver which needs a delay every time it is accessed.<br>
+
+Hopefully you are sufficiently depressed now, so let's look at how to make the Toshiba T6A04 (that's the name of the driver) our bitch.<p>
+
+<a name="prt"></a>
+    <h2>Control Ports</h2>
+    The two ports that control the LCD are
+
+<table class=Info>
+<tr>
+    <th class=Heading><tt>$10</tt></th>
+    <td class=SubHeading>Command Port</td>
+    <td>Alters the driver's status.</td>
+</tr>
+<tr>
+    <th class=Heading><tt>$11</tt></td>
+    <td class=SubHeading>Data Port</td>
+    <td>Let's you muck about with the driver's RAM.</td>
+</tr>
+</table>
+
+    In order to send a command to the driver, interrupts must be disabled. And since the
+    driver is so slow, you need a 10&micro;s delay between operations. This means that
+    a 6Mhz TI-83 Plus needs about 60 T-States' worth of waste instructions, and A TI-83
+    Plus SE in fast mode needs about 100.<p>
+
+<table class=UndocCommand>
+<tr>
+    <th class=UndocHeading width=25%><tt>_LCD_BUSY_QUICK</tt></th>
+    <td class=UndocCell>Creates a sufficient delay for the LCD driver, regardless of what
+    model.</td>
+</tr>
+<tr>
+    <th class=UndocHeading>Location</th>
+    <td class=UndocCell><tt><b>$000B</b></tt></td>
+</tr>
+<tr>
+    <th class=UndocHeading>Remarks</th>
+    <td class=UndocCell>For this routine, you use a <span class=ins>CALL</span> instead of the normal <tt>b_call()</tt>.</td>
+</tr>
+</table><p>
+
+<a name="ram"></a>
+    <h2>Driver RAM</h2>
+    The T6A04's RAM is a 960-byte bitmap mapped to 64 rows of 15 bytes, however the last
+    three bytes in each row aren't used, giving an effective RAM space of a 768-byte bitmap
+    mapped to 64 rows of 12 bytes (sound familiar?). To read the data or write to it, the
+    driver has to know which byte to look at. You tell it by sending a row command and a
+    column command through the command port. The only confusing thing is that the Cartesian
+    plane is flipped: the column is called Y and the row is called X. The commands are:
+
+<table class=Info>
+<tr>
+    <th class=Heading>Instruction</th>
+    <th class=Heading>Effect</th>
+</tr>
+<tr>
+    <td class=SubHeading><tt>$20</tt> to <tt>$2E</tt></td>
+    <td>Set column: 0 (leftmost 8 pixels) to 14 (rightmost 8 pixels).</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>$80</tt> to <tt>$BF</tt></td>
+    <td>Set row: 0 (top row) to 63 (bottom row).</td>
+</tr>
+</table>
+
+<a name="aut"></a>
+    <h2>Auto-Addressing</h2>
+    So that life with the driver is not as grim as it could be, the driver will automatically 
+    update the LCD coordinates after a data read or write. There are four modes.<p>
+
+<table class=Info>
+<tr>
+    <th class=Heading><tt>$04</tt></th>
+    <td class=SubHeading>X auto-decrement</td>
+    <td>Driver moves back one byte along X.</td>
+</tr>
+<tr>
+    <th class=Heading><tt>$05</tt></th>
+    <td class=SubHeading>X auto-increment</td>
+    <td>Driver moves forward one byte along X.</td>
+</tr>
+<tr>
+    <th class=Heading><tt>$06</tt></th>
+    <td class=SubHeading>Y auto-decrement</td>
+    <td>Driver moves back one byte along Y.</td>
+</tr>
+<tr>
+    <th class=Heading><tt>$07</tt></th>
+    <td class=SubHeading>Y auto-increment</td>
+    <td>Driver moves forward one byte along Y.</td>
+</tr>
+</table><p>
+
+    The TI-OS expects X auto-increment mode for all its routines, and must be set back to
+    this mode if you change it. Although the results could be interesting if you don't.<p>
+
+<a name="raw"></a>
+    <h2>Reading and Writing (But Thank God No 'Rithmetic)</h2>
+    After the X or Y coordinate is set, a dummy read must be done if you want to read data.
+    To read:
+
+<pre>    <span class=ins>IN</span>    <span class=reg>A</span>, ($11)</pre>
+
+    A dummy read is an intermediary between setting a coordinate and reading a byte.
+    Therefore, you don't need a dummy read between setting coordinates, nor between two
+    successive reads.<p>
+
+    To write (which doesn't require a dummy):
+
+<pre>    <span class=ins>OUT</span>    ($11), <span class=reg>A</span></pre>
+
+    <h3>Program 26-1</h3>
+    Read the enitre LCD (or at least as much as you can stuff into a Pic variable) to
+    <tt>Pic0</tt>
+
+<div class=Program>
+<pre><span class=mem>_LCD_BUSY_QUICK</span>    <span class=dir>.EQU</span>    $000B
+
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>Pic0Name</span>
+    <span class=ins>RST</span>    20h
+    <span class=ins>RST</span>    10h
+    <span class=ins>JR     NC</span>, <span class=mem>ExistError</span>
+
+    b_call(_CreatePict)
+    <span class=ins>EX</span>     <span class=reg>DE</span>, <span class=reg>HL</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+
+    <span class=ins>CALL</span>   <span class=mem>ScanLCDToPic</span>
+    <span class=ins>EI</span>
+
+    <span class=ins>RET</span>
+
+<span class=mem>ScanLCDToPic:</span>
+    <span class=ins>DI</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, $80           <span class=cmt>; Set row 0</span>
+    <span class=ins>OUT</span>    ($10), <span class=reg>A</span>
+
+    <span class=ins>LD</span>     <span class=reg>C</span>, $20-1         <span class=cmt>; C will hold column</span>
+
+<span class=mem>Row:</span>
+    <span class=ins>INC</span>    <span class=reg>C</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>C</span>
+    <span class=ins>CP</span>     $2C             <span class=cmt>; See if C exceeded maximum column value</span>
+    <span class=ins>RET    Z</span>
+
+    <span class=ins>CALL</span>   <span class=mem>_LCD_BUSY_QUICK</span>
+    <span class=ins>OUT</span>    ($10), <span class=reg>A</span>         <span class=cmt>; Set column</span>
+
+    <span class=ins>CALL</span>   <span class=mem>_LCD_BUSY_QUICK</span>
+    <span class=ins>IN</span>     <span class=reg>A</span>, ($11)         <span class=cmt>; Dummy read</span>
+    
+    <span class=ins>LD</span>     <span class=reg>B</span>, 63            <span class=cmt>; 63 display rows to a picture</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, 12           <span class=cmt>; Because LCD is read in column-major order, 
+                           ; and picture data is in row-major order.</span>
+
+<span class=mem>Column:</span>
+    <span class=ins>CALL</span>   <span class=mem>_LCD_BUSY_QUICK</span>
+    <span class=ins>IN</span>     <span class=reg>A</span>, ($11)         <span class=cmt>; Read one byte</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=reg>A</span>          <span class=cmt>; And put it to the picture</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>DJNZ</span>   <span class=mem>Column</span>
+
+    <span class=ins>CALL</span>   <span class=mem>_LCD_BUSY_QUICK</span>      <span class=cmt>; Restart at row 0</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, $80
+    <span class=ins>OUT</span>    ($10), <span class=reg>A</span>
+
+    <span class=ins>LD</span>     <span class=reg>DE</span>, -(12 * 63) + 1    <span class=cmt>; -(12*63) returns to the first row.</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>                <span class=cmt>; + 1 moves one column over.</span>
+    <span class=ins>JR     Row</span>
+
+<span class=mem>ExistError:</span>
+    <span class=cmt>; Display an error message if Pic0 already exists</span>
+    b_call(_ClrLCDFull)
+    <span class=ins>LD</span>     <span class=reg>HL</span>, 0
+    <span class=ins>LD</span>     <span class=mem>(CurRow)</span>, <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>ExistErrorMsg</span>
+    <span class=ins>SET</span>    <span class=mem>TextInverse</span>, <span class=reg>(IY + <span class=mem>TextFlags</span>)</span>
+    b_call(_PutS)
+    <span class=ins>RES</span>    <span class=mem>TextInverse</span>, <span class=reg>(IY + <span class=mem>TextFlags</span>)</span>
+    b_call(_PutS)
+    b_call(_GetKey)
+    <span class=ins>RET</span>
+
+<span class=mem>Pic0Name:</span>
+    <span class=dir>.DB</span>    <span class=mem>PictObj</span>, <span class=mem>tVarPict</span>, <span class=mem>tPic0</span>, 0
+<span class=mem>ExistErrorMsg:</span>
+    <span class=dir>.DB</span>    "ERR:  PIC EXISTS", 0
+    <span class=dir>.DB</span>    "Press any key...", 0</pre>
+</div><p>
+
+<a name="con"></a>
+    <h2>Contrast</h2>
+    There are 40 contrast settings: 0 to 39. To set the contrast, you output to the command
+    port the desired contrast command.
+
+<div align=center><pre>command = contrast + (24 OR $C0)</pre></div>
+
+    Interrupts are allowed to be active.<p>
+
+    Reading the command port does not tell you what the current contrast setting is, so the
+    system's contrast value is held in <span class=mem>(contrast)</span>. The value here is
+    in the range 0 to 39.<p>
+
+    <h3>Program 26-2</h3>
+    It's everyone's favorite cinematic! (Shut up you punk cross-dissolvers!).
+
+<div class=Program>
+<pre><span class=mem>_LCD_BUSY_QUICK</span>    <span class=dir>.EQU</span>    $000B
+<span class=dir>#define</span>    <span class=mem>DEC_A_OP</span>    $3D
+<span class=dir>#define</span>    <span class=mem>INC_A_OP</span>    $3C
+
+    b_call(_RunIndicOff)
+    b_call(_GrBufClr)
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(contrast)</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>A</span>             <span class=cmt>; Number of times to decrease contrast</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, $18 | $C0     <span class=cmt>; "|": TASM command for bitwise OR</span>
+
+    <span class=ins>PUSH</span>   <span class=reg>BC</span>              <span class=cmt>; Save current contrast so we can fade back</span>
+
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>FadePatch</span>    <span class=cmt>; SMC Fade routine to fade to white.</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=mem>DEC_A_OP</span>
+    <span class=ins>CALL</span>   <span class=mem>Fade</span>
+
+    <span class=cmt>; Display a picture here. Make sure to keep A intact.</span>
+
+    <span class=ins>POP</span>    <span class=reg>BC</span>              <span class=cmt>; Restore counter -- number of times to increase</span>
+                           <span class=cmt>; contrast to restore the original setting.</span>
+
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>FadePatch</span>    <span class=cmt>; SMC Fade routine to fade in.</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=mem>INC_A_OP</span>
+
+<span class=mem>Fade:</span>
+    <span class=ins>OUT</span>    ($10), <span class=reg>A</span>
+    <span class=ins>HALT</span>
+    <span class=ins>HALT</span>                   <span class=cmt>; Delay for approx. 1/20th second</span>
+    <span class=ins>HALT</span>
+    <span class=ins>HALT</span>
+    <span class=ins>HALT</span>
+    <span class=ins>HALT</span>
+    <span class=ins>HALT</span>
+    <span class=ins>HALT</span>
+<span class=mem>FadePatch:</span>
+    <span class=ins>DEC</span>    <span class=reg>A</span>
+    <span class=ins>DJNZ</span>   <span class=mem>Fade</span>
+    <span class=ins>RET</span></pre>
+</div><p>
+
+<a name="tst"></a>
+    <h2>Test Mode</h2>
+    This is a pretty useless feature, but you can really scare some people with it! By
+    sending an instruction in the range <tt>$1C</tt> to <tt>$1F</tt>, you put the LCD driver
+    into something called test mode, affectionately known as The Blue Lines of Death. In a
+    nutshell, during test mode the liquid crystals are receiving an abnormal amount of 
+    energy. So much in fact    that you get blue horizontal lines across the screen. Even
+    weirder, the lines overflow out of each pixel cell (there are normally thin areas of
+    blank space separating each pixel). By sending multiple test mode commands you can make
+    more blue lines appear, potentially you can make the entire display blue.<br>
+    To cancel test mode, send command <tt>$18</tt>. This will also set the contrast to its
+    darkest.<p>
+
+    Now that you know about test mode, please, don't use it. There is no way to make the
+    BLODs appear on a specific row, nor can they be constrained. If you had any hopes of
+    making some kind of waterfall animation, you can just as well forget about it.<br>
+    As well, test mode is dangerous. If you leave the calculator in test mode for more than
+    a minute, you risk damaging the LCD. Even a few seconds of BLODs may leave an imprint
+    on the screen (not unlike phosphor burn-in when you forget your screen saver).<p>
+
+<a name="pwr"></a>
+    <h2>Power</h2>
+    Command <tt>$02</tt> will "unhook" the LCD from its internal RAM, and <tt>$03</tt> will
+    relink it. In other words, these turn the LCD off and on. Keep in mind that these
+    commands will only turn off the LCD, <i>not the calculator</i> (actually, the only way to
+    truly shut off the calculator is to remove all five batteries).<p>
+
+<a name="zad"></a>
+    <h2>Z-Address</h2>
+    Commands <tt>$40</tt> to <tt>$7F</tt> change how the driver's RAM is mapped to the
+    screen. <tt>$40</tt> is the default, the first 12 bytes of driver RAM are displayed on
+    the top row of the LCD. Each successive number moves the screen up one pixel (there is
+    vertical wrapping). This is still pretty pointless; I could see it used in a game for an
+    earthquake effect, but aside from that, its only use is for this demo.<p>
+
+    <h3>Program 26-3</h3>
+<div class=Program>
+<pre>    <span class=ins>LD</span>     <span class=reg>B</span>, 63
+    <span class=ins>LD</span>     <span class=reg>A</span>, $41
+<span class=mem>Scroll:</span>
+    <span class=ins>OUT</span>    ($10), <span class=reg>A</span>
+    <span class=ins>INC</span>    <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, 5       <span class=cmt>;Use a bigger number for slower scrolling.</span>
+<span class=mem>Delay:</span>
+    <span class=ins>HALT</span>
+    <span class=ins>DEC</span>    <span class=reg>C</span>
+    <span class=ins>JR     NZ</span>, <span class=mem>Delay</span>
+
+    <span class=ins>DJNZ</span>   <span class=mem>Scroll</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, $40
+    <span class=ins>OUT</span>    ($10), <span class=reg>A</span>
+    <span class=ins>RET</span></pre></div><p>
+
+<a name="wrd"></a>
+    <h2>Word Size</h2>
+    The last feature of the T6A04 is the ability to change the word size from 8-bit to 6-bit.
+    Technically, a word is defined as a string of bits that can occupy a single addressable
+    location. This kind of conflicts with the popular definition of a word being a size of
+    16 bits, which is due to the fact that Intel made some computers with 16-bit words that
+    were <i>very</i> popular. But this is the official Toshiba name, and I can't think of
+    a better one, so oh well.<p>
+
+    The word size is changed with two commands:
+<table class=info>
+<tr>
+    <th class=Heading><tt>$00</tt></th>
+    <td>Configure six bits per word</td>
+</tr>
+<tr>
+    <th class=Heading><tt>$01</tt></th>
+    <td>Configure eight bits per word</td>
+</tr>
+</table>
+
+    What can we use this for? Well, Toshiba thought it would be nice if computers could have
+    two font sizes, and in fact the 6x8 character routines do use 6-bit word mode to display
+    characters. Maybe we could make a custom large font routine?<p>
+
+    <h3>Program 26-4</h3>
+<div class=Program>
+<pre>
+    b_call(_ClrLCDFull)
+    b_call(_HomeUp)
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>text</span>
+    <span class=ins>CALL</span>   <span class=mem>CustomStr</span>
+    <span class=ins>RET</span>
+
+<span class=mem>text:</span>    <span class=dir>.DB</span>    "Hello ", 1, 0
+
+<span class=mem>CustomStr:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>OR</span>     <span class=reg>A</span>
+    <span class=ins>RET    Z</span>
+
+    <span class=ins>CP</span>     1
+    <span class=ins>JR     NZ</span>, <span class=mem>NormalChar</span>    <span class=cmt>; Trap for char $01 (custom)</span>
+
+    <span class=ins>PUSH</span>   <span class=reg>AF</span>
+
+    <span class=ins>XOR</span>    <span class=reg>A</span>                <span class=cmt>; Configure word size</span>
+    <span class=ins>OUT</span>    ($10), <span class=reg>A</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, $05            <span class=cmt>; Configure X auto-increment</span>
+    <span class=ins>CALL</span>   $000B
+    <span class=ins>OUT</span>    ($10), <span class=reg>A</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(CurCol)</span>       <span class=cmt>; Set LCD Row</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, $20
+    <span class=ins>CALL</span>   $000B
+    <span class=ins>OUT</span>    ($10), <span class=reg>A</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(CurRow)</span>       <span class=cmt>; Set LCD Row</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, $80
+    <span class=ins>OUT</span>    ($10), <span class=reg>A</span>
+
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>Smilie</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 8
+<span class=mem>FontLoop:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>
+    <span class=ins>CALL</span>   $000B
+    <span class=ins>OUT</span>    ($11), <span class=reg>A</span>
+    <span class=ins>INC</span>    <span class=reg>DE</span>
+    <span class=ins>DJNZ</span>   <span class=mem>FontLoop</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(CurCol)</span>       <span class=cmt>; Advance cursor position</span>
+    <span class=ins>INC</span>    <span class=reg>A</span>
+    <span class=ins>AND</span>    %00001111
+    <span class=ins>LD</span>     <span class=mem>(CurCol)</span>, <span class=reg>A</span>
+    <span class=ins>JR     NZ</span>, <span class=mem>DoneCustomFont</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(CurRow)</span>       <span class=cmt>; Advance row. This doesn't check for a bad</span>
+    <span class=ins>INC</span>    <span class=reg>A</span>                <span class=cmt>; position or scroll. Do that on your own time.</span>
+    <span class=ins>LD</span>     <span class=mem>(CurRow)</span>, <span class=reg>A</span>
+
+<span class=mem>DoneCustomFont:</span>
+    <span class=ins>POP</span>    <span class=reg>AF</span>
+    <span class=ins>JR</span>     <span class=mem>DoneChar</span>
+
+<span class=mem>NormalChar:</span>
+    b_call(_PutC)
+
+<span class=mem>DoneChar:</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>JR</span>     <span class=mem>CustomStr</span>
+
+<span class=cmt>; Our custom character!</span>
+<span class=mem>smilie:</span>
+    <span class=dir>.DB</span>    %00011110
+    <span class=dir>.DB</span>    %00101101
+    <span class=dir>.DB</span>    %00101101
+    <span class=dir>.DB</span>    %00111111
+    <span class=dir>.DB</span>    %00101101
+    <span class=dir>.DB</span>    %00110011
+    <span class=dir>.DB</span>    %00011110
+    <span class=dir>.DB</span>    %00000000
+</pre>
+</div>
+
+<a name="cso"></a>
+    <h2>LCD Command Port Cheat Sheet</h2>
+<table class=Info>
+<caption>Outputs</caption>
+<tr>
+    <th class=Heading>Command</th>
+    <th class=Heading>Function</th>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$00</tt></th>
+    <td>Configure six bits per word</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$01</tt></th>
+    <td>Configure eight bits per word</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$02</tt></th>
+    <td>Turn off</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$03</tt></th>
+    <td>Turn on</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$04</tt></th>
+    <td>X auto-decrement mode</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$05</tt></th>
+    <td>X auto-increment mode</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$06</tt></th>
+    <td>Y auto-decrement mode</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$07</tt></th>
+    <td>Y auto-increment mode</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$08 &ndash; $0B</tt></th>
+    <td>Power supply enhancement. <tt>$08</tt> is lowest.</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$10 &ndash; $13</tt></th>
+    <td>Power supply level. <tt>$10</tt> is lowest.</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$14 &ndash; $17</tt></th>
+    <td>Unknown</td>
+<tr>
+    <th class=SubHeading><tt>$18</tt></th>
+    <td>Exit test mode</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$19 &ndash; $1B</tt></th>
+    <td>Unknown</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$1C &ndash; $1F</tt></th>
+    <td>Enter test mode</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$20 &ndash; $2E</tt></th>
+    <td>Set column in 8-bit word mode</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$20 &ndash; $33</tt></th>
+    <td>Set column in 6-bit word mode</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$34 &ndash; $3F</tt></th>
+    <td>Unknown</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$40 &ndash; $7F</tt></th>
+    <td>Set Z-address</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$80 &ndash; $BF</tt></th>
+    <td>Set row</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>$C0 &ndash; $FF</tt></th>
+    <td>Set contrast</td>
+</tr>
+</table><p>
+
+<a name="csi"></a>
+<table class=Info>
+<caption>Inputs</caption>
+<tr>
+    <th class=Heading>Bit</th>
+    <th class=Heading>State</th>
+</tr>
+<tr>
+    <td class=SubHeading>7</td>
+    <td><tt>1</tt>: LCD is busy<br><tt>0</tt>: LCD can accept a command</td>
+</tr>
+<tr>
+    <td class=SubHeading>6</td>
+    <td><tt>1</tt>: 8 bits-per-word<br><tt>0</tt>: 6 bits-per-word</td>
+</tr>
+<tr>
+    <td class=SubHeading>5</td>
+    <td><tt>1</tt>: Display is on<br><tt>0</tt>: Display is off</td>
+</tr>
+<tr>
+    <td class=SubHeading>4</td>
+    <td><tt>1</tt>: In reset state<br><tt>0</tt>: In operating state</td>
+</tr>
+<tr>
+    <td class=SubHeading>3</td>
+    <td>Not defined</td>
+</tr>
+<tr>
+    <td class=SubHeading>2</td>
+    <td>Not defined</td>
+</tr>
+<tr>
+    <td class=SubHeading>1</td>
+    <td><tt>1</tt>: Y-Auto mode<br><tt>0</tt>: X-Auto mode</td>
+</tr>
+<tr>
+    <td class=SubHeading>0</td>
+    <td><tt>1</tt>: Auto increment mode<br><tt>0</tt>: Auto decrement mode</td>
+</tr>
+</table>
+
+    <hr>
+<div class=NavFooter>
+<a href="day25.html">PREVIOUS - Day 25: Sprites</a><p>
+<a href="day27.html">NEXT - Day 27: String And Numerical Input</a><p>
+<a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

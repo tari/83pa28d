@@ -1,0 +1,1107 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 15 &mdash; Advanced Math</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day14.html">Previous</a>
+    &middot; <a href="day16.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 15. Advanced Math</h1>
+    <hr>
+    <b><font color=#CCCCCC>novice intermediate <font color=#FF6600>advanced</font> expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="square"><a href="#mul">Multiplication</a>
+<li type="square"><a href="#div">Division</a>
+<li type="disc"><a href="#add">Multiprecision Addition</a>
+<li type="disc"><a href="#sub">Multiprecision Subtraction</a>
+<li type="disc"><a href="#cmp">Multiprecision Compare</a>
+<li type="disc"><a href="#bol">Multiprecision Boolean</a>
+<li type="disc"><a href="#neg">Multiprecision Negation</a>
+<li type="disc"><a href="#shf">Multiprecision Shifting</a>
+<li type="disc"><a href="#rot">Multiprecision Rotation</a>
+<li type="circle"><a href="#xml">Multiprecision Multiplication</a>
+<li type="square"><a href="#xdv">Multiprecision Division</a>
+<li type="disc"><a href="#sgn">Signed Multiplication/Division</a>
+<li type="disc"><a href="#ext">Sign Extension</a>
+<li type="circle"><a href="#fix">Fixed-Point Arithmetic</a>
+<li type="circle"><a href="#cdv">Constant Division</a>
+</ul>
+    <hr>
+
+<a name="mul"></a>
+    <h2>Multiplication</h2>
+Way, way back on Day 5, you learned a rudimentary form of multiplying. It wasn't a very versatile technique, since you were always multiplying by the same number. Now that we know about loops, we can create more dynamic routines.<p>
+
+    <h3>Simple Multiplication</h3>
+The arithmetic operation of multiplying is simply repeated addition, so we can use a <span class=ins>DJNZ</span> loop to add a number repeatedly.
+
+<pre>
+<span class=mem>D_Times_E:</span>        <span class=cmt>; HL = D times E</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, 0   <span class=cmt>; Use HL to keep track of the product</span>
+    <span class=ins>XOR</span>    <span class=reg>A</span>      <span class=cmt>; Need to check if either factor is zero</span>
+    <span class=ins>OR</span>     <span class=reg>D</span>
+    <span class=ins>RET    Z</span>
+    <span class=ins>OR</span>     <span class=reg>E</span>
+    <span class=ins>RET    Z</span>
+
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>D</span>    <span class=cmt>; Store one of the factors in the loop counter</span>
+    <span class=ins>LD</span>     <span class=reg>D</span>, <span class=reg>H</span>    <span class=cmt>; Clear D so DE hold the other factor</span>
+<span class=mem>Loop:</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>DJNZ</span>   <span class=mem>Loop</span>
+    <span class=ins>RET</span>
+</pre>
+
+This looks like a nice, simple routine that does the job. However, it has a little inconvenience. When <span class=reg>D</span> is a very large number, there are a lot of additions and the product is calculated very slowly.<p>
+
+    <h3>Fast Multiplication</h3>
+The fast method of assembly multiplication is, suprisingly, a nearly direct translation of the everyday base-10 method. Since it's a mostly automatic process for us, I'll give an explanation of the algorithm.
+
+<pre>        579
+    <u>&times;   163</u>
+       1728    = 579&times;3
+      34740    = 579&times;60
+    <u>+ 57900</u>    = 579&times;100
+      94368</pre>
+
+Each digit of the multiplicand is multiplied by each digit of the
+multiplier. The partial products are then added together to give the result.<p>
+
+If we do this in base-2, we follow the same procedure, but it looks less complicated:
+
+<pre>
+      %0000<font color=#0000FF>1101</font>    (13)
+    <u>&times; %00000110</u>    (6)
+      %00000000
+      %000<font color=#0000FF>1101</font>0
+      %00<font color=#0000FF>1101</font>00
+    <u>+ %00000000</u>
+      %01001110    (78)</pre>
+
+You can see that the multiplicand is being multiplied by either zero or one, so each partial product is either zero, or the original multiplicand itself, shifted an appropriate amount.<p>
+
+    To convert this procedure for assembly:
+<ol>
+    <li>Shift the multiplier right to check the least-significant bit.
+    <li>If the carry flag is set, add the multiplicand to our running total.
+    <li>Regardless of whether there was an addition, shift the original multiplicand left.
+    <li>Repeat for each bit in the multiplier.
+</ol>
+    A possible routine to do this:
+
+<pre>
+<span class=dir>.module    DE_Times_A</span>
+<span class=mem>DE_Times_A:</span>          <span class=cmt>; HL = DE &times; A</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, 0      <span class=cmt>; Use HL to store the product</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 8       <span class=cmt>; Eight bits to check</span>
+<span class=mem>_loop:</span>
+    <span class=ins>RRCA</span>             <span class=cmt>; Check least-significant bit of accumulator</span>
+    <span class=ins>JR     NC</span>, <span class=mem>_skip</span>  <span class=cmt>; If zero, skip addition</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+<span class=mem>_skip:</span>
+    <span class=ins>SLA</span>    <span class=reg>E</span>         <span class=cmt>; Shift DE one bit left</span>
+    <span class=ins>RL</span>     <span class=reg>D</span>
+    <span class=ins>DJNZ</span>   <span class=mem>_loop</span>
+    <span class=ins>RET</span>
+</pre>
+
+This routine will run much faster than the previous one, since the speed isn't based on the value of the multiplier, but rather the amount of <tt>1</tt>s.<p>
+
+If we limit the factors to 8 bits, we can make an even faster routine by storing the multiplier and the product in one register:
+
+<pre>
+<span class=dir>.module    H_Times_E</span>
+<span class=mem>H_Times_E:</span>           <span class=cmt>; HL = H &times; E</span>
+    <span class=ins>LD</span>     <span class=reg>D</span>, 0       <span class=cmt>; Zero D and L</span>
+    <span class=ins>LD</span>     <span class=reg>L</span>, D
+    <span class=ins>LD</span>     <span class=reg>B</span>, 8
+<span class=mem>_loop:</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>     <span class=cmt>; Get most-significant bit of HL</span>
+    <span class=ins>JR     NC</span>, <span class=mem>_skip</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+<span class=mem>_skip:</span>
+    <span class=ins>DJNZ</span>   <span class=mem>_loop</span>
+    <span class=ins>RET</span>
+</pre>
+
+You know from Day 9 that <span class=ins>ADD</span> <span class=reg>HL</span><tt>, </tt><span class=reg>HL</span>
+effectively shifts <span class=reg>HL</span> one bit to the left. We are therefore checking the multiplier
+(<span class=reg>H</span>) from its most-significant end rather than the least-significant. In other words, we perform
+<span class=reg>DE</span>&times;128, <span class=reg>DE</span>&times;64...  instead of <span class=reg>DE</span>&times;1, 
+<span class=reg>DE</span>&times;2...<p>
+
+So, if we add <span class=reg>DE</span> on the first iteration, the result will get shifted over 7 times, i.e.
+<span class=reg>DE</span>&times;2<sup>7</sup>.<p>
+
+You might have an uneasy feeling that repeated addition of <span class=reg>DE</span> will  corrupt our factor in <span class=reg>H</span>. However, this is impossible because the
+result of an 8-bit number plus another 8-bit number can never be more than 9 bits. By the time this can happen, the multiplier has vacated the lower two bits of <span class=reg>H</span>:<p>
+
+For example, if we tried 255<sup>2</sup> (the original value of <span
+class=reg>H</span> is blue):
+
+<table class=Info>
+<tr class=Heading>
+    <th>Iteration</th>
+    <th>Command</th>
+    <th>Binary Value of HL</th>
+</tr>
+<tr>
+    <th class=SubHeading>1</th>
+    <td><span class=ins>ADD</span><span class=reg> HL</span><tt>, </tt><span
+    class=reg>HL</span><br><span class=ins>ADD</span><span class=reg>
+    HL</span><tt>, </tt><span class=reg>DE</span></td>
+    <td align=center><tt><font color=blue>1111111</font>0 00000000<br>
+    <font color=blue>1111111</font>0 11111111</tt></td>
+</tr>
+<tr>
+    <th class=SubHeading>2</th>
+    <td><span class=ins>ADD</span><span class=reg> HL</span><tt>, </tt><span
+    class=reg>HL</span><br><span class=ins>ADD</span><span class=reg>
+    HL</span><tt>, </tt><span class=reg>DE</span></td>
+    <td align=center><tt><font color=blue>111111</font>01 11111110<br>
+    <font color=blue>111111</font>10 11111101</tt></td>
+</tr>
+<tr>
+    <th Class=SubHeading>3</th>
+    <td><span class=ins>ADD</span><span class=reg> HL</span><tt>, </tt><span
+    class=reg>HL</span><br><span class=ins>ADD</span><span class=reg>
+    HL</span><tt>, </tt><span class=reg>DE</span></td>
+    <td align=center><tt><font color=blue>11111</font>101 11111010<br>
+    <font color=blue>11111</font>110 11111001</tt></td>
+</tr>
+<tr>
+    <th Class=SubHeading>4</th>
+    <td><span class=ins>ADD</span><span class=reg> HL</span><tt>, </tt><span
+    class=reg>HL</span><br><span class=ins>ADD</span><span class=reg>
+    HL</span><tt>, </tt><span class=reg>DE</span></td>
+    <td align=center><tt><font color=blue>1111</font>1101
+    11110010<br><font color=blue>1111</font>1110 11110001</tt></td>
+</tr>
+</table>
+    And so on.<p>
+
+<a name="div"></a>
+    <h2>Division</h2>
+In the longhand version of division, 
+
+<pre>        <u>  8026</u>
+    12 | 96315
+        <u>-96</u>
+          03
+         <u>- 0</u>
+           31
+          <u>-24</u>
+            75
+           <u>-72</u>
+             3</pre>
+
+We take the first digit of the dividend and subtract the largest multiple of the divisor that will fit. We then take the next digit of the dividend and weld it to the remainder. This is repeated until we run out of digits.<p>
+
+If done in binary, we only have to subtract zero or the divisor:
+
+<pre>         <u> 00101010</u>
+    101 | 11010110
+         <u>-101</u>
+            110
+           <u>-101</u>
+              111
+             <u>-101</u>
+              100</pre>
+
+The general algorithm, in English, for dividing a number in <i>n</i> bits by a number in <i>m</i> bits, 
+<ol>
+<li>Shift the dividend left one bit.
+<li>Shift the carry out into a temp area of size <i>m</i>+1 bits.
+<li>See if the value of the temp area is greater than or equal to the divisor.
+<li>If it is, subtract the divisor from the temp area and set the lsb of the dividend.
+<li>Repeat <i>n</i> times.
+</ol>
+The result is a quotient in the former dividend, and the remainder in the temp area.
+
+<pre><span class=dir>.module    Div_HL_D</span>
+<span class=mem>Div_HL_D:</span>            <span class=cmt>; HL = HL &divide; D, A = remainder</span>
+    <span class=ins>XOR</span>    <span class=reg>A</span>         <span class=cmt>; Clear upper eight bits of AHL</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 16      <span class=cmt>; Sixteen bits in dividend</span>
+<span class=mem>_loop:</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>     <span class=cmt>; Do a SLA HL</span>
+    <span class=ins>RLA</span>              <span class=cmt>; This moves the upper bits of the dividend into A</span>
+    <span class=ins>JR     C</span>, <span class=mem>_overflow</span>
+    <span class=ins>CP</span>     <span class=reg>D</span>         <span class=cmt>; Check if we can subtract the divisor</span>
+    <span class=ins>JR     C</span>, <span class=mem>_skip</span>   <span class=cmt>; Carry means D > A</span>
+<span class=mem>_overflow:</span>
+    <span class=ins>SUB</span>    <span class=reg>D</span>         <span class=cmt>; Do subtraction for real this time</span>
+    <span class=ins>INC</span>    <span class=reg>L</span>         <span class=cmt>; Set bit 0 of quotient</span>
+<span class=mem>_skip:</span>
+    <span class=ins>DJNZ</span>   <span class=mem>_loop</span>
+    <span class=ins>RET</span></pre>
+
+The dividend is <span class=reg>HL</span> and the temp area is <span class=reg>A</span>. This is not strictly in keeping with the requirement that the temp area be <i>m</i>+1 bits (unless the divisor is restricted to seven or fewer bits), so in cases where <span class=reg>D</span> > <span class=reg>L</span> > $80, there will be an overflow.<p>
+
+For example, if <span class=reg>HL</span> = $8C00 and <span class=reg>D </span> = $90, 
+
+<table class=info>
+<tr>
+ <th class=Heading>Iteration</th>
+ <th class=Heading>Commands</th>
+ <th class=Heading>Binary value of HL</th>
+ <th class=Heading>Binary value of A</th>
+</tr>
+<tr>
+ <th class=SubHeading>1</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br></tt></td>
+ <td><tt>000110000000000<font color=#0000FF>0</font><br>&nbsp;</td>
+ <td><tt><br>00000001</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>2</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br></tt></td>
+ <td><tt>00110000000000<font color=#0000FF>00</font><br>&nbsp;</td>
+ <td><tt><br>00000010</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>3</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br></tt></td>
+ <td><tt>0110000000000<font color=#0000FF>000</font><br>&nbsp;</td>
+ <td><tt><br>00000100</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>4</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br></tt></td>
+ <td><tt>110000000000<font color=#0000FF>0000</font><br>&nbsp;</td>
+ <td><tt><br>00001000</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>5</th>
+ <td><tt><span class=ins>ADD</span><spa n class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br></tt></td>
+ <td><tt>10000000000<font color=#0000FF>00000</font><br>&nbsp;</td>
+ <td><tt><br>00010001</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>6</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br></tt></td>
+ <td><tt>0000000000<font color=#0000FF>000000</font><br>&nbsp;</td>
+ <td><tt><br>00100011</tt></td>
+ </tr>
+<tr>
+ <th class=SubHeading>7</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br></tt></td>
+ <td><tt>0000000000<font color=#0000FF>000000</font><br>&nbsp;</td>
+ <td><tt><br>00100011</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>8</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br></tt></td>
+ <td><tt>000000000<font color=#0000FF>0000000</font><br>&nbsp;</td>
+ <td><tt><br>01000110</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>8</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br></tt></td>
+ <td><tt>00000000<font color=#0000FF>00000000</font><br>&nbsp;</td>
+ <td><tt><br>10001100</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>9</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br>
+ <span class=ins>SUB</span> <span class=reg>D</span><br>
+ <span class=ins>INC</span> <span class=reg>L</span></tt></td>
+ <td><tt>0000000<font color=#0000FF>000000000</font><br>&nbsp;<br>&nbsp;<br>0000000<font color=#0000FF>000000001</font></tt></td>
+ <td><tt><br>00011000<br>10001000<br>&nbsp;</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>10</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br>
+ <span class=ins>SUB</span> <span class=reg>D</span><br>
+ <span class=ins>INC</span> <span class=reg>L</span></tt></td>
+ <td><tt>000000<font color=#0000FF>0000000010</font><br>&nbsp;<br>&nbsp;<br>000000<font color=#0000FF>0000000011</font></tt></td>
+ <td><tt><br>00010000<br>10000000<br>&nbsp;</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>11</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br>
+ <span class=ins>SUB</span> <span class=reg>D</span><br>
+ <span class=ins>INC</span> <span class=reg>L</span></tt></td>
+ <td><tt>00000<font color=#0000FF>00000000110</font><br>&nbsp;<br>&nbsp;<br>00000<font color=#0000FF>00000000111</font></tt></td>
+ <td><tt><br>00010000<br>10000000<br>&nbsp;</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>12</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br>
+ <span class=ins>SUB</span> <span class=reg>D</span><br>
+ <span class=ins>INC</span> <span class=reg>L</span></tt></td>
+ <td><tt>0000<font color=#0000FF>000000001110</font><br>&nbsp;<br>&nbsp;<br>0000<font color=#0000FF>000000001111</font></tt></td>
+ <td><tt><br>00000000<br>01110000<br>&nbsp;</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>13</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br>
+ <span class=ins>SUB</span> <span class=reg>D</span><br>
+ <span class=ins>INC</span> <span class=reg>L</span></tt></td>
+ <td><tt>000<font color=#0000FF>0000000011110</font><br>&nbsp;<br>&nbsp;<br>000<font color=#0000FF>0000000011111</font></tt></td>
+ <td><tt><br>10100000<br>00010000<br>&nbsp;</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>14</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br>
+ <td><tt>00<font color=#0000FF>00000000111110</font><br>&nbsp;</tt></td>
+ <td><tt><br>0010000</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>15</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br>
+ <td><tt>0<font color=#0000FF>000000001111100</font><br>&nbsp;</tt></td>
+ <td><tt><br>0100000</tt></td>
+</tr>
+<tr>
+ <th class=SubHeading>15</th>
+ <td><tt><span class=ins>ADD </span><span class=reg>HL</span>, <span class=reg>HL</span><br>
+ <span class=ins>RLA</span><br>
+ <td><tt><font color=#0000FF>0000000011111000</font><br>&nbsp;</tt></td>
+ <td><tt><br>1000000</tt></td>
+</tr>
+</table><p>
+
+    <h2>Multiprecision Arithmetic</h2>
+If there's one thing about HLLs that's really annoying, it's that you can never process an integer with more than 4 bytes, you have to use slow, inaccurate floating-point numbers. Wouldn't it be nice if you could do arithmetic on an integer of any arbitrary size?<p>
+
+<a name="add"></a>
+    <h3>Multiprecision Addition</h3>
+
+We need a new instruction:
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>ADC</b> A, { reg<sub>8</sub> | imm<sub>8</sub> | (HL) }</tt></td>
+    <td>Adds the operand and the carry flag to the accumulator.</td>
+</tr>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>ADC</b> HL, reg<sub>16</sub></tt></td>
+    <td>Adds <tt>reg<sub>16</sub></tt> and the carry flag to <tt>HL</tt>.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects overflow</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+    To begin with, let's add <tt>7695</tt> and <tt>2182</tt> on "paper":
+<pre>
+       <sub>1</sub>
+      7695
+    <u>+ 2182</u>
+      9877
+</pre>
+
+In the tens position, 9 + 8 = 17, which "overflowed". So you write down '7' and <i>carry</i> the '1'. Add 6 + 1
+with the carry to compensate, and everything works out all right. This is exactly how <span class=ins>ADC</span> is
+meant to work (amazing, eh? All those years in elementary school, you were learning assembly and didn't even know it). 
+In an assembly implementation, you work on bytes or words instead of digits, but the theory is the same. So let's try
+it.<p>
+    
+Example: Add 32-bit number <span class=mem>dword1</span> with 32-bit number <span class=mem>dword2</span>.
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(dword1)</span>        <span class=cmt>; Get least-significant word of dword1</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>(dword2)</span>        <span class=cmt>; Get least-significant word of dword2</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>              <span class=cmt>; Add them</span>
+    <span class=ins>LD</span>     <span class=mem>(result)</span>, <span class=reg>HL</span>        <span class=cmt>; Store least-significant result</span>
+
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(dword1</span> + 2<span class=mem>)</span>    <span class=cmt>; Get most-significant word of dword1</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>(dword2</span> + 2<span class=mem>)</span>    <span class=cmt>; Get most-significant word of dword2</span>
+    <span class=ins>ADC</span>    <span class=reg>HL</span>, <span class=reg>DE</span>              <span class=cmt>; Add them with the carry from the previous addition</span>
+    <span class=ins>LD</span>     <span class=mem>(result</span> + 2<span class=mem>)</span>, <span class=reg>HL</span>    <span class=cmt>; Store most-significant result</span>
+    <span class=ins>RET</span>
+
+<span class=mem>dword1:</span>    <span class=dir>.DB</span>    $B3, $90, $12, $32    <span class=cmt>; Each dword is stored with the least-significant</span>
+<span class=mem>dword2:</span>    <span class=dir>.DB</span>    $F1, $15, $06, $B8    <span class=cmt>; bytes first. You could just as easily have stored</span>
+<span class=mem>result:</span>    <span class=dir>.DB</span>    $00, $00, $00, $00    <span class=cmt>; them in big-endian, but because of how registers are
+                                     ; loaded from RAM, it wouldn't work.</span>
+</pre>
+ 
+This will end up adding $321290B3 + $B80615F1.<p>
+
+<a name="sub"></a>
+    <h3>Multiprecision Subtraction</h3>
+As you'd probably figured, you need the subtraction equivalent of <span class=ins>ADC</span>. Why look, it's our
+old friend from Day 5!
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>SBC</b> A, { reg<sub>8</sub> | imm<sub>8</sub> | (HL) }</tt></td>
+    <td>Subtracts the operand and the carry flag from the accumulator.</td>
+</tr>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>SBC</b> HL, reg<sub>16</sub></tt></td>
+    <td>Subtracts <tt>reg<sub>16</sub></tt> and the carry flag from <tt>HL</tt>.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects overflow</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+    Again, we'll start with subtracting on paper:
+
+<pre>
+        <sub>7   17</sub>
+      1 <strike>8 7</strike> 6
+    <u>-   6 9 1</sub></u>
+      1 1 8 5
+</pre>
+
+Ok, 6 - 1 = 5. Next is a problem, can't do 7 - 9. Solution: add 10 and subtract 1 from the next pair to compensate.
+<span class=ins>SBC</span> works in the same way. When a subtraction result is negative, 256 is effectively added to the byte in the minuend and the carry flag is set.<br>
+Interestingly enough, the addition routine will work fine if you just replace <span class=ins>ADC</span> with
+<span class=ins>SBC</span>.
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(dword1)</span>        <span class=cmt>; Get least-significant word of dword1</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>(dword2)</span>        <span class=cmt>; Get least-significant word of dword2</span>
+    <span class=ins>SBC</span>    <span class=reg>HL</span>, <span class=reg>DE</span>              <span class=cmt>; Add them</span>
+    <span class=ins>LD</span>     <span class=mem>(result)</span>, <span class=reg>HL</span>        <span class=cmt>; Store least-significant result</span>
+
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(dword1</span> + 2<span class=mem>)</span>    <span class=cmt>; Get most-significant word of dword1</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>(dword2</span> + 2<span class=mem>)</span>    <span class=cmt>; Get most-significant word of dword2</span>
+    <span class=ins>SBC</span>    <span class=reg>HL</span>, <span class=reg>DE</span>              <span class=cmt>; Add them with the carry from the previous addition</span>
+    <span class=ins>LD</span>     <span class=mem>(result</span> + 2<span class=mem>)</span>, <span class=reg>HL</span>    <span class=cmt>; Store most-significant result</span>
+    <span class=ins>RET</span>
+
+<span class=mem>dword1:</span>    <span class=dir>.DB</span>    $B3, $90, $12, $32
+<span class=mem>dword2:</span>    <span class=dir>.DB</span>    $F1, $15, $06, $B8
+<span class=mem>result:</span>    <span class=dir>.DB</span>    $00, $00, $00, $00
+</pre>
+
+This routine looks okay, but it has a subtle bug in it, and maybe the more observant of you have noticed. Maybe you're thinking, "Gee, Sean, what happens if the carry flag is set at the start?" and the answer to that is, "The answer's gonna be off by one." And now maybe you're thinking "Gee, Sean, doesn't that make us screwed?" and the answer to that is, "Yes, it does."<br>
+Hmmm... it seems that the best way to fix this problem is to ensure that the carry flag is always reset before going into the loop. How do we do that? Maybe you'd like <a href="day08.html#bol">a hint?</a><p>
+
+Ah. It appears that boolean operations will reset the carry. An <span class=ins>OR </span><span class=reg>A</span> before should set things right.<p>
+
+<a name="cmp"></a>
+    <h3>Multiprecision Compare (Unsigned)</h3>
+There is no such thing as a "compare with carry" instruction, but since <span class=ins>CP</span> and <span class=ins>SUB</span> perform the same operation, you'd figure that you could use the multiprecision subtraction procedure to compare two numbers. This would work, but there is a much better way.<p>
+
+Take the two values $38A4 and $9B4C. Just by comparing the MSBs tells you which one is bigger. In fact, only when the MSBs are the same do you need to compare both bits, and the carry is reset in such a case.
+
+<pre>
+<span class=cmt>; Do a jump to "success" if the dword at HL is greater than the dword at DE</span>
+    <span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>dword1</span>
+    <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>dword2</span>
+    <span class=ins>LD</span>    <span class=reg>B</span>, 4
+
+<span class=mem>CmpLoop:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>
+    <span class=ins>CP</span>     <span class=reg>(HL)</span>
+    <span class=ins>JR     C</span>, <span class=mem>success</span>
+
+    <span class=ins>JR     NZ</span>, <span class=mem>failure</span>
+    
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>INC</span>    <span class=reg>DE</span>
+    <span class=ins>DJNZ</span>   <span class=mem>CmpLoop</span>
+
+<span class=mem>failure:</span>
+<span class=cmt>; Code here deals with (DE) >= (HL)</span>
+</pre><p>
+
+<h3>Multiprecision Compare (Signed)</h3>
+If you want a multiprecision <i>signed</i> compare, then naturally you have a lot more work to do.
+
+<pre>
+<span class=cmt>; Do a jump to "success" if the dword at HL is greater than the dword at DE</span>
+<span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>dword1</span>
+    <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>dword2</span>
+    <span class=ins>LD</span>    <span class=reg>B</span>, 4
+
+<span class=mem>CmpLoop:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>
+    <span class=ins>SUB</span>    <span class=reg>(HL)</span>
+    <span class=ins>JP     PO</span>, <span class=dir>$</span>+5
+    <span class=ins>XOR</span>    $80
+    <span class=ins>JP     M</span>, <span class=mem>success</span>
+    
+<span class=cmt>; This code snippet restores the Z flag that got changed by XOR</span>
+    <span class=ins>JP     PO</span>, <span class=dir>$</span>+5
+    <span class=ins>XOR</span>    $80
+    <span class=ins>JR     NZ</span>, <span class=mem>failure</span>    <span class=cmt>; Since the byte (DE) is >= the byte (HL), 
+                         ; then an inequality means we failed</span>    
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>INC</span>    <span class=reg>DE</span>
+    <span class=ins>DJNZ</span>   <span class=mem>CmpLoop</span>
+
+<span class=mem>failure:</span>
+<span class=cmt>; Code here deals with (DE) >= (HL)</span></pre><p>
+
+<a name="bol"></a>
+    <h3>Multiprecision Boolean</h3>
+Boolean operations (and one's complement) are the simplest. Just perform the operation, and store the value to memory. No messing with flags, shifts, or other crap.
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>qword1</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>qword2</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 8
+<span class=mem>BoolLoop:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>
+    <span class=ins>AND</span>    <span class=reg>(HL)</span>
+    <span class=ins>LD</span>     <span class=reg>(DE)</span>, <span class=reg>A</span>
+    
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>INC</span>    <span class=reg>DE</span>
+    <span class=ins>DJNZ</span>   <span class=mem>BoolLoop</span></pre><p>
+
+<a name="neg"></a>
+    <h3>Multiprecision Negation</h3>
+Probably the simplest way to negate a multibyte integer is to subtract each element from zero.
+
+<pre>
+<span class=dir>#define</span>    <span class=mem>MAX</span>    4        <span class=cmt>; Number of bytes</span>
+
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>dword</span>
+    <span class=ins>AND</span>    <span class=reg>A</span>               <span class=cmt>; Clear carry</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=mem>MAX</span> - 1
+<span class=mem>NegLoop:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 0             <span class=cmt>; Cannot use XOR A because it would disturb carry</span>
+    <span class=ins>SBC</span>    <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=reg>A</span>          <span class=cmt>; Store result</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>              <span class=cmt>; Next byte</span>
+    <span class=ins>DJNZ</span>   <span class=mem>NegLoop</span>
+</pre>
+
+<a name="shf"></a>
+    <h3>Multiprecision Shifting</h3>
+A shift across many bytes is done with a combination of shift instructions and rotate instructions. Keep in mind that the entire number must be shifted no more than one bit at a time.
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 3             <span class=cmt>; Number of bits to shift</span>
+<span class=mem>ShiftLoop:</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>dword</span>
+    <span class=ins>SRL</span>    <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>RR</span>     <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>RR</span>     <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>RR</span>     <span class=reg>(HL)</span>
+    
+    <span class=ins>DJNZ</span>   <span class=mem>ShiftLoop</span>
+
+<span class=mem>dword:</span>    <span class=dir>.DB</span>    $B3, $90, $12, $32
+</pre>
+
+<a name="rot"></a>
+    <h3>Multiprecision Rotation</h3>
+The code to do a rotation depends on the type of rotation wanted.<br>
+For <span class=ins>RL</span>-type rotation:
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>dword</span>+3
+
+    <span class=ins>RL</span>     <span class=reg>(HL)</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>
+    <span class=ins>RL</span>     <span class=reg>(HL)</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>
+    <span class=ins>RL</span>     <span class=reg>(HL)</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>
+    <span class=ins>RL</span>     <span class=reg>(HL)</span>
+
+<span class=mem>dword:</span>    <span class=dir>.DB</span>    $B3, $90, $12, $32
+</pre>
+
+    For <span class=ins>RLC</span>-type rotation:
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>dword</span>+3
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+
+    <span class=ins>SLA</span>    <span class=reg>(HL)</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>
+    <span class=ins>RL</span>     <span class=reg>(HL)</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>
+    <span class=ins>RL</span>     <span class=reg>(HL)</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>
+    <span class=ins>RL</span>     <span class=reg>(HL)</span>
+
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+    <span class=ins>JR     NC</span>, <span class=dir>$</span>+3
+    <span class=ins>INC</span>    <span class=reg>(HL)</span>       <span class=cmt>; Set last bit of (HL) if carry was set</span></pre><p>
+
+<a name="xml"></a>
+    <h3>Multiprecision Multiplication</h3>
+The process of a multiprecision multiplication is similar to that for the other multiprecision operations. The trickiest thing is that you have to perform multiprecision additions (on all the partial products) at the same time as you do the multiplications.<p>
+
+The routine that is given below is certainly not the most efficient, only the most general. Regardless, it is probably one of the most complicated pieces of coding in this entire guide.
+
+<pre>
+<span class=dir>.module    XMul</span>
+<span class=cmt>;B = Size of multiplier
+;C = Size of multiplicand
+;DE = Address of multiplier
+;HL = Address of multiplicand
+;IX = Address of product buffer (B + C bytes, you can use logarithms to see why this is so.)
+;
+;All registers including IY are destroyed</span>
+<span class=mem>XMul:</span>
+    <span class=ins>LD</span>     <span class=reg>IYH</span>, <span class=reg>B</span>
+    <span class=ins>LD</span>     <span class=reg>IYL</span>, <span class=reg>C</span>
+</pre>
+
+First of all, we will have to use the size counters multiple times, so we save them into <span class=reg>IY</span>.
+
+<pre>
+    <span class=ins>XOR</span>    <span class=reg>A</span>
+    <span class=ins>PUSH</span>   <span class=reg>IX</span>
+
+<span class=mem>_Clear1:</span>
+    <span class=ins>LD</span>     <span class=reg>(IX)</span>, <span class=reg>A</span>
+    <span class=ins>INC</span>    <span class=reg>IX</span>
+    <span class=ins>DJNZ</span>   <span class=mem>_Clear1</span>
+
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>C</span>
+<span class=mem>_Clear2:</span>
+    <span class=ins>LD</span>     <span class=reg>(IX)</span>, <span class=reg>A</span>
+    <span class=ins>INC</span>    <span class=reg>IX</span>
+    <span class=ins>DJNZ</span>   <span class=mem>_Clear2</span>
+
+    <span class=ins>POP</span>    <span class=reg>IX</span>
+</pre>
+
+Now we initialize the product area of memory by setting it all to zeros.
+
+<pre>
+<span class=mem>_LoopA:</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>(HL)</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>IYH</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    <span class=ins>PUSH</span>   <span class=reg>IX</span>
+    <span class=ins>PUSH</span>   <span class=reg>DE</span>
+</pre>
+
+Get one byte of the multiplicand into <span class=reg>C</span>. Then restore the size of the multiplier into <span class=reg>B</span>. Finally save all the pointers.
+
+<pre>
+<span class=mem>_LoopB:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>
+    <span class=ins>LD</span>     <span class=reg>H</span>, <span class=reg>A</span>
+    <span class=ins>CALL</span>   <span class=mem>mul_hc</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>L</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>(IX)</span>
+    <span class=ins>LD</span>     <span class=reg>(IX)</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>H</span>
+    <span class=ins>ADC</span>    <span class=reg>A</span>, <span class=reg>(IX + 1)</span>
+    <span class=ins>LD</span>     <span class=reg>(IX + 1)</span>, <span class=reg>A</span>
+</pre>
+
+Okay, we get one byte of the multiplier into <span class=reg>H</span> and multiply <span class=reg>H</span> by <span class=reg>C</span> using the routine below, getting the product in <span class=reg>HL</span>. Now we take this partial product and integrate it into the current full product.
+
+<pre>
+    <span class=ins>JR     NC</span>, <span class=mem>_EndB</span>
+
+    <span class=ins>PUSH</span>   <span class=reg>IX</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+
+<span class=mem>_CyLoop:</span>
+    <span class=ins>INC</span>    <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>JR     Z</span>, <span class=mem>_CyLoop</span>
+</pre>
+
+Now this definately requires some explanation. We have just added <span class=reg>HL</span> to two bytes of the product, but there might have been a carry out of this addition, so the next byte of the product is incremented. However the product could be something like $12FFFFFFFFFF, 
+so we need to keep propagating the carry as far as necessary. This brings up a slight problem in that <span class=ins>INC</span> does not affect the carry flag. <i>But</i> this can be remedied with a little trick. Imagine for a second that <span class=ins>INC</span> actually did affect carry. You should quickly discover that the only circumstance under which carry will be set is when the incremented byte goes from $FF to $00, and in this case zero will be set! Sooooo, all we need to do is to just blindly increment bytes as long as <span class=ins>INC </span> <span class=reg>(HL)</span> sets <span class=ins>Z</span>.
+
+<pre>
+<span class=mem>_EndB:</span>
+    <span class=ins>INC</span>    <span class=reg>IX</span>
+    <span class=ins>INC</span>    <span class=reg>DE</span>
+    <span class=ins>DJNZ</span>   <span class=mem>_LoopB</span>
+</pre>
+
+We're done with the current byte of the multiplier so we increment the pointer, and we increment the product pointer to work in the next partial product. And do our calculations again.
+
+<pre>
+    <span class=ins>POP</span>    <span class=reg>DE</span>
+    <span class=ins>POP</span>    <span class=reg>IX</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>INC</span>    <span class=reg>IX</span>
+    <span class=ins>DEC</span>    <span class=reg>IYL</span>
+    <span class=ins>JP     NZ</span>, <span class=mem>_LoopA</span>
+    <span class=ins>RET</span>
+</pre>
+
+So we're finished with the entire multiplier at this point and we pop the original values of all our pointers back. Now we increment our multiplicand pointer to get the next byte, and increment the product pointer (analogous to indenting a partial product when multiplying on paper).
+
+<pre>
+<span class=dir>.module    mul_hc</span>
+<span class=mem>mul_hc:</span>
+    <span class=ins>PUSH</span>   <span class=reg>BC</span>
+    <span class=ins>LD</span>     <span class=reg>L</span>, 0
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>L</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 8
+<span class=mem>_loop:</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>JR     NC</span>, <span class=mem>_skip</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>BC</span>
+<span class=mem>_skip:</span>
+    <span class=ins>DEC</span>    <span class=reg>A</span>
+    <span class=ins>JP     NZ</span>, <span class=mem>_loop</span>
+    <span class=ins>POP</span>    <span class=reg>BC</span>
+    <span class=ins>RET</span>
+</pre>
+
+This is the <span class=mem>H_Times_E</span> routine from the beginning of this chapter with some modifications to work in this particular context.<p>
+
+<a name="xdv"></a>
+    <h3>Multiprecision Division</h3>
+An extended precision division for integers of arbitrary sizes cannot be built up from a basic division routine like extended precision multiplication can. That must be done by taking the logic behind the fast division routine algorithm and extending it. When you consider that such a method would involve a multiprecision shift, rotate, compare, and subtract, it becomes apparent that it would be extremely messy and slow. What is possible is the division of an arbitrary-size
+integer by an eight-bit or sixteen-bit divisor. This is very easy.<p>
+
+<ol>
+    <li>Store the remainder of the previous division into the MSB of the dividend.
+    <li>Store a byte from memory into the LSB of the dividend.
+    <li>Divide by the divisor.
+    <li>Store the LSB of the quotient into memory (because you can never get a 16-bit quotient).
+    <li>Repeat until done.
+</ol>
+
+For the first time you divide, the remainder is considered zero. Note that you need to start from the most-significant byte of the number.
+
+<pre><span class=dir>.module    XDiv</span>
+<span class=cmt>;IX = Address of dividend
+;BC = Size of dividend
+;E = Divisor</span>
+<span class=mem>XDiv:</span>
+    <span class=ins>LD</span>     <span class=reg>D</span>, 0
+<span class=mem>_loop:</span>
+    <span class=ins>LD</span>     <span class=reg>H</span>, <span class=reg>D</span>
+    <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>(IX)</span>
+    <span class=ins>CALL</span>   <span class=mem>DivHLByE</span>
+    <span class=ins>LD</span>     <span class=reg>(IX)</span>, <span class=reg>L</span>
+    <span class=ins>LD</span>     <span class=reg>D</span>, <span class=reg>A</span>
+    <span class=ins>DEC</span>    <span class=reg>IX</span>
+    <span class=ins>DEC</span>    <span class=reg>BC</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>B</span>
+    <span class=ins>OR</span>     <span class=reg>C</span>
+    <span class=ins>JR     NZ</span>, <span class=mem>_loop</span>
+    <span class=ins>RET</span>
+
+<span class=dir>.module    DivHLByE</span>
+<span class=mem>DivHLByE:</span>
+    <span class=ins>PUSH</span>   <span class=reg>BC</span>
+    <span class=ins>XOR</span>    <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 16
+<span class=mem>_loop:</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>RLA</span>
+    <span class=ins>JR     C</span>, <span class=mem>_overflow</span>
+    <span class=ins>CP</span>     <span class=reg>E</span>
+    <span class=ins>JR     C</span>, <span class=mem>_skip</span>
+<span class=mem>_overflow:</span>
+    <span class=ins>SUB</span>    <span class=reg>E</span>
+    <span class=ins>INC</span>    <span class=reg>L</span>
+<span class=mem>_skip:</span>
+    <span class=ins>DJNZ</span>   <span class=mem>_loop</span>
+    <span class=ins>POP</span>    <span class=reg>BC</span>
+    <span class=ins>RET</span></pre>
+
+<a name="sgn"></a>
+    <h2>Signed Multiplication and Division</h2>
+
+All of the multiplication and division routines that have been presented will only calculate correct results if the inputs are unsigned. To perform a signed operation takes a little more work, but fortunately the same routines can be used. And hey, you don't need to code for an overflow of <span class=reg>A</span> when dividing. Bonus!<p>
+
+<ol>
+    <li>Take the absolute value (i.e. negate if the sign bit is set) of both inputs.
+    <li>Perform the multiplication or division.
+    <li>Based on the signs of the inputs, modify the sign of the result
+</ol>
+
+You can find the sign of the result by taking the XOR of the signs of the original inputs.<p>
+
+<a name="ext"></a>
+<h2>Sign-Extension</h2>
+Here is how to sign extend 8-bit and 16-bit registers into 16 and 32 bits.
+
+<pre>
+<span class=cmt>; Sign-extends E into DE</span>
+   <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>E</span>
+   <span class=ins>RLCA</span>           <span class=cmt>; Move sign bit into carry flag</span>
+   <span class=ins>SBC</span>    <span class=reg>A</span>, <span class=reg>A</span>     <span class=cmt>; A is now 0 or 11111111, depending on the carry</span>
+   <span class=ins>LD</span>     <span class=reg>D</span>, <span class=reg>A</span>
+
+<span class=cmt>; Sign-extends DE into HLDE</span>
+   <span class=ins>LD</span>     <span class=reg>H</span>, <span class=reg>D</span>
+   <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>E</span>
+   <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>   <span class=cmt>; Move sign bit into carry flag</span>
+   <span class=ins>SBC</span>    <span class=reg>HL</span>, <span class=reg>HL</span>   <span class=cmt>; HL is now 0 or 11111111 11111111, depending</span>
+</pre>
+
+<a name="fix"></a>
+    <h2>Fixed-Point Arithmetic</h2>
+There are many programming tasks for which pure integers are just not sufficient, and we are forced to delve into the sordid world of the real numbers. The usual option in such cases is to use floating-point numbers. However, this is only feasible for ultra-fast computers with coprocessors. The reason is that floating-point calculations are very complex and usually have very elaborate error detection so as to maintain a high precision and numeric range. In 99 percent of the cases likely to be encountered, this high precision goes wasted, so maybe there is a way to use fractions with an almost indiscernable speed loss? The answer is a resounding yes! Since time immemorial, programmers have used a computational trick to use integers to simulate fractions.<p>
+
+So what exactly is fixed-point? It is a form of computer math that uses an integer to contain both the characteristic and the mantissa by means of scaling. To fully understand how this works, let us take a short detour into some more place value theory.<p>
+
+Take the decimal number 605.916. We know without thinking that the 605 is really a shorthand way to depict 6&times;10<sup>2</sup> + 0&times;10<sup>1</sup> + 5&times;10<sup>0</sup>. The decimal half can easily be figured by taking geometric progression of the 10<sup>n</sup>s and extending it:<p>
+
+6&times;10<sup>2</sup> + 0&times;10<sup>1</sup> + 5&times;10<sup>0</sup> + 9&times;10<sup>-1</sup> + 1&times;10<sup>-2</sup> + 6&times;10<sup>-3</sup><p>
+
+Since the fractional part of the number is just more terms of place value, we can actually apply it to any radix. We might, therefore, encounter a duodecimal such as 12B0.293. This can be converted to a more familiar decimal number:<p>
+
+1&times;12<sup>3</sup> + 2&times;12<sup>2</sup> + 11&times;12<sup>1</sup> + 0&times;12<sup>0</sup> + 2&times;12<sup>-1</sup> + 9&times;12<sup>-2</sup> + 3&times;12<sup>-3</sup> = 2149.123699<p>
+
+How does this relate to programming. Let's consider for a moment, that for the binary base there is an infinite continuum of place values that can model all binary real numbers, and that an eight-bit register can be superimposed on this continuum to reveal an 8-place "snapshot" of a binary number, and as has normally been the case, that snapshot is of the first eight positive places:
+
+<table class=Info>
+<tr>
+ <th>2<sup>oo</th>
+ <th>&middot;&middot;&middot;</th>
+ <th>2<sup>9</sup></th>
+ <th>2<sup>8</sup></th>
+ <th>2<sup>7</sup></th>
+ <th>2<sup>6</sup></th>
+ <th>2<sup>5</sup></th>
+ <th>2<sup>4</sup></th>
+ <th>2<sup>3</sup></th>
+ <th>2<sup>2</sup></th>
+ <th>2<sup>1</sup></th>
+ <th>2<sup>0</sup></th>
+ <th>2<sup>-1</sup></th>
+ <th>2<sup>-2</sup></th>
+ <th>2<sup>-3</sup></th>
+ <th>2<sup>-4</sup></th>
+ <th>&middot;&middot;&middot;</th>
+ <th>2<sup>-oo</sup></th>
+</tr>
+<tr>
+ <td colspan=4>Zeros continuing<br>to infinity</td>
+ <td class=SubHeading>0</td>
+ <td class=SubHeading>1</td>
+ <td class=SubHeading>1</td>
+ <td class=SubHeading>0</td>
+ <td class=SubHeading>0</td>
+ <td class=SubHeading>1</td>
+ <td class=SubHeading>1</td>
+ <td class=SubHeading>1</td>
+ <td colspan=6>Zeros continuing<br>to infinity</td>
+</tr>
+</table>
+
+Now if we were to apply a shift operation, we could view it as a translation of the snapshot instead of a rudimentary arithmetic operation.
+
+<table class=Info>
+<tr>
+ <th>2<sup>oo</th>
+ <th>&middot;&middot;&middot;</th>
+ <th>2<sup>7</sup></th>
+ <th>2<sup>6</sup></th>
+ <th>2<sup>5</sup></th>
+ <th>2<sup>4</sup></th>
+ <th>2<sup>3</sup></th>
+ <th>2<sup>2</sup></th>
+ <th>2<sup>1</sup></th>
+ <th>2<sup>0</sup></th>
+ <th>2<sup>-1</sup></th>
+ <th>2<sup>-2</sup></th>
+ <th>2<sup>-3</sup></th>
+ <th>2<sup>-4</sup></th>
+ <th>&middot;&middot;&middot;</th>
+ <th>2<sup>-oo</sup></th>
+</tr>
+<tr>
+ <td colspan=2>Zeros continuing<br>to infinity</td>
+ <td>0</td>
+ <td>1</td>
+ <td class=SubHeading>1</td>
+ <td class=SubHeading>0</td>
+ <td class=SubHeading>0</td>
+ <td class=SubHeading>1</td>
+ <td class=SubHeading>1</td>
+ <td class=SubHeading>1</td>
+ <td class=SubHeading>0</td>
+ <td class=SubHeading>0</td>
+ <td>0</td>
+ <td>0</td>
+ <td colspan=2>Zeros continuing<br>to infinity</td>
+</tr>
+</table>
+
+And as is clearly seen, we now have a piece of the mantissa portion in our register snapshot! This is the fundamental mechanic of fp, by shifting a number, we gain a part of the fractional part at the expense of a part of the integer. We would actually never use just eight bits (unless we could get away with it), sixteen gives us a nice foundation.<p>
+
+Now we should set up some ground rules so that we are all on the same wavelength. First, while we could place the binary point in any of the 17 positions, I will set it to between bits 7 and 8. This decision has two clear advantages: we can easily extract either the whole or fractional part, and it provides the most balanced compromise between numerical range and fractional precision. Rule #2 is more of a procedure, but we can convert a number to fixed point by either a left shift by 8 or a multiplication by 256.<p>
+
+<h3>Operations on Fixed-Point Numbers</h3>
+Our fixed-point format uses an internal scaling of 256, so we will algebraically represent an FP number as 256(a) so as to simplify analysis of arithmetic operations.<p>
+
+If we were to add (or subtract) two FP numbers, the internal calculation would be 256(a) + 256(b) = 256(a + b). The result is valid since the scaling factor stayed constant. Thus, fixed point numbers may be added or subtracted using ordinary integer arithmetic instructions.<p>
+
+Suppose we were to get a product of two FP numbers: 256(a) &times; 256(b) = 65536(ab). The answer has a scaling factor of 65536, which means we get only the fractional part of the result. We must correct this somehow:
+<ol>
+<li>Shift a factor right by 8 bits to calculate 1(a) &times; 256(b) = 256(ab).
+<li>Shift the product right by 8 bits to calculate 65536(ab) &divide; 256 = 256(ab).
+<li>Calculate a full 32-bit product and use bits 8 through 24.
+</ol>
+Options 1 and 2 are too extreme since they will destroy the accuracy of the result, though we might compromise on (1) by scaling both factors down by 16. But option 3 is the best, albeit the slowest (and the routine to do the multiplication is left as an exercise to the reader :)<p>
+
+Contrary to multiplication, division suffers an almost inverse scaling problem: 256(a) &divide; 256(b) = 1(a&divide;b). The solutions to this problem are similar to multiplication, but again the best method may well be to scale the dividend to 32 bits and craft a routine to divide it by a 16-bit divisor.<p>
+
+<a name="cdv"></a>
+<h2>Constant Division</h2>
+I remember from a while back that I promised to show you a way to divide by a constant number perfectly, so here it comes. You really need to know about fixed point if you want to have any hope of understanding this dreck.<p>
+
+The whole premise is based on the fact that if you have a number <i>x</i>, then division by <i>x</i> is the same operation as multiplication by <sup>1</sup>/<sub><i>x</i></sub>. This ain't that pansy quotient of 256 that gave only approximate results, but the bona fide <i>x</i><sup>-1</sup> multiplicative inverse. The reciprocal is in, you guessed it, fixed point.<p>
+
+E.g., let's use a divisor of 15. The reciprocal is <sup>1</sup>/<sub>15</sub>, or 0.066<span style="text-decoration: overline">6</span>.<br> Now I'm asking you, how many bits should we use so that (a) we get a result that is accurate enough, and (b) involves no more than the absolute minimum of arithmetic?
+
+<ol>
+<li>Given the constant divisor, <i>d</i>, find the exact value of <i>r</i> = <sup>1</sup>/<sub><i>d</i></sub>.
+<li>Find the integer <i>z</i> such that 0.5 <u>&lt;</u> ( <i>r</i> &times; 2<sup><i>z</i></sup> ) + 1. <i>z</i> is the number of leading zeros between the binary point and the first one in the mantissa.
+<li>For an <i>n</i>-bit dividend, take the first <i>n</i>+<i>z</i>+1 bits after the binary point, and round.
+</ol>
+
+Continuing, <i>z</i> = 3, because 0.<span style="text-decoration: overline">6</span> &times; 2<sub>3</sub> = 0.5<span style="text-decoration: overline">3</span>, 
+and so we use only the first 12 bits of the fixed point number, which is 0.000100010001.<p>
+
+We are now going to calculate the product as this:
+<pre>
+    q = x >> 4;
+    q = (q + x) >> 4;
+    q = (q + x) >> 4;
+</pre>
+
+Did you get all that? Heh-heh-heh, okay, here's a blow-by-blow analysis of each operation.<p>
+
+<pre>    q = x >> 4</pre>
+
+Okay, when we start, q = x &times; m, where m is initially 1 and will eventually become the reciprocal.
+A right shift by four will make m = .0001.<p>
+
+<pre>    q = (q + x) >> 4</pre>
+
+If we add the original number, we get a multiplier m = 1.0001, see? If this is then shifted right by four, where the first shift is shifting in the carry from (q + x), m now equals 0.00010001. If we do it again, we
+get a multiplier of 0.000100010001. Isn't that just magickal?<p>
+
+Were you the cautious type you might want to quit while we're ahead, but forget it! The next step is to go the whole nine yards and get the remainder too. It's straightforward enough, remultiply the remainder by 15.
+
+<pre>
+    r = (q << 4) - q;
+    r = x - r;
+</pre>
+
+Enough of all this C, let's see it in assembler already.
+
+<pre>
+<span class=mem>Div_15:</span>
+<span class=cmt>; IN    A   dividend
+; OUT   C   quotient
+;       A   remainder</span>
+
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>A</span>
+    <span class=ins>RRA</span>
+    <span class=ins>RRA</span>
+    <span class=ins>RRA</span>
+    <span class=ins>RRA</span>
+    <span class=ins>AND</span>    $0F        <span class=cmt>; A = q * 0.0001</span>
+
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>B</span>        <span class=cmt>; A = q * 1.0001</span>
+    <span class=ins>RRA</span>
+    <span class=ins>RRA</span>
+    <span class=ins>RRA</span>
+    <span class=ins>RRA</span>
+    <span class=ins>AND</span>    $1F        <span class=cmt>; A = q * 0.00010001</span>
+
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>B</span>        <span class=cmt>; A = q * 1.00010001</span>
+
+    <span class=ins>RRA</span>
+    <span class=ins>RRA</span>
+    <span class=ins>RRA</span>
+    <span class=ins>RRA</span>
+    <span class=ins>AND</span>    $1F        <span class=cmt>; A = q * 0.000100010001</span>
+
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>SUB</span>    <span class=reg>C</span>          <span class=cmt>; A = r * 15</span>
+
+    <span class=ins>SUB</span>    <span class=reg>B</span>
+    <span class=ins>NEG</span>               <span class=cmt>; A = -(r * 15 - x) = x - r * 15</span>
+    <span class=ins>RET</span>
+</pre>
+
+    <hr>
+<div class=NavFooter>
+    <a href="day14.html">PREVIOUS - Day 14: Procedures</a><p>
+    <a href="day16.html">NEXT - Day 16: Character Strings</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

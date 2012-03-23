@@ -1,0 +1,311 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 20 &mdash; Program and System Variables</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day19.html">Previous</a>
+    &middot; <a href="day21.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 20. Program and System Variables</h1>
+    <hr>
+    <b><font color=#CCCCCC>novice intermediate <font color=#FF6600>advanced</font> expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="square"><a href="#wri">Writeback</a>
+<li type="disc"><a href="#bas">TI-BASIC Programs</a>
+<li type="disc"><a href="#asm">Assembly Programs</a>
+<li type="disc"><a href="#hid">Hidden Programs</a>
+<li type="disc"><a href="#sys">System Variables</a>
+</ul>
+    <hr>
+
+<a name="wri"></a>
+    <h2>Writeback</h2>
+What do you do if you use SMC to change a program, and you want those changes to be permanent? Let's find out. Run
+this program several times. In a perfect world, it should keep counting upward by 100 each time it is run.<p>
+
+<h3>Program 19-1</h3>
+<div class=Program>
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(counter)</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, 100
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>LD</span>     <span class=mem>(counter)</span>, <span class=reg>HL</span>
+    b_call(_DispHL)
+    <span class=ins>RET</span>
+<span class=mem>counter:</span>
+    <span class=dir>.DW</span>    10000</pre>
+</div>
+    
+    <p align=center><img src="../img/smc1.png"></p>
+
+    That's a problem. The reason is that the TI-OS copies the program to $9D95 to
+    run it, but the lazy $@%!* forgets to copy it back. The program is effectively
+    write-protected. To make SMC changes permanent, you have to copy the original program
+    data yourself.<p>
+
+    The only hard part is finding your program so you can copy the data back. Yeah, you use
+    <tt>ChkFindSym</tt>, but how do you know what to put in <span class=mem>OP1</span>? If
+    you stuck the program's name in itself somewhere it would work, but that whole theory
+    breaks down if you use a utility to rename the program. Fortunately, the program's name
+    is located in <span class=mem>OP1</span> once the program starts, so you can back it up
+    to a safe place if you intend to make use of it.
+    <p>
+
+    <h3>Program 19-2</h3>
+    So, create this program and compile it.
+<div class=Program>
+<pre>
+    b_call(_PushRealO1)    <span class=cmt>;Save OP1 before we blow it away somehow</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(counter)</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, 100
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>LD</span>     <span class=mem>(counter)</span>, <span class=reg>HL</span>
+    b_call(_DispHL)
+    b_call(_PopRealO1)     <span class=cmt>;Retrieve OP1 for writeback</span>
+    b_call(_ChkFindSym)
+
+    <span class=cmt>;Find data location as offset from start of program.</span>
+    <span class=ins>LD</span>    HL, <span class=mem>DataStart</span> - $9D95 + 4    <span class=cmt>;Have to add 4 because of tAsmCmp token
+                                      ;(2 bytes) and for size bytes (2 bytes)</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>        <span class=cmt>;HL now points to data location in original program.</span>
+    <span class=ins>EX</span>    <span class=reg>DE</span>, <span class=reg>HL</span>         <span class=cmt>;Write back.</span>
+    <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>DataStart</span>
+    <span class=ins>LD</span>    <span class=reg>BC</span>, <span class=mem>DataEnd</span> - <span class=mem>DataStart</span>
+    <span class=ins>LDIR</span>
+    <span class=ins>RET</span>
+<span class=mem>DataStart:</span>
+<span class=mem>counter:</span>    <span class=dir>.DW</span>    10000
+<span class=mem>DataEnd:</span>
+</pre>
+</div>
+
+    <h2>Creating Programs</h2>
+Creating programs is more complicated than the other variable types because of all the different kinds. I could've
+shown you how to do this yesterday, but I didn't want you to feel overwhelmed :)<p>
+
+Naturally, you can make TI-BASIC programs or assembly programs.<p>
+
+<a name="bas"></a>
+    <h3>TI-BASIC Programs</h3>
+    A TI-BASIC program is made up of various tokens for system commands, letters, and
+    numbers. For reference, you should know these tokens:
+<ul>
+    <li><span class=mem>tStore</span> (<tt>$03</tt>) is the store character <tt>/->/</tt>
+    <li><span class=mem>tSpace</span> (<tt>$29</tt>) is the space character
+    <li><span class=mem>tString</span> (<tt>$2A</tt>) is the quote character
+    <li><span class=mem>tEnter</span> (<tt>$3F</tt>) is a newline or CRLF
+    <li>The ASCII codes and token codes of uppercase characters and numbers are the same.
+</ul>
+
+    A TI-BASIC program to convert the number in <tt>X</tt> to a string in <tt>Str1</tt>
+    (I bet you didn't know that was possible):
+<pre>
+    :{X, 0}-><span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, 
+    sans-serif">L</span>TEMP1
+    :{0, X}-><span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, 
+    sans-serif">L</span>TEMP2
+    :LinReg(a+bx) <span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, sans-serif">L</span>TEMP1, <span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, sans-serif">L</span>TEMP2, Y<span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, 
+    sans-serif">1</span>
+    :Equ>String(Y<span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, sans-serif">1</span>, Str1)
+    :sub(Str1, 1, length(Str1)-4)->Str1
+    :DelVar <span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, sans-serif">L</span>TEMP1
+    :DelVar <span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, sans-serif">L</span>TEMP2
+    :DelVar Y<span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, sans-serif">1</span>
+</pre>
+
+    An assembly program to create this program:
+
+    <h3>Program 19-3</h3>
+<div class=Program>
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>prog_name</span>
+    b_call(_Mov9ToOP1)
+
+    b_call(_ChkFindSym)
+    <span class=ins>JR     C</span>, <span class=mem>IsOkay</span>
+    b_call(_DelVarArc)
+<span class=mem>IsOkay:</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>prog_data_end</span> - <span class=mem>prog_data</span>
+    b_call(_CreateProg)
+
+    <span class=ins>INC</span>    <span class=reg>DE</span>
+    <span class=ins>INC</span>    <span class=reg>DE</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>prog_data</span>
+    <span class=ins>LD</span>     <span class=reg>BC</span>, <span class=mem>prog_data_end</span> - <span class=mem>prog_data</span>
+    <span class=ins>LDIR</span>
+
+    <span class=ins>RET</span>
+
+<span class=mem>prog_name:</span>
+    <span class=dir>.DB</span>    <span class=mem>ProgObj</span>, "TOSTRING"
+
+<span class=mem>prog_data:</span>
+<span class=dir>#define</span>    <span class=mem>tok2(token)</span>    <span class=mem>t2ByteToken</span>, <span class=mem>token</span>
+
+    <span class=dir>.DB</span>    tLBrace, tX, tComma, t0, tRBrace, tStore, tListName, "TEMP1", tEnter
+    <span class=dir>.DB</span>    tLBrace, t0, tComma, tX, tRBrace, tStore, tListName, "TEMP2", tEnter
+    <span class=dir>.DB</span>    tLR, tListName, "TEMP1", tComma, tListName, "TEMP2", tComma, tVarEqu, tY1, tEnter
+    <span class=dir>.DB</span>    tok2(tEquToStrng), tVarEqu, tY1, tComma, tVarStrng, tStr1, tRParen, tEnter
+    <span class=dir>.DB</span>    tok2(tSubStrng), tVarStrng, tStr1, tComma, t1, tComma, tok2(tLength)
+    <span class=dir>.DB</span>    tVarStrng, tStr1, tRParen, tSub, t4, tRParen, tStore, tVarStrng, tStr1, tEnter
+    <span class=dir>.DB</span>    tok2(tDelVar), tListName, "TEMP1", tEnter
+    <span class=dir>.DB</span>    tok2(tDelVar), tListName, "TEMP2", tEnter
+    <span class=dir>.DB</span>    tok2(tDelVar), tVarEqu, tY1
+<span class=mem>prog_data_end:</span></pre>
+</div>
+
+<a name="asm"></a>
+    <h3>Assembly Programs</h3>
+To create the data for an assembly program, have the assembly code inline. There are some extra things you have to do to
+get it right. The first line must be <span class=dir>.DB</span>
+<span class=mem>t2ByteTok</span><tt>, </tt><span class=mem>tAsmCmp</span>. In addition, every time you want to reference
+a label within the program, you must relocate it.<p>
+
+    <h3>Program 19-4</h3>
+    Create an assembly program to display "Hello World!"
+
+<div class=Program>
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>prog_name</span>
+    b_call(_Mov9ToOP1)
+
+    b_call(_ChkFindSym)
+    <span class=ins>JR     C</span>, <span class=mem>IsOkay</span>
+    b_call(_DelVarArc)
+<span class=mem>IsOkay:</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>prog_data_end</span> - <span class=mem>prog_data</span>
+    b_call(_CreateProg)
+
+    <span class=ins>INC</span>    <span class=reg>DE</span>
+    <span class=ins>INC</span>    <span class=reg>DE</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>prog_data</span>
+    <span class=ins>LD</span>     <span class=reg>BC</span>, <span class=mem>prog_data_end</span> - <span class=mem>prog_data_start</span>
+    <span class=ins>LDIR</span>
+
+    <span class=ins>RET</span>
+
+<span class=mem>prog_name:</span>
+    <span class=dir>.DB</span>    <span class=mem>ProgObj</span>, "HELLO", 0
+
+<span class=mem>prog_data:</span>
+    <span class=dir>.DB</span>    <span class=mem>t2ByteTok</span>, <span class=mem>tAsmCmp</span>
+<span class=mem>prog_data_start:</span>
+    b_call(_ClrLCDFull)
+    <span class=ins>LD</span>     <span class=reg>HL</span>, 0
+    <span class=ins>LD</span>     <span class=mem>(CurRow)</span>, <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>msg</span> - <span class=mem>prog_data_start</span> + $9D95
+    b_call(_PutS)
+    <span class=ins>RET</span>
+<span class=mem>msg:</span>
+    <span class=dir>.DB</span>    "Hello World!", 0
+<span class=mem>prog_data_end:</span></pre>
+</div><p>
+
+<a name="hid"></a>
+    <h3>Completely Hidden Programs</h3>
+    You can make programs hidden from the <tt>EDIT</tt> menu, so how'd you like to hide them
+    from the <tt>EXEC</tt> menu and the memory screen too? It's really very simple, all you
+    have to do is give the program a name where the first character is ASCII 32 (space) or
+    lower. If you want to run or delete these programs, you'll have to make some other
+    programs... but we'll look at these concepts tommorrow.<p>
+
+<a name="sys"></a>
+    <h2>System Variables</h2>
+    System variables are used by the calculator for most of its basic functionality as a
+    graphing calculator. All system variables are real FP numbers. They can never be deleted
+    or archived, and their location in memory is always at a fixed address. This makes it
+    simple enough to access and modify their values. Nevertheless, since some of these
+    variables can't have certain values, it is better to use a ROM call to store to them so
+    that proper validity checks can be performed and the system doesn't go to hell in a
+    handbasket.<p>
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_StoSysTok</tt></th>
+    <td colspan=2>Stores the FP number in <span class=mem>OP1</span> to a system
+    variable.</td>
+</tr>
+<tr>
+    <th class=Heading rowspan=2>INPUT</th>
+    <td class=SubHeading width=12%><tt>A</tt</td>
+    <td>System variable token.</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>OP1</tt></td>
+    <td>Real number to store.</td>
+</tr>
+</table><p>
+
+    <h3>Program 19-5</h3>
+Perform a zoom standard by storing to the window system variables <span class=mem>XMin</span>, 
+<span class=mem>XMax</span>, <span class=mem>XScl</span>, etc. using both <tt>StoSysTok</tt> and direct loading.
+
+<div class=Program>
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>FP_Negative10</span>
+    b_call(_Mov9ToOP1)
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>XMINt</span>
+    b_call(_StoSysTok)
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>YMINt</span>
+    b_call(_StoSysTok)
+
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>FP_Positive10</span>
+    b_call(_Mov9ToOP1)
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>XMAXt</span>
+    b_call(_StoSysTok)
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>YMAXt</span>
+    b_call(_StoSysTok)
+
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>FP_1</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>XScl</span>        <span class=cmt>; Address of XScl variable</span>
+    <span class=ins>CALL</span>   <span class=mem>Store9Bytes</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>YScl</span>        <span class=cmt>; Address of YScl variable</span>
+    <span class=ins>CALL</span>   <span class=mem>Store9Bytes</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>XResO</span>       <span class=cmt>; Address of XRes variable</span>
+
+<span class=mem>Store9Bytes:</span>
+    <span class=ins>LDI
+    LDI
+    LDI
+    LDI
+    LDI
+    LDI
+    LDI
+    LDI
+    LDI
+    LD</span>     <span class=reg>HL</span>, <span class=mem>FP_1</span>
+    <span class=ins>RET</span>
+
+<span class=mem>FP_Negative10:</span>
+    <span class=dir>.DB</span>    $80, $81, $10, $00, $00, $00, $00, $00, $00
+<span class=mem>FP_Positive10:</span>
+    <span class=dir>.DB</span>    $00, $81, $10, $00, $00, $00, $00, $00, $00
+<span class=mem>FP_1:</span>
+    <span class=dir>.DB</span>    $00, $80, $10, $00, $00, $00, $00, $00, $00</pre>
+</div><p>
+
+    <hr>
+<div class=NavFooter>
+<a href="day19html">PREVIOUS - Day 19: User Variables</a><p>
+<a href="day21.html">NEXT - Day 21: The VAT</a><p>
+<a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

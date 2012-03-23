@@ -1,0 +1,632 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 13 &mdash; More Program Control</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day12.html">Previous</a>
+    &middot; <a href="day14.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 13. More Program Control</h1>
+    <hr>
+    <b><font color=#CCCCCC>novice <font color=#E0E000>intermediate</font> advanced expert</font></b><hr>    
+
+<ul class=TopicList>
+<li type="square"><a href="#smc">Self-Modifying Code</a>
+<li type="disc"><a href="#pwp">PUSHing Without POPing</a>
+<li type="square"><a href="#lut">Lookup Tables</a>
+<li type="square"><a href="#vct">Vector Tables</a>
+<li type="square"><a href="#jmp">Jump Tables</a>
+<li type="square"><a href="#rel">Relocation</a>
+</ul>
+    <hr>
+
+<a name="smc"></a>
+    <h2>Self-Modifying Code</h2>
+
+    Assembly already has the advantage over high-level languages in terms of speed and
+    efficiency, but another plus is the ability of programs to overwrite themselves. As you
+    are well aware, you can define and read/write a variable in the program code:
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(data)</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>C</span>
+    <span class=ins>ADC</span>    <span class=reg>A</span>, <span class=reg>B</span>
+    <span class=ins>LD</span>     <span class=mem>(data)</span>, <span class=reg>A</span>
+    <span class=ins>RET</span>
+<span class=mem>data:</span>    <span class=dir>.DB</span>    35</pre>
+
+    Notice that a variable is just a label with some numbers after it, which is pretty much
+    identical to any other label you have in the program. Therefore, any label can be
+    treated as a variable, even if it was never intended to be one.<p>
+
+<pre>
+    <span class=ins>LD</span>    <span class=reg>A</span>, 26
+    <span class=ins>LD</span>    <span class=mem>(Blegh)</span>, <span class=reg>A</span>
+    <span class=ins>RET</span>
+<span class=mem>Blegh:</span>
+    <span class=ins>CP</span>    7
+    <span class=ins>RET</span></pre>
+
+What happens here? The <tt><span class=ins>LD</span> <span class=mem>(Blegh)</span>, <span 
+class=ins>A</span></tt> will change the instruction <tt><span class=ins>CP</span> 7</tt>
+to something else entirely. Taking a lower-level perspective, FE07C9 is changed to 1A07C9. This new op code
+sequence represents
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>    <span class=cmt>; $1A</span>
+    <span class=ins>RLCA</span>             <span class=cmt>; $07</span>
+    <span class=ins>RET</span>              <span class=cmt>; $C9</span>
+</pre>
+
+    The entire operation of the program has been totally changed! The code has modified
+    itself, or less reflexively, self-modifying code.<p>
+
+    An arbitrary example like this shows SMC's primary disadvantage: really hard to interpret
+    code. The main purpose of SMC is to extend the processor's limited capabilities. Example: When using an index register, 
+    the offset is a constant number. With SMC, that offset can be altered.
+
+<pre>
+<span class=mem>IX_Offset</span>    <span class=dir>.EQU</span>    <span class=dir>$</span>+2</span>
+    <span class=ins>INC</span>    <span class=reg>(IX + </span>0<span class=reg>)</span>      <span class=cmt>; $DD $34 $00<offset byte></span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(IX_Offset)</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, 3
+    <span class=ins>LD</span>     <span class=mem>(IX_Offset)</span>, <span class=reg>A</span>
+</pre>
+
+    Or you can change the target of a <span class=ins>JR</span> or <span class=ins>DJNZ</span>.
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>B</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=mem>(Jump)</span>, <span class=reg>A</span>
+<span class=mem>Jump</span>    <span class=dir>.EQU</span>    <span class=dir>$</span>+1
+    <span class=ins>JR</span>     $00
+    <span class=ins>INC</span>    <span class=reg>IX</span>    <span class=cmt>; JR $00</span>
+    <span class=ins>INC</span>    <span class=reg>IX</span>    <span class=cmt>; JR $02</span>
+    <span class=ins>INC</span>    <span class=reg>IX</span>    <span class=cmt>; JR $04</span>
+    <span class=ins>INC</span>    <span class=reg>IX</span>    <span class=cmt>; JR $06</span>
+    <span class=ins>INC</span>    <span class=reg>IX</span>    <span class=cmt>; JR $08</span>
+    <span class=ins>INC</span>    <span class=reg>IX</span>    <span class=cmt>; JR $0A</span>
+</pre>
+
+    It can also be used to save a register faster than the stack:
+<pre>
+    <span class=ins>LD</span>     <span class=mem>(save_a)</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=mem>(save_hl)</span>, <span class=reg>HL</span>
+
+    <span class=cmt>; Do some math on A and HL ...</span>
+
+<span class=mem>save_a</span>     <span class=dir>.EQU    $+1</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, $00
+
+<span class=mem>save_hl</span>    <span class=dir>.EQU    $+1</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, $0000
+</pre>
+
+<a name="pwp"></a>
+    <h2>A PUSH without a POP</h2>
+    When you use <span class=ins>RET</span>, the processor pops the top value of the stack
+    into <span class=reg>PC</span>. Supposing that you pushed a value and followed it with
+    a <span class=ins>RET</span>, you would jump to the address corresponding to that
+    value.<p>
+
+Where would this be useful? Assume a scenario wherein a main module jumps to one of about twenty routines. Once any one
+of these routines is finished, they should return to a specific address in the main module referenced by the label
+<span class=mem>Start</span>. This would have to be done by placing a <span class=ins>JP
+</span><span class=mem>Start</span> at the end of each routine, which would come out to 60 bytes of code.<br>
+On the other hand, if the main module were to push the value of <span class=mem>Start</span> before jumping to a routine, 
+then the routine would only need a <span class=ins>RET</span> to return. This would save 40 bytes of code.
+
+<pre><span class=mem>Start:</span>
+    <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>Start</span>
+    <span class=ins>PUSH</span>    <span class=reg>HL</span>
+    . . .
+    <span class=ins>JP    Z</span>, <span class=mem>Routine01</span>
+    . . .
+    <span class=ins>JP    Z</span>, <span class=mem>Routine02</span>
+    . . .
+    <span class=ins>JP    C</span>, <span class=mem>Routine03</span>
+    . . .
+    <span class=cmt>; This is for exiting the program</span>
+    <span class=ins>POP</span>    <span class=reg>AF</span>    <span class=cmt>; Remove Start from the stack</span>
+    <span class=ins>RET</span>
+
+<span class=mem>Routine01:</span>
+    <span class=cmt>; Do stuff</span>
+    <span class=ins>RET</span>    <span class=cmt>; Go back to Start</span>
+
+<span class=mem>Routine02:</span>
+    <span class=cmt>; Do stuff</span>
+    <span class=ins>RET</span>    <span class=cmt>; Go back to Start</span>
+
+<span class=mem>Routine03:</span>
+    <span class=cmt>; Do stuff</span>
+    <span class=ins>RET</span>    <span class=cmt>; Go back to Start</span>
+</pre>
+
+<a name="lut"></a>
+    <h2>Lookup Tables</h2>
+A lookup table is just an array, that all. But where a lookup table differs from your ordinary array is that a LUT contains
+pre-calculated data that is not intended to change. Sometimes you have to perform a function that cannot be calculated
+easily or at all. The use of a LUT lets you get around this. It may also be used for trivial functions where speed is
+a necessity.<p>
+
+To construct a LUT, first identify the function's domain (the range of possible input values). For each domain value, 
+calculate the result of the function, format it accordingly, and enter it into the LUT.<p>
+
+    Example: a LUT used to calculate sin(x), 0&deg; <= x < 90&deg; (in 8.8 fixed-point format):
+<table class=Info>
+<tr class=Heading>
+    <th>Element</th>
+    <th>Value</th>
+    <th>Element</th>
+    <th>Value</th>
+    <th>Element</th>
+    <th>Value</th>
+</tr>
+<tr>
+    <td class=SubHeading>0</td>
+    <td>$0000</td>
+    <td class=SubHeading>1</td>
+    <td>$0004</td>
+    <td class=SubHeading>2</td>
+    <td>$0009</td>
+</tr>
+<tr>
+    <td class=SubHeading>3</td>
+    <td>$000D</td>
+    <td class=SubHeading>4</td>
+    <td>$0012</td>
+    <td class=SubHeading>5</td>
+    <td>$0016</td>
+</tr>
+<tr>
+    <td class=SubHeading>6</td>
+    <td>$001B</td>
+    <td class=SubHeading>7</td>
+    <td>$001F</td>
+    <td class=SubHeading>8</td>
+    <td>$0024</td>
+</tr>
+<tr>
+    <td class=SubHeading>9</td>
+    <td>$0028</td>
+    <td class=SubHeading>10</td>
+    <td>$002C</td>
+    <td class=SubHeading>11</td>
+    <td>$0031</td>
+</tr>
+<tr>
+    <td class=SubHeading>12</td>
+    <td>$0035</td>
+    <td class=SubHeading>13</td>
+    <td>$003A</td>
+    <td class=SubHeading>14</td>
+    <td>$003E</td>
+</tr>
+<tr>
+    <td class=SubHeading>15</td>
+    <td>$0042</td>
+    <td class=SubHeading>16</td>
+    <td>$0047</td>
+    <td class=SubHeading>17</td>
+    <td>$004B</td>
+</tr>
+<tr>
+    <td class=SubHeading>18</td>
+    <td>$004F</td>
+    <td class=SubHeading>19</td>
+    <td>$0053</td>
+    <td class=SubHeading>20</td>
+    <td>$0058</td>
+</tr>
+<tr>
+    <td class=SubHeading>21</td>
+    <td>$005C</td>
+    <td class=SubHeading>22</td>
+    <td>$0060</td>
+    <td class=SubHeading>23</td>
+    <td>$0064</td>
+</tr>
+<tr>
+    <td class=SubHeading>24</td>
+    <td>$0068</td>
+    <td class=SubHeading>25</td>
+    <td>$006C</td>
+    <td class=SubHeading>26</td>
+    <td>$0070</td>
+</tr>
+<tr>
+    <td class=SubHeading>27</td>
+    <td>$0074</td>
+    <td class=SubHeading>28</td>
+    <td>$0078</td>
+    <td class=SubHeading>29</td>
+    <td>$007C</td>
+</tr>
+<tr>
+    <td class=SubHeading>30</td>
+    <td>$0080</td>
+    <td class=SubHeading>31</td>
+    <td>$0084</td>
+    <td class=SubHeading>32</td>
+    <td>$0088</td>
+</tr>
+<tr>
+    <td class=SubHeading>33</td>
+    <td>$008B</td>
+    <td class=SubHeading>34</td>
+    <td>$008F</td>
+    <td class=SubHeading>35</td>
+    <td>$0093</td>
+</tr>
+<tr>
+    <td class=SubHeading>36</td>
+    <td>$0096</td>
+    <td class=SubHeading>37</td>
+    <td>$009A</td>
+    <td class=SubHeading>38</td>
+    <td>$009E</td>
+</tr>
+<tr>
+    <td class=SubHeading>39</td>
+    <td>$00A1</td>
+    <td class=SubHeading>40</td>
+    <td>$00A5</td>
+    <td class=SubHeading>41</td>
+    <td>$00A8</td>
+</tr>
+<tr>
+    <td class=SubHeading>42</td>
+    <td>$00AB</td>
+    <td class=SubHeading>43</td>
+    <td>$00AF</td>
+    <td class=SubHeading>44</td>
+    <td>$00B2</td>
+</tr>
+<tr>
+    <td class=SubHeading>45</td>
+    <td>$00B5</td>
+    <td class=SubHeading>46</td>
+    <td>$00B8</td>
+    <td class=SubHeading>47</td>
+    <td>$00BB</td>
+</tr>
+<tr>
+    <td class=SubHeading>48</td>
+    <td>$00BE</td>
+    <td class=SubHeading>49</td>
+    <td>$00C1</td>
+    <td class=SubHeading>50</td>
+    <td>$00C4</td>
+</tr>
+<tr>
+    <td class=SubHeading>51</td>
+    <td>$00C7</td>
+    <td class=SubHeading>52</td>
+    <td>$00CA</td>
+    <td class=SubHeading>53</td>
+    <td>$00CC</td>
+</tr>
+<tr>
+    <td class=SubHeading>54</td>
+    <td>$00CF</td>
+    <td class=SubHeading>55</td>
+    <td>$00D2</td>
+    <td class=SubHeading>56</td>
+    <td>$00D4</td>
+</tr>
+<tr>
+    <td class=SubHeading>57</td>
+    <td>$00D7</td>
+    <td class=SubHeading>58</td>
+    <td>$00D9</td>
+    <td class=SubHeading>59</td>
+    <td>$00DB</td>
+</tr>
+<tr>
+    <td class=SubHeading>60</td>
+    <td>$00DE</td>
+    <td class=SubHeading>61</td>
+    <td>$00E0</td>
+    <td class=SubHeading>62</td>
+    <td>$00E2</td>
+</tr>
+<tr>
+    <td class=SubHeading>63</td>
+    <td>$00E4</td>
+    <td class=SubHeading>64</td>
+    <td>$00E6</td>
+    <td class=SubHeading>65</td>
+    <td>$00E8</td>
+</tr>
+<tr>
+    <td class=SubHeading>66</td>
+    <td>$00EA</td>
+    <td class=SubHeading>67</td>
+    <td>$00EC</td>
+    <td class=SubHeading>68</td>
+    <td>$00ED</td>
+</tr>
+<tr>
+    <td class=SubHeading>69</td>
+    <td>$00EF</td>
+    <td class=SubHeading>70</td>
+    <td>$00F1</td>
+    <td class=SubHeading>71</td>
+    <td>$00F2</td>
+</tr>
+<tr>
+    <td class=SubHeading>72</td>
+    <td>$00F3</td>
+    <td class=SubHeading>73</td>
+    <td>$00F5</td>
+    <td class=SubHeading>74</td>
+    <td>$00F6</td>
+</tr>
+<tr>
+    <td class=SubHeading>75</td>
+    <td>$00F7</td>
+    <td class=SubHeading>76</td>
+    <td>$00F8</td>
+    <td class=SubHeading>77</td>
+    <td>$00F9</td>
+</tr>
+<tr>
+    <td class=SubHeading>78</td>
+    <td>$00FA</td>
+    <td class=SubHeading>79</td>
+    <td>$00FB</td>
+    <td class=SubHeading>80</td>
+    <td>$00FC</td>
+</tr>
+<tr>
+    <td class=SubHeading>81</td>
+    <td>$00FD</td>
+    <td class=SubHeading>82</td>
+    <td>$00FE</td>
+    <td class=SubHeading>83</td>
+    <td>$00FE</td>
+</tr>
+<tr>
+    <td class=SubHeading>84</td>
+    <td>$00FF</td>
+    <td class=SubHeading>85</td>
+    <td>$00FF</td>
+    <td class=SubHeading>86</td>
+    <td>$00FF</td>
+</tr>
+<tr>
+    <td class=SubHeading>87</td>
+    <td>$0100</td>
+    <td class=SubHeading>88</td>
+    <td>$0100</td>
+    <td class=SubHeading>89</td>
+    <td>$0100</td>
+</tr>
+</table>
+
+The input value must now be transformed into the value it represents in the LUT. This is done as with any other array.
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>H</span>, 0
+    <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>sine_table</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>H</span>, <span class=reg>(HL)</span>
+    <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>A</span>
+    <span class=ins>RET</span>
+<span class=mem>sine_table:</span>
+    <span class=cmt>; The lookup table</span>
+<span class=dir>.DW</span>    $0000, $0004, $0009, $000D, $0012, $0016, $001B, $001F, $0024
+<span class=dir>.DW</span>    $0028, $002C, $0031, $0035, $003A, $003E, $0042, $0047, $004B
+<span class=dir>.DW</span>    $004F, $0053, $0058, $005C, $0060, $0064, $0068, $006C, $0070
+<span class=dir>.DW</span>    $0074, $0078, $007C, $0080, $0084, $0088, $008B, $008F, $0093
+<span class=dir>.DW</span>    $0096, $009A, $009E, $00A1, $00A5, $00A8, $00AB, $00AF, $00B2
+<span class=dir>.DW</span>    $00B5, $00B8, $00BB, $00BE, $00C1, $00C4, $00C7, $00CA, $00CC
+<span class=dir>.DW</span>    $00CF, $00D2, $00D4, $00D7, $00D9, $00DB, $00DE, $00E0, $00E2
+<span class=dir>.DW</span>    $00E4, $00E6, $00E8, $00EA, $00EC, $00ED, $00EF, $00F1, $00F2
+<span class=dir>.DW</span>    $00F3, $00F5, $00F6, $00F7, $00F8, $00F9, $00FA, $00FB, $00FC
+<span class=dir>.DW</span>    $00FD, $00FE, $00FE, $00FF, $00FF, $00FF, $0100, $0100, $0100
+</pre>
+
+The most prohibitive drawback to using lookup tables is their giant size, but there's nothing that can be done about
+that (actually, in the case of trigonometry, you could use the symmetry of the sine function to have a LUT with
+only the entries for <a style="cursor: help" onClick="alert('I feel I should point out that if you ever actually \
+implemented a sine function you should not use a circle divided into either degrees or radians, but divided into \
+256 parts. There are good reasons for this, but I won\'t get into them here.'); return false">one-quarter of a circle</a>).
+<p>
+
+<a name="vct"></a>
+    <h2>Vector Tables</h2>
+    A vector table is a lookup table where each table entry is a 16-bit address. The input
+    value is converted to an address, then a jump to that address is done. This is how the
+    switch() type of control structure works. If you want to relate a value to a
+    subroutine, then a vector table will do it faster and easier than a large, confusing
+    <span class=ins>CP</span>/<span class=ins>JP</span> block.<p>
+
+    Here is an example vector table:
+<pre><span class=mem>VectTbl:</span>
+    <span class=dir>.DW</span>     <span class=mem>ClearScreen</span>
+    <span class=dir>.DW</span>     <span class=mem>PutSprite</span>
+    <span class=dir>.DW</span>     <span class=mem>DrawLine</span>
+    <span class=dir>.DW</span>     <span class=mem>EndPrgm</span>
+    <span class=dir>.DW</span>     <span class=mem>BlackScreen</span></pre>
+
+    The elements of the vector table are accessed just as a lookup table
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>H</span>, 0
+    <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>VectTbl</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>H</span>, <span class=reg>(HL)</span>
+    <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>A</span>
+    <span class=ins>JP</span>     <span class=reg>(HL)</span>
+</pre>
+
+<a name="jmp"></a>
+    <h2>Jump Tables</h2>
+    Similar to vector tables, jump tables work by holding entire jump <i>instructions</i>
+    instead of just addresses.
+
+<pre><span class=mem>JumpTbl:</span>
+    <span class=ins>JP</span>    <span class=mem>ClearScreen</span>
+    <span class=ins>JP</span>    <span class=mem>PutSprite</span>
+    <span class=ins>JP</span>    <span class=mem>DrawLine</span>
+    <span class=ins>JP</span>    <span class=mem>EndPrgm</span>
+    <span class=ins>JP</span>    <span class=mem>BlackScreen</span></pre>
+
+    To call or jump to a routine in the jump table, you use an address of
+
+<div align=center><pre><span class=mem>JumpTbl</span> + 3 * <i>n</i></pre></div>
+
+    where <tt><i>n</i></tt> is the number of the routine you want. Supposing you wanted to
+    run <span class=mem>DrawLine</span>, then you would use 
+
+<div align=center><pre><span class=ins>CALL</span> <span class=mem>JumpTbl</span> + 3 * 2</pre></div>
+
+Jump tables are very useful for shells (the <tt>b_call</tt> addresses are part of one
+<i>big</i> jump table (or vector table, does it really make a difference?)). Suppose you
+made this new shell called "StratocumulusOS" (little joke there for the boys at
+<a href="http://www.unitedti.org">United-TI</a> :D) that was so freakin' awesome it made MirageOS look like the dog it
+is (well that remains to be seen ;)), and all its library functions were referenced through a jump table that the shell
+stored at, oh, let's say $8000.
+
+<table class=Info>
+<tr>
+    <th class=Heading>Address</th>
+    <th class=Heading>Jump</th>
+</tr>
+<tr>
+    <th class=SubHeading>$8000</th>
+    <td><tt>JP $9321</tt></td>
+</tr>
+<tr>
+    <th class=SubHeading>$8003</th>
+    <td><tt>JP $9356</tt></td>
+</tr>
+<tr>
+    <th class=SubHeading>$8006</th>
+    <td><tt>JP $9400</tt></td>
+</tr>
+<tr>
+    <th class=SubHeading>$8009</th>
+    <td><tt>JP $9436</tt></td>
+</tr>
+<tr>
+    <th class=SubHeading>$800C</th>
+    <td><tt>JP $945A</tt></td>
+</tr>
+<tr>
+    <th class=SubHeading>$800F</th>
+    <td><tt>JP $949F</tt></td>
+</tr>
+</table>
+
+    Now if someone makes a program for StratocumulusOS and uses the libraries
+
+<pre>    <span class=ins>CALL</span>    <span class=mem>stratocumulus_routines</span> + 3 * 3</pre>
+
+This will call $8009 which will then jump to $9436. But, one month later you release StratocumulusOS v1.1 which, 
+owing to a truly brilliant optimization on your part, has a much smaller library size; as well, you store the routines
+somewhere else (but the jump table is still stored at $8000):
+
+<table class=Info>
+<tr>
+    <th class=Heading>Address</th>
+    <th class=Heading>Jump</th>
+</tr>
+<tr>
+    <th class=SubHeading>$8000</th>
+    <td><tt>JP $A58E</tt></td>
+</tr>
+<tr>
+    <th class=SubHeading>$8003</th>
+    <td><tt>JP $A59C</tt></td>
+</tr>
+<tr>
+    <th class=SubHeading>$8006</th>
+    <td><tt>JP $A5E2</tt></td>
+</tr>
+<tr>
+    <th class=SubHeading>$8009</th>
+    <td><tt>JP $A602</tt></td>
+</tr>
+<tr>
+    <th class=SubHeading>$800C</th>
+    <td><tt>JP $A631</tt></td>
+</tr>
+<tr>
+    <th class=SubHeading>$800F</th>
+    <td><tt>JP $A66B</tt></td>
+</tr>
+</table>
+
+When that original v1.0 program is run under v1.1, then that <span class=ins>CALL</span>
+<tt>$8009</tt> will still jump to the right routine.<p>
+
+If you don't mind the size difference, you can also use a jump table as a replacement for
+a vector table. In this case, you have to multiply <span class=reg>A</span> by three
+(since each jump is three bytes in size).<p>
+
+<a name="rel"></a>
+<h2>Relocation</h2>
+For reasons of security, the TI-83 Plus will crash if <span class=reg>PC</span> is ever $C000 or greater. This is a
+mega-bitch, because it means the executable part of a program can never exceed 8811 bytes. You can get a partial reprieve
+by copying code to the scrap RAM areas. But if this code references an address within itself with 16-bit addresses, you
+have to relocate them.
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 40
+<span class=mem>Loop:</span>
+    <span class=ins>INC</span>    <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>DEC</span>    <span class=reg>A</span>
+    <span class=ins>JP     NZ</span>, <span class=mem>Loop</span>
+</pre>
+
+Say that this piece of code were to be relocated to $9900. The problem is that when assembled, TASM will determine the
+value of <span class=mem>Loop</span> in the <span class=ins>JP</span> as relative to $9D95, when it should be relative to
+$9900. You have to handle situations like this. It's easy: first you subtract $9D95 from the value of <span class=mem>Loop</span>, 
+giving the offset from $9D95. Then you add the offset to $9900 to get the correct address. This is the fixed code:
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 40
+<span class=mem>Loop:</span>
+    <span class=ins>INC</span>    <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>DEC</span>    <span class=reg>A</span>
+    <span class=ins>JP     NZ</span>, <span class=mem>Loop</span> - $9D95 + $9900
+</pre>
+
+If there need to be a lot of relocations you would do well to make some macros.<p>
+
+    <hr>
+<div class=NavFooter>
+<a href="day12.html">PREVIOUS - Day 12: Key Input</a><p>
+<a href="day14.html">NEXT - Day 14: Procedures</a><p>
+<a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

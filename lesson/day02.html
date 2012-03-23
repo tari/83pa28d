@@ -1,0 +1,164 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 2 &mdash; The Components Of A Z80 Program</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day01.html">Previous</a>
+    &middot; <a href="day03.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 2. The Components Of A Z80 Program</h1>
+    <hr>
+    <b><font color=#006600>novice</font> <font color=#CCCCCC>intermediate advanced expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#com">Components</a>
+<li type="disc"><a href="#tmp">Program Template</a>
+</ul>
+    <hr>
+    
+Every Z80 program consists of several parts combined in a certain way. Today, we will take a look at these sections, using the program from yesterday as an example. For the sake of clarity, I have colorized common parts.<p>
+
+<div class=Program>
+<pre><span class=dir>.NOLIST
+#INCLUDE</span> "ti83plus.inc"
+<span class=dir>#DEFINE</span>  <span class=mem>ProgStart</span>    $9D95
+<span class=dir>.LIST</span>
+<span class=dir>.ORG</span>    <span class=mem>ProgStart</span> - 2
+<span class=dir>.DB</span>     <span class=mem>t2ByteTok</span>, <span class=mem>tAsmCmp</span>
+    b_call(_ClrLCDFull)
+    <span class=ins>LD</span>     <span class=reg>HL</span>, 0
+    <span class=ins>LD</span>     <span class=mem>(PenCol)</span>, <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>msg</span>
+    b_call(_PutS)        <span class=cmt>; Display the text</span>
+    b_call(_NewLine)
+    <span class=ins>RET</span>
+<span class=mem>msg:</span>
+    <span class=dir>.DB</span> "Hello world!", 0
+<span class=dir>.END
+.END</span>
+</pre>
+</div>
+
+<a name="com"></a>
+    <h2>Directives &nbsp;&nbsp;<span class=dir>MAROON</span></h2>
+Directives are preceded by either a period or a "#".  Their purpose is to give instructions to the assembler about how it is to interpret the source code. Directives are normally on the leftmost edge, but they can be indented any way you want. Here are some very candid descriptions of the functions of the directives used above.
+
+<table class=Normal>
+<tr>    
+    <td class=SubHeading width=30%><tt>.nolist<br>.list</tt></td>
+    <td>These affect something called a listing file that TASM creates. Not really important, 
+    but have them in anyway.</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>#define <i>text1 text2</i></tt></td>
+    <td>Replaces all instances of <tt><i>text1</i></tt> in the program &mdash; that aren't in
+    quotation marks or part of larger words&mdash;with <tt><i>text2</i></tt>. Essentially
+    just a Find/Replace command.</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>#include&nbsp;"<i>filename</i>"</td>
+    <td>Inserts the contents of <tt><i>filename</i></tt> into the source code.</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt><i>text</i> .equ <i>number</i></td>
+    <td>Virtually identical to <tt>#define</tt>, when <tt><i>text2</i></tt> is a number.</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>.db</td>
+    <td>Specifies data.</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>.end</td>
+    <td>Signifies the end of the source code. There are two here because TASM has this
+    annoying tendency to ignore the last line in a file. the second one is redundant, but oh
+    well.</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>.org <i>number</i></td>
+    <td>Specifies where in memory the program is loaded into (not exactly true), which is
+    always <tt>$9D95</tt>. Notice the "<tt>- 2</tt>"? Don't worry about it now.</td>
+</tr>
+</table>
+
+    <h2>Comments &nbsp;&nbsp;<span class=cmt>RED</span></h2>
+Anything that follows a semicolon is a comment, and will be totally ignored by the assembler. Comments are used to explain the effect of, or reasoning behind sections of code. They may not seem very useful for all the noddy programs you will get to see, and that's probably true. But if you've been working on a project for over a month, and you're puzzling over what you were thinking when you wrote that instruction block, that is a divine sign that you should be commenting your code.<p>
+
+    <h2>Instructions &nbsp;&nbsp;<span class=ins>PURPLE</span></h2>
+These are the commands that tell the processor what to do. They are also all the processor knows how to do, so if you can't do something with instructions, you can't do it at all. There are over a hundred unique instructions, but fortunately the majority are just variations on a theme. 
+Syntax note: instructions must be indented in the source.<p>
+
+    <h2>ROM Calls <font color=#000000><tt>&nbsp;&nbsp;BLACK</tt></font></h2>
+Certain tasks, such as displaying text on the screen, are used so often that TI decided to make the code for them a permanent part of the calculator. This was a very good idea, since the actual 
+coding for some of them is very long and complex (for example, our "Hello World!" program takes only a few dozen bytes of storage, but when the code for the ROM calls is added in, it adds up to several kilobytes). These miniprograms are stored in the calculator's ROM (hence the name). When the program encounters a ROM call, it transfers to the location in ROM where the code is stored, and returns to the program when finished. You execute a ROM call like this:
+
+<pre>    b_call(<i>ROM_Call_Name</i>)</pre>
+
+ROM calls must be tabbed in along with instructions.<p>
+
+Lots of people knock ROM calls because they believe them to be inherently slow and poorly implemented to boot. Okay, that's true, but no one can argue that for beginners, having simple to use prefabricated support software makes the difference between frustration and accomplishment.<p>
+
+    <h2>Manifest Constants &nbsp;&nbsp;<span class=mem>GREEN</span></h2>
+A <i>much</i> more in-depth discussion of manifest constants appears in a later chapter. Very briefly, a manifest constant is a symbolic representation of a number. Once a manifest constant has been defined, at every place in the source code it is encountered it is interpreted as the value it was defined as. There are three ways to define a manifest constant. You can use #define or <span class=dir>.equ</span> (see the table above), or you can use a label.<br>
+Labels are headings for sections of the program. They have to be on the leftmost edge, and end with a colon. You will learn what value a label represents a little later.<p>
+
+Throughout the course of this tutorial, when a new instruction or ROM call comes up, it's function will be fully (or at leat mostly) explained, along with any data you have to apply (called arguments or operands) to make it work. Kinda like these:
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax><tt><b>RET</b></tt></td>
+    <td>Quits the program and returns to the TI-OS. All programs <i>must</i> eventually 
+    execute this instruction.</td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_ClrLCDFull</tt></th>
+    <td>Clears the screen</td>
+</tr>
+</table>
+
+For more information about these little gray boxes, check out the <a href="../ref/format.html" target="_blank">guide's style conventions</a>.<p>
+
+<a name="tmp"></a>
+    <h2>Program Template</h2>
+Programs always need some assembler commands in order to work right. When making your own
+programs, all you need to do is follow this format:
+
+<div class=Program>
+<pre><span class=reg>.nolist
+    #include    "ti83plus.inc"
+.list
+.org    $9D93
+.db    t2ByteTok, tAsmCmp</span>
+    <i>Your program goes here.</i><span class=reg>
+.end
+.end</span></pre>
+</div>
+
+The stuff in blue is required for every program. To save space, all example programs in this guide will omit it. If you want to test an example program, you will have to supply the required parts yourself. I would suggest you make a template file, then copy and rename it every time you want to test something.
+
+    <hr>
+<div class=NavFooter>
+    <a href="day01.html">PREVIOUS - Day 1: Introduction</a><p>
+    <a href="day03.html">NEXT - Day 3: Registers, Memory, and Variables</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+
+</body>
+</html>

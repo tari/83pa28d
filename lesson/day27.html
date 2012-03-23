@@ -1,0 +1,847 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 27 &mdash; String and Numerical Input</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day26.html">Previous</a>
+    &middot; <a href="day28.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 27. String and Numerical Input</h1>
+    <hr>
+<b><font color=#CCCCCC>novice intermediate advanced <font color=#CC0000>expert</font></font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#spc">Specifications</a><br>
+<li type="square"><a href="#bld">Building It Up</a><br>
+<li type="square"><a href="#bas">Basic Routine</a><br>
+<li type="disc"><a href="#buf">Reading from the Buffer</a><br>
+<li type="square"><a href="#edt">Editing</a><br>
+<li type="square"><a href="#shf">Shift Keys</a><br>
+<li type="disc"><a href="#cur">Cursor</a><br>
+<li type="disc"><a href="#inp">Numerical Input</a><br>
+<li type="square"><a href="#dc8">8-bit Decimal</a><br>
+<li type="square"><a href="#hx8">8-bit Hex</a><br>
+<li type="square"><a href="#d16">16-bit Decimal</a><br>
+<li type="square"><a href="#h16">16-bit Hex</a><br>
+</ul>
+    <hr>
+
+There are times when you would like to get input from the user, but you need something more subtantial than a single keypress. In a game program, for example, the player has gotten a high score and they want to enter their name. By the end of today we will have a moderately complex routine to more or less do what we want.<p>
+
+<a name="spc"></a>
+    <h2>Specifications</h2>
+The first question we should ask ourselves is, "how should this routine work?" As it turns out, there are a few techniques that the routine can be based upon. For the first version of our input routine (we will be adding features to it later), our goals are:
+
+<ul>
+    <li>Use <tt>_GetCSC</tt> to read a keypress.
+    <li>Accept letters only.
+    <li>Has echo (user sees the characters as he types them) using the large character set.
+    <li>Once accepting a key, the letter it corresponds to is stored in a buffer in RAM.
+    <li>Should stop after some number of characters are input. 48 seems okay.
+    <li>Once it stops, write a zero to the buffer to indicate the end.
+</ul>
+
+    From this simple checklist we can make a rough outline of how the code should be
+    structured.
+
+<ol type="A">
+    <li>Initialize the buffer pointer.
+    <li>Set the buffer counter to zero.
+    <li>Setup cursor coordinates
+    <li>Invoke <tt>GetCSC</tt>.
+    <ul>
+        <li>If there wasn't a key pressed, 
+        <ol type="1">
+            <li>Goto "D".
+        </ol>
+        <li>If there was a key pressed, 
+        <ol type="1">
+            <li>If the key pressed was <tt>[ENTER]</tt>, Write a zero and END.
+            <li>If the buffer is full, Goto "D".
+            <li>Convert the key to the letter it represents.
+            <li>Write the letter to the buffer.
+            <li>Write the letter to the screen with <tt>PutC</tt>.
+            <li>Goto "D".
+        </ol>
+    </ul>
+</ol>
+
+    We now have a rough idea of how the code should be ordered. We should now think about how
+    to implement each point of the outline in assembly. Since we are using some of the TIOS
+    system routines, it would be wise to know what are the side effects of using them. Most
+    of the routines will alter one or more registers, and this will have an impact on
+    register use in our code.
+
+<dl>
+    <dt><tt>GetCSC</tt>
+    <dd>Destroys <span class=reg>AF</span> and <span class=reg>HL</span>
+    <dt><tt>PutC</tt>
+    <dd>Destroys no registers.
+</dl>
+
+<a name="bld"></a>
+    <h2>Building It Up</h2>
+<dl>
+    <dt>Initialize the buffer pointer
+    <dd>For now, let's locate our buffer at <span class=mem>TextShadow</span>. We will
+    maintain a pointer into this buffer to direct where inputted characters are to be stored.
+    The best place to put this pointer is in <span class=reg>HL</span>.<p>
+
+<pre><span class=mem>buffer</span>  <span class=dir>.EQU</span> <span class=mem>TextShadow</span>
+
+     <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>buffer</span></pre>
+
+    <dt>Set the buffer counter to zero.
+    <dd>We'll store the number of characters input in <span class=reg>B</span>.<p>
+
+<pre><span class=dir>#define</span> <span class=mem>BUFSIZE</span>  48
+
+    <span class=ins>XOR</span>   <span class=reg>A</span>
+    <span class=ins>LD</span>    <span class=reg>B</span>, <span class=reg>A</span></pre>
+
+    <dt>Setup cursor coordinates
+    <dd>We want the cursor position to start in the first column to maximize usage of horizontal space. We will leave <span class=mem>CurRow</span> alone. We could set it to some value, but the routine doesn't really care, and the programmer might not like characters appearing at a random location on screen, overwriting important information.<p>
+
+<pre>
+    <span class=ins>LD</span>    <span class=mem>(CurCol)</span>, <span class=reg>A</span></pre><p>
+
+    <dt>Invoke <tt>GetCSC</tt>
+    <dd>Because <tt>GetCSC</tt> destroys <span class=reg>HL</span>, we have to preserve its value.
+
+<pre>
+    <span class=ins>EX</span>    <span class=reg>DE</span>, <span class=reg>HL</span>
+    b_call(_GetCSC)
+    <span class=ins>EX</span>    <span class=reg>DE</span>, <span class=reg>HL</span></pre><p>
+
+    <dt>If there wasn't a key pressed, Goto "D".
+    <dd>Taking advantage of the fact that <tt>GetCSC</tt> returns zero if no key was pressed, 
+    we can use <span class=ins>OR </span><span class=reg>A</span> to check this, and jump to
+    the <tt>GetCSC</tt> if the <span class=ins>Z</span> flag is set. Make a note to put a
+    label before <tt>GetCSC</tt>.
+
+<pre>
+    <span class=ins>OR</span>    <span class=reg>A</span>
+    <span class=ins>JR    Z</span>, <span class=mem>KeyLoop</span></pre><p>
+
+    <dt>If the key pressed was <tt>[ENTER]</tt>, Write a zero and END.
+    <dd>Of course we want the user to be able to tell the routine that he's finished. He can
+    do this by pressing the <tt>[ENTER]</tt> key. It doesn't have to be <tt>[ENTER]</tt>, but
+    this choice will be more intuitive to the user.
+
+<pre>
+    <span class=ins>CP</span>    <span class=mem>skEnter</span>
+    <span class=ins>JR    NZ</span>, <span class=mem>NotEnter</span>
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, 0
+    <span class=ins>RET</span>
+
+<span class=mem>NotEnter:</span></pre><p>
+
+    <dt>If the buffer is full, Goto "D".
+    <dd>We have to make sure that no more than the maximum number of characters will be
+    input since we haven't made the buffer big enough to hold them.<p>
+
+<pre>
+    <span class=ins>LD</span>    <span class=reg>C</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>B</span>
+    <span class=ins>CP</span>    <span class=mem>BUFSIZE</span>
+    <span class=ins>JR    Z</span>, <span class=mem>KeyLoop</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>C</span></pre>
+
+    <dt>Convert the key to the letter it represents.
+    <dd>Comparing a table of <tt>GetCSC</tt>'s scan codes and a table of character ASCII codes
+    each key represents (looking at the green letter above each key). It can be seen that the 
+    two have no simple relationship. In this case, a <a href="day13.html#lut">lookup
+    table</a> will be used to do the conversion.<p>
+    
+    From the scan code table, we see that all the letter keys are between <tt>$0A</tt> and
+    <tt>$2F</tt>. We will want to reject all keys that are outside this range.<p>
+
+<pre>
+    <span class=ins>SUB</span>   <span class=mem>skAdd</span>
+    <span class=ins>JR    C</span>, <span class=mem>KeyLoop</span>
+    <span class=ins>CP</span>    <span class=mem>skMath</span> - <span class=mem>skAdd</span> + 1
+    <span class=ins>JR    NC</span>, <span class=mem>KeyLoop</span></pre>
+
+    We used a <span class=ins>SUB</span> here because of the nature of arrays. The first
+    element in all arrays is referenced with an index of zero. Since our input domain starts
+    with <tt>$0A</tt>, we subtract that number to "massage" the input to something more
+    compatible. If this wasn't done, we would have to fill the first eleven entries of the
+    look-up table with a garbage value.<p>
+
+    Now the code to convert the character and the contents of the look-up table. We have to
+    be careful here because the scan codes are not always sequential, and there are some keys
+    that have no letter assigned to them. We'll make these keys result in boxes.<p>
+
+<pre>
+    <span class=ins>PUSH</span>  <span class=reg>HL</span>
+    <span class=ins>LD</span>    <span class=reg>H</span>, 0
+    <span class=ins>LD</span>    <span class=reg>L</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>CharTable</span>
+    <span class=ins>ADD</span>   <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>POP</span>   <span class=reg>HL</span>
+
+<span class=mem>CharTable:</span>
+<span class=dir>.DB</span>   $27, "WRMH", $FF, $FF      <span class=cmt>; + - &times; &divide; ^ undefined</span>
+<span class=dir>.DB</span>   "?", $5B, "VQLG", $FF, $FF  <span class=cmt>; (-) 3 6 9 ) TAN VARS undefined</span>
+<span class=dir>.DB</span>   ":ZUPKFC", $FF, $FF       <span class=cmt>; . 2 5 8 ( COS PRGM STAT</span>
+<span class=dir>.DB</span>   " YTOJEB", $FF, $FF       <span class=cmt>; 0 1 4 7 , SIN APPS XT&theta;<i>n</i> undefined</span>
+<span class=dir>.DB</span>   "XSNIDA"               <span class=cmt>; STO LN LOG x<sup>2</sup> x<sup>-1</sup> MATH</span>
+</pre>
+
+    <dt>Write the letter to the buffer, update pointers and counters.
+    <dd>The character is in <span class=reg>A</span> and the place to put it to is in <span
+    class=reg>HL</span>.<p>
+
+<pre>
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, <span class=reg>A</span>
+    <span class=ins>INC</span>   <span class=reg>HL</span>
+    <span class=ins>INC</span>   <span class=reg>B</span></pre>
+
+    <dt>Write the letter to the screen
+    <dd><pre>   b_call(_PutC)</pre>
+
+    <dt>Goto "D"
+    <dd>And do it all over again.<p>
+
+<pre>    <span class=ins>JR</span>    <span class=mem>KeyLoop</span></pre>
+</dl><p>
+
+<a name="bas"></a>
+    <h2>Version 1 &mdash; The Basics</h2>
+    With all the little tasks complete, all that must be done is to combine them into one
+    routine.
+
+<pre><span class=dir>#define</span> <span class=mem>BUFSIZE</span>  48
+<span class=mem>buffer</span>    <span class=dir>.EQU</span> <span class=mem>TextShadow</span>
+
+<span class=mem>GetStr:</span>
+    <span class=ins>RES</span>   <span class=mem>AppTextSave</span>, <span class=reg>(IY + <span class=mem>AppFlags</span>)</span>
+    <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>buffer</span>     <span class=cmt>; Init pointer</span>
+    <span class=ins>XOR</span>   <span class=reg>A</span>
+    <span class=ins>LD</span>    <span class=reg>B</span>, <span class=reg>A</span>           <span class=cmt>; Init character counter</span>
+    <span class=ins>LD</span>    <span class=mem>(CurCol)</span>, <span class=reg>A</span>
+
+<span class=mem>KeyLoop:</span>
+    <span class=ins>EX</span>    <span class=reg>DE</span>, <span class=reg>HL</span>         <span class=cmt>; Get a character</span>
+    b_call(_GetCSC)
+    <span class=ins>EX</span>    <span class=reg>DE</span>, <span class=reg>HL</span>
+    <span class=ins>OR</span>    <span class=reg>A</span>             <span class=cmt>; If no character recieved, restart</span>
+    <span class=ins>JR    Z</span>, <span class=mem>KeyLoop</span>
+
+    <span class=ins>CP</span>    <span class=mem>skEnter</span>      <span class=cmt>; If [ENTER] pressed, exit</span>
+    <span class=ins>JR    NZ</span>, <span class=mem>NotEnter</span>
+
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, 0       <span class=cmt>; Null-terminate buffer</span>
+    <span class=ins>RET</span>
+
+<span class=mem>NotEnter:</span>
+    <span class=ins>LD</span>    <span class=reg>C</span>, <span class=reg>A</span>          <span class=cmt>; Save input char temporarily</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>B</span>          <span class=cmt>; See if max number of characters input</span>
+    <span class=ins>CP</span>    <span class=mem>BUFSIZE</span>
+    <span class=ins>JR    Z</span>, <span class=mem>KeyLoop</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>C</span>          <span class=cmt>; Restore char</span>
+
+    <span class=ins>SUB</span>   <span class=mem>skAdd</span>        <span class=cmt>; Throw out all keys below [+]</span>
+    <span class=ins>JR    C</span>, <span class=mem>KeyLoop</span>
+    <span class=ins>CP</span>    <span class=mem>skMath</span> - <span class=mem>skAdd</span> + 1    <span class=cmt>; Throw out all keys above [MATH]</span>
+    <span class=ins>JR    NC</span>, <span class=mem>KeyLoop</span>
+
+    <span class=ins>PUSH</span>  <span class=reg>HL</span>           <span class=cmt>; Convert scan code into character</span>
+    <span class=ins>LD</span>    <span class=reg>H</span>, 0
+    <span class=ins>LD</span>    <span class=reg>L</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>CharTable</span>
+    <span class=ins>ADD</span>   <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>POP</span>   <span class=reg>HL</span>
+
+    b_call(_PutC)      <span class=cmt>; Echo it</span>
+
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, <span class=reg>A</span>       <span class=cmt>; Write char to buffer</span>
+    <span class=ins>INC</span>   <span class=reg>HL</span>          <span class=cmt>; Increment pointer</span>
+    <span class=ins>INC</span>   <span class=reg>B</span>           <span class=cmt>; Increment char counter</span>
+
+    <span class=ins>JR</span>    <span class=mem>KeyLoop</span>
+
+<span class=mem>CharTable:</span>
+<span class=dir>.DB</span>  "'WRMH", 0, 0            <span class=cmt>; + - &times; &divide; ^ undefined</span>
+<span class=dir>.DB</span>  "?", LTheta, "VQLG", 0, 0  <span class=cmt>; (-) 3 6 9 ) TAN VARS undefined</span>
+<span class=dir>.DB</span>  ":ZUPKFC", 0            <span class=cmt>; . 2 5 8 ( COS PRGM STAT</span>
+<span class=dir>.DB</span>  " YTOJEB", 0, 0          <span class=cmt>; 0 1 4 7 , SIN APPS XT&theta;<i>n</i> undefined</span>
+<span class=dir>.DB</span>  "XSNIDA"               <span class=cmt>; STO LN LOG x<sup>2</sup> x<sup>-1</sup> MATH</span>
+</pre><p>
+        
+<a name="buf"></a>
+    <h2>Reading from the Buffer</h2>
+Now that we have read a string, we want to process the characters input. The desired routine to do this will return the next character in the buffer. For this we will require another variable that tracks at which address the next character is in. This variable will need to be initialized in <span class=mem>GetStr</span> (which will be done in version 2).<br>
+It is also vital that this routine be robust enough to handle an empty buffer. It will do this through the carry flag: reset means a character was returned, set means the buffer was empty.<p>
+
+<pre>
+<span class=mem>GetChar:</span>
+    <span class=ins>PUSH</span>  <span class=reg>HL</span>
+    <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>(buf_ptr)</span>  <span class=cmt>; buf_ptr is our pointer variable</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>OR</span>    <span class=reg>A</span>
+    <span class=ins>SCF</span>                 <span class=cmt>; Set carry to indicate error status</span>
+    <span class=ins>JR    Z</span>, <span class=mem>GetChar_Done</span>
+
+    <span class=ins>INC</span>   <span class=reg>HL</span>            <span class=cmt>; Update buffer pointer</span>
+    <span class=ins>LD</span>    <span class=mem>(buf_ptr)</span>, <span class=reg>HL</span>
+    <span class=ins>OR</span>    <span class=mem>A</span>             <span class=cmt>; Reset carry to indicate success status</span>
+
+<span class=mem>GetChar_Done:</span>
+    <span class=ins>POP</span>   <span class=reg>HL</span>
+    <span class=ins>RET</span>
+    </pre><p>
+
+It would also be useful to have an inverse routine, one that "ungets" characters from the buffer. We might use such a routine in a case like inputting numbers digit-by-digit, and stopping input when the first non-digit character is read. That character might be part of subsequent data, and should be returned.<br>
+The unget routine has a very simple concept: since the characters are always in the buffer, the buffer pointer only needs to be decremented. There should also be a check to make sure we don't go past the start of the buffer.<p>
+
+<pre>
+<span class=mem>Ungetc:</span>
+    <span class=ins>PUSH</span>  <span class=reg>HL</span>
+    <span class=ins>PUSH</span>  <span class=reg>DE</span>
+    <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>(buf_ptr)</span>
+    <span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>buffer</span>     <span class=cmt>; See that the buffer pointer is not</span>
+    b_call(_CpHLDE)     <span class=cmt>; at the start of the buffer</span>
+    <span class=ins>SCF</span>                 <span class=cmt>; Set carry to indicate error status</span>
+    <span class=ins>JR    Z</span>, <span class=mem>Ungetc_Done</span>
+    <span class=ins>DEC</span>   <span class=reg>HL</span>
+    <span class=ins>LD</span>    <span class=mem>(buf_ptr)</span>, <span class=reg>HL</span>
+    <span class=ins>OR</span>    <span class=reg>A</span>             <span class=cmt>; Reset carry to indicate success status</span>
+
+<span class=mem>Ungetc_Done:</span>
+    <span class=ins>POP</span>   <span class=reg>DE</span>
+    <span class=ins>POP</span>   <span class=reg>HL</span>
+    <span class=ins>RET</span>
+</pre><p>
+
+<a name="edt"></a>
+    <h2>Version 2 &mdash; Editing</h2>
+    We now have the bare bones of a string input engine. It's time to go back over <span class=mem>GetStr</span> and see
+    what optimizations can be done and what additions we might like to have. We know we have to initialize the variable
+    <span class=mem>buf_ptr</span>, but while we're at it, let's add some kind of editing capabilities.<p>
+
+    We'll allow two ways to edit the inputted string:
+<dl>
+    <dt>Backspace
+    <dd>Pressing the <tt>[DEL]</tt> key will backspace over the last character input.
+    <dt>Wipe
+    <dd>Pressing the <tt>[CLEAR]</tt> key will wipe out every input character.
+</dl>
+
+<dl>
+    <dt>Optimizing
+    <dd>Looking at the routine as a whole, notice that nowhere is <span class=reg>DE</span>
+    really used. We will take advantage of this by tracking the buffer pointer with <span
+    class=reg>DE</span>. We can now use <span class=reg>HL</span> for
+    general addressing.<p>
+
+    <dt>Initialize <span class=mem>buf_ptr</span>.
+    <dd>This variable has to be allocated and should be initialized at the start of the program.<p>
+
+    <dt>Backspacing
+    <dd>We will implement a backspace as follows:
+    <ul>
+        <li>Check that there is actually a character to delete. If there isn't, abort.
+        <li>Decrement <span class=mem>CurCol</span>.
+        <li>Display a space to erase the previous character. Use <tt>PutMap</tt> so that cursor position is not
+        affected.
+        <li>Decrement the buffer pointer.
+        <li>Decrement the buffer counter.
+    </ul><p>
+
+    <dt>Wiping
+    <dd>A wipeout will be done like this:
+    <ul>
+        <li>Check that there are characters to delete. If not, abort.
+        <li>Put zero in <span class=mem>CurCol</span>.
+        <li>Display a space for each character in the buffer.
+        <li>Reset the buffer pointer.
+        <li>Reset the buffer count.
+    </ul>
+</dl>
+
+There can be instances where the user's input spans several lines. In this case, if more than fifteen characters are input, the cursor position will be on a row other than the origin. We need to be able to take care of this. The updated code looks like this:<p>
+
+<pre><span class=dir>#define</span> <span class=mem>BUFSIZE</span>  48
+<span class=mem>buffer</span>   <span class=dir>.EQU</span> <span class=mem>TextShadow</span>
+<span class=mem>buf_ptr</span>  <span class=dir>.EQU</span> <span class=mem>buffer + BUFSIZE</span> + 1
+<span class=mem>GetStr:</span>
+    <span class=ins>RES</span>   <span class=mem>AppTextSave</span>, <span class=reg>(IY + <span class=mem>AppFlags</span>)</span>
+<div class=Program>    <span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>buffer</span>       <span class=cmt>; Init pointer</span></div>    <span class=ins>LD</span>    <span class=mem>(buf_ptr)</span>, <span class=reg>DE</span></div>
+    <span class=ins>XOR</span>   <span class=reg>A</span>
+    <span class=ins>LD</span>    <span class=reg>B</span>, <span class=reg>A</span>             <span class=cmt>; Init character counter</span>
+    <span class=ins>LD</span>    <span class=mem>(CurCol)</span>, <span class=reg>A</span>
+
+<span class=mem>KeyLoop:</span>
+    b_call(_GetCSC)       <span class=cmt>; Get a character.</span>
+    <span class=ins>OR</span>    <span class=reg>A</span>               <span class=cmt>; If no character received, restart</span>
+    <span class=ins>JR    Z</span>, <span class=mem>KeyLoop</span>
+
+    <span class=ins>CP</span>    <span class=mem>skEnter</span>         <span class=cmt>; If [ENTER] pressed, exit</span>
+    <span class=ins>JR    NZ</span>, <span class=mem>NotEnter</span>
+
+    <span class=ins>XOR</span>   <span class=reg>A</span>               <span class=cmt>; Null-terminate buffer</span>
+<div class=Program>    <span class=ins>LD</span>    <span class=reg>(DE)</span>, <span class=reg>A</span></div>    <span class=ins>RET</span>
+
+<span class=mem>NotEnter:</span>
+<div class=Program>    <span class=ins>CP</span>    <span class=mem>skDel</span>           <span class=cmt>; If [DEL] key pressed, backspace</span>
+    <span class=ins>JR    NZ</span>, <span class=mem>NotDel</span>
+
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>B</span>             <span class=cmt>; See that there is a character to delete</span>
+    <span class=ins>OR</span>    <span class=reg>A</span>
+    <span class=ins>JR    Z</span>, <span class=mem>KeyLoop</span>       <span class=cmt>; If not, restart</span>
+
+    <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>CurCol</span>       <span class=cmt>; Save value of CurCol</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>DEC</span>   <span class=reg>(HL)</span>            <span class=cmt>; Decrement cursor column</span>
+
+    <span class=ins>OR</span>    <span class=reg>A</span>               <span class=cmt>; If original column was zero, should back up one row</span>
+    <span class=ins>JR    NZ</span>, <span class=mem>DidNotCrossLine</span>
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, 15         <span class=cmt>; Set cursor to last column</span>
+    <span class=ins>DEC</span>   <span class=reg>HL</span>              <span class=cmt>; Go back one row</span>
+    <span class=ins>DEC</span>   <span class=reg>(HL)</span>
+
+<span class=mem>DidNotCrossLine:</span>
+    <span class=ins>DEC</span>   <span class=reg>DE</span>              <span class=cmt>; Backup one char in buffer</span>
+    <span class=ins>DEC</span>   <span class=reg>B</span>               <span class=cmt>; Decrease char counter</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, ' '           <span class=cmt>; Erase char on screen</span>
+    b_call(_PutMap)       <span class=cmt>; without affecting position</span>
+    <span class=ins>JR</span>    <span class=mem>KeyLoop</span>
+    
+<span class=mem>NotDel:</span>
+    <span class=ins>CP</span>    <span class=mem>skClear</span>         <span class=cmt>; If [CLEAR] pressed, everything must die!!!</span>
+    <span class=ins>JR    NZ</span>, <span class=mem>NotClear</span>
+
+    <span class=ins>LD</span>    <span class=reg>C</span>, <span class=reg>B</span>             <span class=cmt>; Divide characters input by 16</span>
+    <span class=ins>SRA</span>   <span class=reg>C</span>               <span class=cmt>; to determine how many rows the input spans</span>
+    <span class=ins>SRA</span>   <span class=reg>C</span>
+    <span class=ins>SRA</span>   <span class=reg>C</span>
+    <span class=ins>SRA</span>   <span class=reg>C</span>
+
+    <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>CurRow</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>B</span>             <span class=cmt>; See if there are any characters to clear</span>
+    <span class=ins>OR</span>    <span class=reg>A</span>
+    <span class=ins>JR    Z</span>, <span class=mem>KeyLoop</span>
+
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(HL)</span>          <span class=cmt>; Backup to the start of input</span>
+    <span class=ins>SUB</span>   <span class=reg>C</span>
+    <span class=ins>LD</span>    <span class=reg>C</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, <span class=reg>A</span>
+
+    <span class=ins>INC</span>   <span class=reg>HL</span>              <span class=cmt>; Go to first column</span>
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, 0
+    <span class=ins>LD</span>    <span class=reg>A</span>, ' '
+    
+<span class=mem>ClearLoop:</span>
+    b_call(_PutC)         <span class=cmt>; Draw spaces to clear everything</span>
+    <span class=ins>DJNZ</span>   <span class=mem>ClearLoop</span>      <span class=cmt>; Will reset char counter</span>
+
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, <span class=reg>B</span>          <span class=cmt>; Reset column to zero</span>
+    <span class=ins>DEC</span>   <span class=reg>HL</span>              <span class=cmt>; Reset row to original value</span>
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, <span class=reg>C</span>
+    <span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>buffer</span>       <span class=cmt>; Reset buffer pointer</span>
+    <span class=ins>JR</span>    <span class=mem>KeyLoop</span>
+
+<span class=mem>NotClear:</span></div>    <span class=ins>LD</span>    <span class=reg>C</span>, <span class=reg>A</span>             <span class=cmt>; Save input char temporarily</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>B</span>             <span class=cmt>; See if at max characters input</span>
+    <span class=ins>CP</span>    <span class=mem>BUFSIZE</span>
+    <span class=ins>JR    Z</span>, <span class=mem>KeyLoop</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>C</span>             <span class=cmt>; Restore char</span>
+
+    <span class=ins>SUB</span>   <span class=mem>skAdd</span>           <span class=cmt>; Throw out all keys below [+]</span>
+    <span class=ins>JR    C</span>, <span class=mem>KeyLoop</span>
+    <span class=ins>CP</span>    <span class=mem>skMath</span> - <span class=mem>skAdd</span> + 1    <span class=cmt>; Throw out all keys above [MATH]</span>
+    <span class=ins>JR    NC</span>, <span class=mem>KeyLoop</span>
+
+<div class=Program>    <span class=ins>PUSH</span>  <span class=reg>DE</span>              <span class=cmt>; Convert scan code into character</span></div>    <span class=ins>LD</span>    <span class=reg>H</span>, 0
+    <span class=ins>LD</span>    <span class=reg>L</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>CharTable</span>
+    <span class=ins>ADD</span>   <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(HL)</span>
+<div class=Program>    <span class=ins>POP</span>   <span class=reg>DE</span></div>
+    b_call(_PutC)         <span class=cmt>; Echo it</span>
+
+    <span class=ins>LD</span>    <span class=reg>(DE)</span>, <span class=reg>A</span>          <span class=cmt>; Write char to buffer</span>
+<div class=Program>    <span class=ins>INC</span>   <span class=reg>DE</span>              <span class=cmt>; Increment pointer</span></div>    <span class=ins>INC</span>   <span class=reg>B</span>               <span class=cmt>; Increment counter</span>
+    <span class=ins>JR</span>    <span class=mem>KeyLoop</span>
+
+<span class=mem>CharTable:</span>
+<span class=dir>.DB</span>  $27, "WRMH", $FF, $FF        <span class=cmt>; + - &times; &divide; ^ undefined</span>
+<span class=dir>.DB</span>  "?", $5B, "VQLG", $FF, $FF    <span class=cmt>; (-) 3 6 9 ) TAN VARS undefined</span>
+<span class=dir>.DB</span>  ":ZUPKFC", $FF             <span class=cmt>; . 2 5 8 ( COS PRGM STAT</span>
+<span class=dir>.DB</span>  " YTOJEB", $FF, $FF         <span class=cmt>; 0 1 4 7 , SIN APPS XT&theta;<i>n</i> undefined</span>
+<span class=dir>.DB</span>  "XSNIDA"                  <span class=cmt>; STO LN LOG x<sup>2</sup> x<sup>-1</sup> MATH</span></pre><p>
+
+<a name="shf"></a>
+    <h2>Version 3 &mdash; Shift Keys</h2>
+Our current input routine is somewhat limited in ability, it can only deal with alphabetic characters. What we will now do is modify it so that the user can toggle between alpha keys and normal keys.<p>
+
+How to do this? The simplest way is to have two lookup tables, one for alpha, the other for normal. We will toggle between the two modes using the <tt>[ALPHA]</tt> key, and store the current mode in the system flag <span class=mem>ShiftAlpha</span>.<p>
+
+<pre>
+<span class=dir>#define</span> <span class=mem>BUFSIZE</span>  48
+<span class=mem>buffer</span>   <span class=dir>.EQU</span> <span class=mem>TextShadow</span>
+<span class=mem>buf_ptr</span>  <span class=dir>.EQU</span> <span class=mem>buffer + BUFSIZE</span> + 1
+<span class=mem>GetStr:</span>
+    <span class=ins>RES</span>   <span class=mem>AppTextSave</span>, <span class=reg>(IY + <span class=mem>AppFlags</span>)</span>
+    <div class=Program><span class=ins>RES</span>   <span class=mem>ShiftAlpha</span>, <span class=reg>(IY + <span class=mem>ShiftFlags</span>)</span></div>    <span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>buffer</span>       <span class=cmt>; Init pointer</span>
+    <span class=ins>LD</span>    <span class=mem>(buf_ptr)</span>, <span class=reg>DE</span>
+    <span class=ins>XOR</span>   <span class=reg>A</span>
+    <span class=ins>LD</span>    <span class=reg>B</span>, <span class=reg>A</span>             <span class=cmt>; Init character counter</span>
+    <span class=ins>LD</span>    <span class=mem>(CurCol)</span>, <span class=reg>A</span>
+
+<span class=mem>KeyLoop:</span>
+    b_call(_GetCSC)       <span class=cmt>; Get a character.</span>
+    <span class=ins>OR</span>    <span class=reg>A</span>               <span class=cmt>; If no character received, restart</span>
+    <span class=ins>JR    Z</span>, <span class=mem>KeyLoop</span>
+
+    <span class=ins>CP</span>    <span class=mem>skEnter</span>         <span class=cmt>; If [ENTER] pressed, exit</span>
+    <span class=ins>JR    NZ</span>, <span class=mem>NotEnter</span>
+
+    <span class=ins>XOR</span>   <span class=reg>A</span>               <span class=cmt>; Null-terminate buffer</span>
+    <span class=ins>LD</span>    <span class=reg>(DE)</span>, <span class=reg>A</span>
+    <span class=ins>RES</span>   <span class=mem>ShiftAlpha</span>, <span class=reg>(IY + <span class=mem>ShiftFlags</span>)</span></div>    <span class=ins>RET</span>
+
+<span class=mem>NotEnter:</span>
+<div class=Program>
+    <span class=ins>CP</span>    <span class=mem>skAlpha</span>
+    <span class=ins>JR    NZ</span>, <span class=mem>NotAlpha</span>
+
+    <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>Flags + ShiftFlags</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>XOR</span>   1 << <span class=mem>ShiftAlpha</span>     <span class=cmt>; Toggle state of ShiftAlpha flag</span>
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, <span class=reg>A</span>
+    <span class=ins>JR</span>    <span class=mem>KeyLoop</span>
+    
+<span class=mem>NotAlpha:</span></div>    <span class=ins>CP</span>    <span class=mem>skDel</span>           <span class=cmt>; If [DEL] key pressed, backspace</span>
+    <span class=ins>JR    NZ</span>, <span class=mem>NotDel</span>
+
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>B</span>             <span class=cmt>; See that there is a character to delete</span>
+    <span class=ins>OR</span>    <span class=reg>A</span>
+    <span class=ins>JR    Z</span>, <span class=mem>KeyLoop</span>       <span class=cmt>; If not, restart</span>
+
+    <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>CurCol</span>       <span class=cmt>; Save value of CurCol</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>DEC</span>   <span class=reg>(HL)</span>            <span class=cmt>; Decrement cursor column</span>
+
+    <span class=ins>OR</span>    <span class=reg>A</span>               <span class=cmt>; If original column was zero, should back up one row</span>
+    <span class=ins>JR    NZ</span>, <span class=mem>DidNotCrossLine</span>
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, 15         <span class=cmt>; Set cursor to last column</span>
+    <span class=ins>DEC</span>   <span class=reg>HL</span>              <span class=cmt>; Go back one row</span>
+    <span class=ins>DEC</span>   <span class=reg>(HL)</span>
+
+<span class=mem>DidNotCrossLine:</span>
+    <span class=ins>DEC</span>   <span class=reg>DE</span>              <span class=cmt>; Backup one char in buffer</span>
+    <span class=ins>DEC</span>   <span class=reg>B</span>               <span class=cmt>; Decrease char counter</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, ' '           <span class=cmt>; Erase char on screen</span>
+    b_call(_PutMap)       <span class=cmt>; without affecting position</span>
+    <span class=ins>JR</span>    <span class=mem>KeyLoop</span>
+    
+<span class=mem>NotDel:</span>
+    <span class=ins>CP</span>    <span class=mem>skClear</span>         <span class=cmt>; If [CLEAR] pressed, everything must die!!!</span>
+    <span class=ins>JR    NZ</span>, <span class=mem>NotClear</span>
+
+    <span class=ins>LD</span>    <span class=reg>C</span>, <span class=reg>B</span>             <span class=cmt>; Divide characters input by 16</span>
+    <span class=ins>SRA</span>   <span class=reg>C</span>               <span class=cmt>; to determine how many rows the input spans</span>
+    <span class=ins>SRA</span>   <span class=reg>C</span>
+    <span class=ins>SRA</span>   <span class=reg>C</span>
+    <span class=ins>SRA</span>   <span class=reg>C</span>
+
+    <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>CurRow</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>B</span>             <span class=cmt>; See if there are any characters to clear</span>
+    <span class=ins>OR</span>    <span class=reg>A</span>
+    <span class=ins>JR    Z</span>, <span class=mem>KeyLoop</span>
+
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(HL)</span>          <span class=cmt>; Backup to the start of input</span>
+    <span class=ins>SUB</span>   <span class=reg>C</span>
+    <span class=ins>LD</span>    <span class=reg>C</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, <span class=reg>A</span>
+
+    <span class=ins>INC</span>   <span class=reg>HL</span>              <span class=cmt>; Go to first column</span>
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, 0
+    <span class=ins>LD</span>    <span class=reg>A</span>, ' '
+    
+<span class=mem>ClearLoop:</span>
+    b_call(_PutC)         <span class=cmt>; Draw spaces to clear everything</span>
+    <span class=ins>DJNZ</span>   <span class=mem>ClearLoop</span>      <span class=cmt>; Will reset char counter</span>
+
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, <span class=reg>B</span>          <span class=cmt>; Reset column to zero</span>
+    <span class=ins>DEC</span>   <span class=reg>HL</span>              <span class=cmt>; Reset row to original value</span>
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, <span class=reg>C</span>
+    <span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>buffer</span>       <span class=cmt>; Reset buffer pointer</span>
+    <span class=ins>JR</span>    <span class=mem>KeyLoop</span>
+
+<span class=mem>NotClear:</span>
+    <span class=ins>LD</span>    <span class=reg>C</span>, <span class=reg>A</span>             <span class=cmt>; Save input char temporarily</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>B</span>             <span class=cmt>; See if at max characters input</span>
+    <span class=ins>CP</span>    <span class=mem>BUFSIZE</span>
+    <span class=ins>JR    Z</span>, <span class=mem>KeyLoop</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>C</span>             <span class=cmt>; Restore char</span>
+
+    <span class=ins>SUB</span>   <span class=mem>skAdd</span>           <span class=cmt>; Throw out all keys below [+]</span>
+    <span class=ins>JR    C</span>, <span class=mem>KeyLoop</span>
+    <span class=ins>CP</span>    <span class=mem>skMath</span> - <span class=mem>skAdd</span> + 1    <span class=cmt>; Throw out all keys above [MATH]</span>
+    <span class=ins>JR    NC</span>, <span class=mem>KeyLoop</span>
+
+    <span class=ins>PUSH</span>  <span class=reg>DE</span>              <span class=cmt>; Convert scan code into character</span>
+    <span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>CharTable</span>
+<div class=Program>    <span class=ins>BIT</span>   <span class=mem>ShiftAlpha</span>, <span class=reg>(IY + <span class=mem>ShiftFlags</span>)</span>
+    <span class=ins>JR    NZ</span>, <span class=mem>AlphaMode</span>
+    <span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>NormalTable</span>
+
+<span class=mem>AlphaMode:</span></div>        <span class=ins>LD</span>    <span class=reg>H</span>, 0
+    <span class=ins>LD</span>    <span class=reg>L</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>CharTable</span>
+    <span class=ins>ADD</span>   <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>POP</span>   <span class=reg>DE</span>
+    b_call(_PutC)         <span class=cmt>; Echo it</span>
+
+    <span class=ins>LD</span>    <span class=reg>(DE)</span>, <span class=reg>A</span>          <span class=cmt>; Write char to buffer</span>
+<div class=Program>    <span class=ins>INC</span>   <span class=reg>DE</span>              <span class=cmt>; Increment pointer</span></div>    <span class=ins>INC</span>   <span class=reg>B</span>               <span class=cmt>; Increment counter</span>
+    <span class=ins>JR</span>    <span class=mem>KeyLoop</span>
+
+<span class=mem>CharTable:</span>
+<span class=dir>.DB</span>  $27, "WRMH", $FF, $FF        <span class=cmt>; + - &times; &divide; ^ undefined</span>
+<span class=dir>.DB</span>  "?", $5B, "VQLG", $FF, $FF    <span class=cmt>; (-) 3 6 9 ) TAN VARS undefined</span>
+<span class=dir>.DB</span>  ":ZUPKFC", $FF             <span class=cmt>; . 2 5 8 ( COS PRGM STAT</span>
+<span class=dir>.DB</span>  " YTOJEB", $FF, $FF         <span class=cmt>; 0 1 4 7 , SIN APPS XT&theta;<i>n</i> undefined</span>
+<span class=dir>.DB</span>  "XSNIDA"                  <span class=cmt>; STO LN LOG x<sup>2</sup> x<sup>-1</sup> MATH</span>
+
+<div class=Program><span class=mem>NormTable:</span>
+<span class=dir>.DB</span>  "+-*/^", $FF, $FF           <span class=cmt>; + - × ÷ ^ CLEAR undefined</span>
+<span class=dir>.DB</span>  "_369)", $C1, "]", $FF       <span class=cmt>; (-) 3 6 9 ) TAN VARS undefined</span>
+<span class=dir>.DB</span>  ".258({};"                <span class=cmt>; . 2 5 8 ( COS PRGM STAT</span>
+<span class=dir>.DB</span>  "0147, <>|", $FF            <span class=cmt>; 0 1 4 7 , SIN APPS XT&theta;n undefined</span>
+<span class=dir>.DB</span>  $05, "!@#%&"               <span class=cmt>; STO LN LOG x2 x-1 MATH</span></div>
+</pre><p>
+
+<a name="cur"></a>
+    <h2>A Cursor</h2>
+A blinking cursor'll make our input engine look just extra tricked out. All you need to know about the workings are:
+<ul>
+    <li>The cursor will be shown if <span class=mem>CurOn</span>, <span class=reg>(IY +
+    <span class=mem>CurFlags</span>)</span> is set.
+    <li>The system interrupt uses the value of <span class=mem>(CurTime)</span> to
+    blink the cursor. When this variable hits zero, the status of <span
+    class=mem>CurOn</span> is flipped and <span class=mem>(CurTime)</span> is reset to
+    <tt>$32</tt>.
+    <li>Force the cursor off when <tt>[DEL]</tt> and <tt>[CLEAR]</tt> are pressed.
+    <li>Force the cursor on when <tt>[ALPHA]</tt> or a valid key is pressed, and also
+    after you have cleared a character or a line.
+</ul>
+
+The included program demo27.8xp will show you more or less what you should aim for.<p>
+
+<a name="inp"></a>
+    <h2>Numerical Input</h2>
+We can use <span class=mem>GetStr</span> to input numbers in addition to strings. To do this we input the number as a string and process it depending on what kind of number we are looking for. What follows are four routines that you can use to convert an ASCII representation of a number to its binary counterpart for decimal and hexadecimal. Each routine has an 8-bit version and a 16-bit version.<p>
+
+    As for the details on each routine, 
+<ul>
+    <li>The 8-bit ones output their result to <span class=reg>C</span> and the 16-bit ones output to <span
+    class=reg>HL</span>.
+    <li>An error occurs if an invalid bit, digit, or hexit is encountered.
+    <li>The error status is reported in the carry flag. Set means an error occured.
+    <li>Conversion is finished upon encountering a space or when the buffer is exhausted.
+    <li>For decimal, only the first digits without overflow are used. E.g. "70000" results in 7000 for 16-bit and 70 for 8-bit. The trailing zeros are left in the buffer.
+    <li>For hexadecimal, only the last digits entered are used. E.g. "4C3A024" results in $A024 for 16-bit and $24 for 8-bit. The preceding characters are lost.
+</ul>
+
+<a name="dc8"></a>
+    <h3>ASCII-Encoded Decimal to Register C</h3>
+<pre>
+<span class=dir>.module    ConvDec8</span>
+<span class=mem>ConvDec8:</span>
+    <span class=ins>LD</span>    <span class=reg>C</span>, 0
+
+<span class=mem>_Loop:</span>
+    <span class=ins>CALL</span>  <span class=mem>GetChar</span>
+    <span class=ins>CCF</span>             <span class=cmt>; End if no more characters</span>
+    <span class=ins>RET   NC</span>
+
+    <span class=ins>SUB</span>   '0'       <span class=cmt>; Throw out all characters below '0'</span>
+    <span class=ins>JR    C</span>, <span class=mem>_Check</span>
+
+    <span class=ins>CP</span>    10        <span class=cmt>; Throw out all characters above '9'</span>
+    <span class=ins>CCF</span>
+    <span class=ins>RET   C</span>
+
+    <span class=ins>LD</span>    <span class=reg>D</span>, <span class=reg>A</span>       <span class=cmt>; Save value in D</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>C</span>       <span class=cmt>; Load running total</span>
+    <span class=ins>CP</span>    26        <span class=cmt>; Halt if there would be an overflow (260+)</span>
+    <span class=ins>JP    NC</span>, <span class=mem>Ungetc</span> <span class=cmt>; Return gotten character</span>
+
+    <span class=ins>LD</span>    <span class=reg>E</span>, <span class=reg>C</span>       <span class=cmt>; Save current number in case of overflow</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>A</span>       <span class=cmt>; Multiply by 10</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>C</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>D</span>       <span class=cmt>; Add gotten character</span>
+
+    <span class=ins>LD</span>    <span class=reg>C</span>, <span class=reg>A</span>       <span class=cmt>; Halt if overflow (256 to 259)</span>
+    <span class=ins>JR    NC</span>, <span class=mem>_Loop</span>
+
+    <span class=ins>LD</span>    <span class=reg>C</span>, <span class=reg>E</span>
+    <span class=ins>JP</span>    <span class=mem>Ungetc</span>
+
+<span class=mem>_Check:</span>
+    <span class=ins>CP</span>    ' ' - '0' <span class=cmt>; If a space is encountered exit without error</span>
+    <span class=ins>RET   Z</span>
+    <span class=ins>SCF</span>
+    <span class=ins>RET</span></pre><p>
+
+<a name="hx8"></a>
+    <h3>ASCII-Encoded Hexadecimal to Register C</h3>
+<pre><span class=dir>.module    ConvHex8</span>
+<span class=mem>ConvHex8:</span>
+    <span class=ins>LD</span>   <span class=reg>BC</span>, 0
+
+<span class=mem>_Loop:</span>
+    <span class=ins>CALL</span>  <span class=mem>GetChar</span>
+    <span class=ins>JR    C</span>, <span class=mem>_Check</span>
+
+    <span class=ins>CP</span>   ' '
+    <span class=ins>JR    Z</span>, <span class=mem>_Check</span>
+
+    <span class=ins>SUB</span>   '0'
+    <span class=ins>RET   C</span>
+
+    <span class=ins>CP</span>    10
+    <span class=ins>JR    C</span>, <span class=mem>_Okay</span>         <span class=cmt>; Not a hexit in the range A-F</span>
+
+    <span class=ins>CP</span>    'F' - '0' + 1   <span class=cmt>; Throw out all characters above 'F'</span>
+    <span class=ins>CCF</span>
+    <span class=ins>RET   C</span>
+
+    <span class=ins>CP</span>    'A' - '0'       <span class=cmt>; Throw out all characters between '9' and 'A'</span>
+    <span class=ins>RET   C</span>
+    <span class=ins>SUB</span>   7               <span class=cmt>; Make A-F into 10-15</span>
+
+<span class=mem>_Okay:</span>
+    <span class=ins>PUSH</span>  <span class=reg>AF</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>C</span>             <span class=cmt>; Multiply running total by 16</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>OR</span>    <span class=reg>C</span>               <span class=cmt>; Add in character</span>
+    <span class=ins>LD</span>    <span class=reg>C</span>, <span class=reg>A</span>
+    <span class=ins>INC</span>   <span class=reg>B</span>
+    <span class=ins>JR</span>    <span class=mem>_Loop</span>
+
+<span class=mem>_Check:</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>B</span>
+    <span class=ins>OR</span>    <span class=reg>A</span>
+    <span class=ins>RET   NZ</span>
+    <span class=ins>SCF</span>
+    <span class=ins>RET</span></pre><p>
+
+<a name="d16"></a>
+    <h3>ASCII-Encoded Decimal to Register HL</h3>
+<pre><span class=dir>.module    ConvDec16</span>
+<span class=mem>ConvDec16:</span>
+    <span class=ins>LD</span>    <span class=reg>HL</span>, 0
+    <span class=ins>LD</span>    <span class=reg>B</span>, <span class=reg>H</span>
+
+<span class=mem>_Loop:</span>
+    <span class=ins>CALL</span>  <span class=mem>GetChar</span>
+    <span class=ins>CCF</span>
+    <span class=ins>RET   NC</span>
+
+    <span class=ins>SUB</span>   '0'
+    <span class=ins>JR    C</span>, <span class=mem>_Check</span>
+
+    <span class=ins>CP</span>    10
+    <span class=ins>CCF</span>
+    <span class=ins>RET   C</span>
+
+    <span class=ins>LD</span>    <span class=reg>D</span>, <span class=reg>H</span>
+    <span class=ins>LD</span>    <span class=reg>E</span>, <span class=reg>L</span>
+    <span class=ins>ADD</span>   <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>ADD</span>   <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>ADD</span>   <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>ADD</span>   <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>JR    C</span>, <span class=mem>_Overflow</span>
+
+    <span class=ins>LD</span>    <span class=reg>C</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>   <span class=reg>HL</span>, <span class=reg>BC</span>
+    <span class=ins>JR    NC</span>, <span class=mem>_Loop</span>
+
+<span class=mem>_Overflow:</span>
+    <span class=ins>EX</span>    <span class=reg>DE</span>, <span class=reg>HL</span>
+    <span class=ins>JR</span>    <span class=mem>Ungetc</span>
+    
+<span class=mem>_Check:</span>
+    <span class=ins>CP</span>    ' ' - '0'
+    <span class=ins>RET   Z</span>
+    <span class=ins>SCF</span>
+    <span class=ins>RET</span></pre><p>
+
+<a name="h16"></a>
+    <h3>ASCII-Encoded Hexadecimal to Register HL</h3>
+<pre><span class=dir>.module    ConvHex16</span>
+<span class=mem>ConvHex16:</span>
+    <span class=ins>LD</span>    <span class=reg>HL</span>, 0
+    <span class=ins>LD</span>    <span class=reg>C</span>, <span class=reg>H</span>
+
+<span class=mem>_Loop:</span>
+    <span class=ins>CALL</span>  <span class=mem>GetChar</span>
+    <span class=ins>JR    C</span>, <span class=mem>_Check</span>
+
+    <span class=ins>CP</span>    ' '
+    <span class=ins>JR    Z</span>, <span class=mem>_Check</span>
+
+    <span class=ins>SUB</span>   '0'
+    <span class=ins>RET   C</span>
+
+    <span class=ins>CP</span>    10
+    <span class=ins>JR    C</span>, <span class=mem>_Okay</span>
+
+    <span class=ins>CP</span>    'F' - '0' + 1
+    <span class=ins>CCF</span>
+    <span class=ins>RET   C</span>
+
+    <span class=ins>CP</span>    'A' - '0'
+    <span class=ins>RET   C</span>
+    <span class=ins>SUB</span>   7
+
+<span class=mem>_Okay:</span>
+    <span class=ins>ADD</span>   <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>ADD</span>   <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>ADD</span>   <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>ADD</span>   <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>OR</span>    <span class=reg>L</span>
+    <span class=ins>LD</span>    <span class=reg>L</span>, <span class=reg>A</span>
+    <span class=ins>INC</span>   <span class=reg>C</span>
+    <span class=ins>JR</span>    <span class=mem>_Loop</span>
+
+<span class=mem>_Check:</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>C</span>
+    <span class=ins>SCF</span>
+    <span class=ins>RET</span></pre><p>
+
+    <hr>
+<div class=NavFooter>
+<a href="day26.html">PREVIOUS - Day 26: Sprites</a><p>
+<a href="day28.html">NEXT - Day 28: Putting It All Together</a><p>
+<a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

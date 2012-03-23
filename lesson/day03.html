@@ -1,0 +1,659 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 3 &mdash; Registers, Memory, and Variables</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day02.html">Previous</a>
+    &middot; <a href="day04.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 3. Registers, Memory, and Variables</h1>
+    <hr>
+    <b><font color=#006600>novice</font> <font color=#CCCCCC>intermediate advanced expert</font></b><hr>
+
+<ul class=TopicList>   
+<li type="square"><a href="#sys">Number Systems</a>
+<li type="disc"><a href="#rdx">Designating Radix in Assembly</a>
+<li type="square"><a href="#reg">Registers</a>
+<li type="square"><a href="#neg">Negative Numbers</a>
+<li type="square"><a href="#mem">Memory</a>
+<li type="disc"><a href="#lit">Literal Constants</a>
+<li type="square"><a href="#man">Manifest Constants</a>
+<li type="disc"><a href="#var">Variables</a>
+<li type="square"><a href="#ind">Indirect Access</a>
+</ul>
+    <hr>
+
+It's high time we jumped in and actually started off on this assembly kick. Now, we are going to cover a lot of vital stuff concerning number theory, how it relates to computers, and yes, even some assembly. These are the absolute basics, and you <i>need</i> to understand them or the rest of the guide is garbage. The unfortunate part is that the length and the novel concepts combine to make this chapter a major hurdle, but don't get too discouraged! Just stick with it and it will start to click eventually.<p>
+
+<a name="sys"></a>
+    <h2>Number Systems</h2>
+Necessary reading, this. Computer's don't count the same way you and I do.<p>
+
+    <h3>Decimal</h3>
+All number systems use a particular radix. Radix is synonymous with "base" if it helps, although I should caution you that saying such things as "All you radix are belong to us" is a great way to get people to throw pointy things at you (but whether it's because of the horrid pun or the tired pop-culture reference is hard to say... :-). To understand what a radix is, consider our everyday system of numbers, which uses base ten.<p>
+
+Like you learned in grade school and forgot over summer, in a base ten number, each digit specifies a certain power of 10, and as a consequence you need ten different digits to denote any number. The rightmost digit specifies 10<sup>0</sup>, the second digit specifies 10<sup>1</sup>, the third 10<sup>2</sup> and so on.<br>
+You can, therefore, break down a decimal number, such as 2763<sub>10</sub>, like this (although it does wind up to be redundant):
+
+<pre>2763<sub>10</sub>  = (2 x 10<sup>3</sup>) + (7 x 10<sup>2</sup>) + (6 x 10<sup>1</sup>) + (3 x 10<sup>0</sup>)
+        = (2 x 1000) + (7 x 100) + (6 x 10) + (3 x 1)
+        = 2000 + 700 + 60 + 3
+        = 2763<sub>10</sub></pre>
+    
+Computers enjoy working with two other bases: binary and hexadecimal. Octal is base-8, and seems to have died out. It was only used by UNIX anyway.<p>
+
+    <h3>Binary</h3>
+Binary is a base-2 system, so it uses only two digits (0 and 1), and each digit represents a power of 2:
+<pre>10110101<sub>2</sub>  = (1 x 2<sup>7</sup>) + (0 x 2<sup>6</sup>) + (1 x 2<sup>5</sup>) + (1 x 2<sup>4</sup>) + (0 x 2<sup>3</sup>) + (1 x 2<sup>2</sup>) + (0 x 2<sup>1</sup>) + (1 x 2<sup>0</sup>)
+           = (1 x 128) + (0 x 64) + (1 x 32) + (1 x 16) + (0 x 8) + (1 x 4) + (0 x 2) + (1 x 1)
+           = 128 + 32 + 16 + 4 + 1
+           = 181<sub>10</sub></pre>
+
+A single binary digit is familiarly called a <i>bit</i>. Eight bits are called a byte. Other combinations you could hear about:
+
+<table class=Info>
+<tr class=center>
+ <th class=Heading width=60%>Name</th>
+ <th class=Heading>Size</th>
+</tr>
+<tr>
+ <td class=SubHeading>nibble</td>
+ <td>4 bits</td>
+</tr>
+<tr>
+ <td class=SubHeading>word</td>
+ <td>16 bits</td>
+</tr>
+<tr>
+ <td class=SubHeading>dword<br>
+ <td>32 bits</td>
+</tr>
+<tr>
+ <td class=SubHeading>quadword</td>
+ <td>64 bits</td>
+</tr>    
+</table>
+
+Since the Z80 can directly manipulate only bytes and words (and nibbles in some circumstances), the majority of data handling you do will involve mostly those, so you don't have to concern yourself with the others too much (although it would still be a good idea to familiarize yourself with them).<p>
+
+We will find ourselves working with, or at the very least referencing the individual bits of a byte or word. The nomenclature:
+<ul>
+<li>If we arranged the bits out horizontally, we call the rightmost bit "bit 0", and each bit to the left is given a number one greater.
+<li>The leftmost and rightmost bits are given special names: the leftmost bit is called the high-order bit or the most-significant bit (since it controls the highest power of two of the number, it makes the most significant contrubution to the value). The rightmost bit is called the low-order bit or the least-significant bit.
+<li>We can apply these points to nibbles in a byte, bytes in a word or dword, etc. So for example the rightmost byte in a 64-bit quantity would be termed the least-significant byte.
+</ul>
+
+    <h3>Hexadecimal</h3>
+Hexadecimal is base-16, so it uses 16 digits: the regular digits 0 to 9, and the letters A to F that correspont to the decimal values 10 to 15.
+
+<pre>1A2F<sub>16</sub>  = (1 x 16<sup>3</sup>) + (10 x 16<sup>2</sup>) + (2 x 16<sup>1</sup>) + (15 x 16<sup>0</sup>)
+        = (1 x 4096) + (10 x 256) + (2 x 16) + (15 x 1)
+        = 4096 + 2560 + 32 + 15
+        = 6703<sub>10</sub></pre>
+
+Hex values have an interesting relationship with binary: take the number 11010011<sub>2</sub>. In hex, this
+value is represented as D3<sub>16</sub>, but consider the individual digits:<br>
+
+<pre>D<sub>16</sub> = 1101<sub>2</sub>    3<sub>16</sub> = 0011<sub>2</sub></pre>
+
+Compare these two binary numbers with the original. You should see that one hex digit is equivalent to one nibble. This is what's so great about hexadecimal, converting binary numbers used by the computer into more manageable hex values is a snap.<p>
+
+<a name="rdx"></a>
+    <h2>Designating Base</h2>
+To designate base above, we have adopted the notation used by many mathematicians by writing the radix as a subscript. Too bad we must write assembly code in plain text format, which has no capability for such niceties. The way to denote radix varies, but in all cases it involves attaching an extra character or characters to the number. TASM gives you a choice between a symbolic prefix or an alphabetic suffix.
+
+<table class=Info>
+<tr class=Heading>
+    <th>Prefix Format</th>
+    <th>Suffix Format</th>
+    <th>Base</th>
+</tr>
+<tr>
+    <td><span class=reg>%</span><tt>10011011</tt></td>
+    <td><tt>10011011<span class=reg>b</span></tt></td>
+    <td>Binary</td>
+</tr>
+<tr>
+    <td><tt><span class=reg>$</span>31D0</tt></td>
+    <td><tt>31D0<span class=reg>h</span></tt></td>
+    <td>Hexadecimal</td>
+</tr>
+<tr>
+    <td><tt><span class=reg>@</span>174</tt></td>
+    <td><tt>174<span class=reg>o</span></tt></td>
+    <td>Octal</td>
+</tr>
+<tr>
+    <td><tt>12305</tt> (no prefix)</td>
+    <td><tt>12305<span class=reg>d</span></tt></td>
+    <td>Decimal</td>
+</tr>
+</table>
+
+It doesn't matter which format you use, provided you don't mix them (like $4F33h). The prefix formats may be
+easier to read, since the letter sort of gets lost among the numbers (especially if it's upper case).<p>
+
+<a name="reg"></a>
+    <h2>Registers</h2>
+Registers are sections of very expensive RAM inside the CPU that are used to store numbers and rapidly operate on them. At this point, you only need to concern yourself with nine registers: <span class=reg>A B C D E F H L</span> and <span class=reg>IX</span>.<p>
+
+The single-letter registers are 8 bits in size, so they can store any number from 0 to 255. Since this is oftentimes inadequate, they can be combined into four register pairs: <span class=reg>AF BC DE HL</span>. These, along with <span class=reg>IX</span>, are 16-bit, and can store a number in the range 0 to 65535.<p>
+
+These registers are general purpose, to a point. What I mean by that is that you can usually use whichever register you want, but many times you are forced to, or it's just better to, use a specific one. <p>
+
+The special uses of the registers:
+
+<dl>
+<dt>8-bit Registers:
+<dd><span class=reg>A</span> is also called the "<b>a</b>ccumulator". It is the primary register for arithmetic operations and accessing memory. Indeed, it's the <i>only</i> register you can use.
+<dd><span class=reg>B</span> is commonly used as an 8-bit counter.
+<dd><span class=reg>C</span> is used when you want to interface with hardware ports.<br>
+<span class=reg>F</span> is known as the <b>f</b>lags. The bits of this register signify (that is to say they "flag") whether certain events have occured. For example, one of the flags (bits) reports if the accumulator is zero or not. The uses of the flags will be explained at a later day because we have no use for them at this point.<p>
+
+<dt>16-bit Registers:
+<dd><span class=reg>HL</span> has two purposes. One, it is like the 16-bit equivalent of the accumulator, i.e. it is used for 16-bit arithmetic. Two, it stores the <b>h</b>igh and <b>l</b>ow bytes of a memory address.
+<dd><span class=reg>BC</span> is used by instructions and code sections that operate on streams of bytes as a <b>b</b>yte <b>c</b>ounter.
+<dd><span class=reg>DE</span> holds the address of a memory location that is a <b>de</b>stination.
+<dd><span class=reg>IX</span> is a funky li'l register called an <b>i</b>nde<b>x</b> register. Almost everywhere <span class=reg>HL</span> is acceptable, so too is <span class=reg>IX</span>. Important to note that using <span class=reg>IX</span> results in slower and more inflated code than <span class=reg>HL</span> would (approximately double the size and time), so call on his services only when necessary (usually when <span class=reg>HL</span> is tied up). <span class=reg>IX</span> can do something special that no other register can though, we'll look at that in due time.
+</dl>
+
+To store to a register, you use the <span class=ins>LD</span> instruction.
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>LD</b> <i>destination</i>, <i>source</i></tt></td>
+    <td>Stores the value of <tt><i>source</i></tt> into <tt><i>destination</i></tt>.</td>
+</tr>
+</table>
+
+<table class=Info>
+<caption><b>Valid arguments for <span class=ins>LD</span></b><br>
+There are many more, but they involve registers you haven't heard of yet.<br>
+Note: <tt><b>imm<sub>8</sub></b></tt>: 8-bit immediate value. <tt><b>imm<sub>16</sub></b></tt>: 16-bit immediate value.</caption>
+<tr>
+    <td class=Transparent></td>
+    <th class=Heading colspan=23>Destination</th>
+</tr>
+<tr>
+    <th class=Heading rowspan=17>S<br>o<br>u<br>r<br>c<br>e</th>
+    <td class=Transparent width=9%></td>
+    <th class=SubHeading width=5%><tt>A</tt></th>
+    <th class=SubHeading width=5%><tt>B</tt></th>
+    <th class=SubHeading width=5%><tt>C</tt></th>
+    <th class=SubHeading width=5%><tt>D</tt></th>
+    <th class=SubHeading width=5%><tt>E</tt></th>
+    <th class=SubHeading width=5%><tt>H</tt></th>
+    <th class=SubHeading width=5%><tt>L</tt></th>
+    <th class=SubHeading width=7%><tt>BC</tt></th>
+    <th class=SubHeading width=7%><tt>DE</tt></th>
+    <th class=SubHeading width=7%><tt>HL</tt></th>
+    <th class=SubHeading width=7%><tt>(BC)</tt></th>
+    <th class=SubHeading width=7%><tt>(DE)</tt></th>
+    <th class=SubHeading width=7%><tt>(HL)</tt></th>
+    <th class=SubHeading width=9%><tt>(imm<sub>16</sub>)</tt></th>
+</tr>
+<tr>
+    <th class=SubHeading><tt>A</tt></th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td class=Transparent colspan=3></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>B</tt></th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td class=Transparent colspan=5></td>
+    <td></td>
+    <td class=Transparent></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>C</tt></th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td class=Transparent colspan=5></td>
+    <td></td>
+    <td class=Transparent></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>D</tt></th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td class=Transparent colspan=5></td>
+    <td></td>
+    <td class=Transparent></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>E</tt></th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td class=Transparent colspan=5></td>
+    <td></td>
+    <td class=Transparent></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>H</tt></th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td class=Transparent colspan=5></td>
+    <td></td>
+    <td class=Transparent></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>L</tt></th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td class=Transparent colspan=5></td>
+    <td></td>
+    <td class=Transparent></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>BC</tt></th>
+    <td class=Transparent colspan=13></td>
+    <td></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>DE</tt></th>
+    <td class=Transparent colspan=13></td>
+    <td></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>HL</tt></th>
+    <td class=Transparent colspan=13></td>
+    <td></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>(BC)</tt></th>
+    <td></td>
+    <td class=Transparent colspan=20></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>(DE)</tt></th>
+    <td></td>
+    <td class=Transparent colspan=20></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>(HL)</tt></th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td class=Transparent colspan=20></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>(imm<sub>16</sub>)</tt></th>
+    <td></td>
+    <td class=Transparent colspan=6></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td class=Transparent colspan=4></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>imm<sub>8</sub></tt></th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td class=Transparent colspan=5></td>
+    <td></td>
+    <td class=Transparent></td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>imm<sub>16</sub></tt></th>
+    <td class=Transparent colspan=7></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td class=Transparent colspan=4></td>
+</tr>
+</table><p>
+
+You obviously have no clue what difference parentheses make for an operand. You'll see shortly.<p>
+
+Examples:
+<table class=info>
+<tr>
+    <td class=SubHeading><tt><span class=ins>LD</span> <span class=reg>A</span>, 25</tt></td>
+    <td>Stores 25 into register <span class=reg>A</span></td>
+</tr>
+<tr>
+    <td class=SubHeading><tt><span class=ins>LD</span> <span class=reg>D</span>, <span class=reg>B</span></tt></td>
+    <td>Stores the value of register <span class=reg>B</span> into register <span class=reg>D</span>.</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt><span class=ins>LD</span> ($8325), <span class=reg>A</span></tt></td>
+    <td>Stores the value of register <span class=reg>A</span> into address <tt>$8325</tt> (explained later on).</td>
+</tr>
+</table><p>
+
+Some points that should be made clear:<p>
+
+The two operands for <span class=ins>LD</span> cannot both be register pairs. You have to load the registers separately:
+
+<pre>
+<span class=cmt>   ; Since we can't do LD DE, HL...</span>
+   <span class=ins>LD</span>    <span class=reg>D</span>, <span class=reg>H</span>
+   <span class=ins>LD</span>    <span class=reg>E</span>, <span class=reg>L</span>
+</pre>
+
+If you use <span class=ins>LD</span> with a number that is too big for the register to hold, you will get an error at assembly time. Storing negative numbers, however, is legal, but the number will get "wrapped" to fit.
+For example, if you assign -1 to <span class=reg>A</span>, it will really hold 255. If you assign -2330</tt> to
+<span class=reg>BC</span>, it will really hold 63206. Adding one plus the maximum value the register will hold gives you the value that will be stored. There is a reason for this phenomenon that will be made clear shortly.<p>
+
+An instruction similar to <span class=ins>LD</span> but functionally different, is <span class=ins>EX</span>.
+Despite the fact that it is very particular about its operands, it is a <i>very</i> useful instruction. (90% of the time the registers you want to exchange are <span class=reg>HL</span> and <span class=reg>DE</span>).<p>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>EX</b> DE, HL</tt></td>
+    <td>Swaps the value of <span class=reg>DE</span> with the value of
+    <span class=reg>HL</span>.</td>
+</tr>
+</table><p>
+
+Registers <span class=reg>F</span> and <span class=reg>AF</span> cannot be used as operands for the
+<span class=ins>LD</span> instruction. Actually, these registers can not be operands for <i>any</i>
+instruction barring a few.<p>
+
+<a name="neg"></a>
+    <h2>Negative Numbers</h2>
+Up to this point there has been an implication that registers are only capable of assuming positive values, but in the real world negative numbers are just as common. Fortunately, there are ways to represent negative numbers. In assembly, we can attribute a number as either signed or unsigned. Unsigned means that the number can only take on positive values, signed means that the number can be either positive or negative. It is this concept of signed numbers we need to look at.<p>
+
+It turns out that there are many signed numbering schemes, but the only one we're interested in is called the two's complement. When we have a signed value in two's complement, the most significant bit of the number is termed the <i>sign bit</i> and its state determines the sign of the number. The existence of the sign bit naturally imposes a restriction on the number of bits a number may be composed of. With this, the amount of bits at our disposal to represent the number is reduced by one; for a string of eight bits, we can have a numeric range of -128 to +127. For a string of sixteen, it's -32, 768 to 32, 767, etc.<p>
+
+As to what bearing the state of the sign bit has on the value, it is this: if the sign bit is clear, the value is a positive quantity and is stored normally, as if it were an unsigned number. If the sign bit is set, the value is negative and is stored in two's complement format. To convert a postive number to its negative counterpart, you have two methods, either of which you can choose based on convenience.
+
+<ol>
+<li>Calculate zero minus the number (like negative numbers in the Real World). If you're confused how to do this, you can consider 0 and 256 (or 65536 if appropriate) to be the same number. Therefore, -6 would be 256 - 6 or 250: %11111010.
+<li>Flip the state of every bit, and add one. Therefore, -6 would be %11111001 + 1 or %11111010.
+</ol>
+
+There is one special case of two's complement where negation fails, and that is when you try to negate the smallest negative value:
+
+<pre>
+      %10000000        -128
+      %01111111        Invert all bits
+      %10000000        Add one (=-128)
+</pre>
+
+Of course -(-128) isn't -128, but the value +128 cannot be represented in two's complement with just eight bits, so the smallest negative value can never be negated.<p>
+
+
+There is an instruction to automate two's complement:
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>NEG</b></tt></td>
+    <td>Calculates the two's complement of the accumulator.</td>
+</tr>
+</table>
+
+I'm sure you find the theory wonderfully engrossing, but what you're probably interested in is how the CPU handles the difference between unsigned and signed numbers. The answer is, it doesn't. You see, the beauty of two's complement is that if we add or subtract two numbers, the result will be valid for both signed and unsigned values:
+
+<pre>
+                     unsigned        signed
+        %00110010           5             5
+      <u>+ %11001110</u>       <u>+ 206</u>          <u>+ -5</u>
+      %1 00000000         256             0   (Disqualify ninth bit)
+</pre>
+
+This phenomenon was not lost on the makers of the Z80. You could use the same hardware for adding signed numbers as unsigned numbers only with two's complement, and less hardware means a cheaper chip (true, nowadays you can get a fistful of Z80s for fifty cents, but back in 1975 it was a big deal, just look at the 6502).<p>
+
+<a name="mem"></a>
+    <h2>Memory and the Location Counter</h2>
+    <img src="../img/memviz.png" alt="[NO IMAGE]" vspace=15 hspace=20 align=left width=251 height=143>
+The TI-83 Plus's RAM consists of 32 kilobytes, and each byte is distinguishable from its myriad bretheren by a unique number, called an address, which is a number from $8000 to $FFFF (addresses $0000 to $7FFF are used for the Flash ROM). Now, you must realize that all data on the calculator, from numbers to text to pictures, is really just an endless series of numbers to the computer (in fact, it isn't even that), and programs are no exception. This is related to an important point of computer science, and I want you to make it your mantra: <i>"Data is whatever you define it to be"</i>.<br>
+Seriously, the computer is an idiot and doesn't know dick-all about what this byte or that word is supposed to mean, that's why you can force Microsoft Word to open a JPEG. It won't look like much, but the fact that you can do it proves a related point, and that is that no matter what you do with your data, be consistent with it. If in one moment you point your finger at a memory cell and say "Okay, this here will be the number of bixie manifestations recorded on the Kamchatka Linux newsgroup", and the next minute you're using it to store the state of the memory manager, you're a <a style="cursor: help" onClick='alert("A guy who sits at a business terminal wearing a suit, making programs to print out paychecks in COBOL, which as we all know is the language entirely responsible for all the Y2K hysteria"); return false'>code grinder</a> who gets a big red sticker that says "slap me, I'm a jackass". But now I'm just rambling, back to the action :-D<p>
+
+When you run a program, the calculator takes the series of numbers that makes up the program, transfers it to some other place in RAM (to address $9D95 as it happens), and starts wading through it, sending each number it comes across to the processor. When you assemble a program, you are converting all those instructions into numbers. An instruction could take one to four bytes, and a ROM call takes up three bytes.<p>
+
+To assist in keeping track, TASM uses a location counter. This is the current address data will be located at when the program runs. The <span class=dir>.ORG</span> directive sets the location counter to a certain value at that point in the program source. As the program is compiled, the location counter is incremented for each byte of machine code generated.<p>
+
+The location counter's value can be used in programs. It is represented by <span class=dir>$</span> or
+<span class=dir>*</span>, <span class=dir>$</span> being preferred, mainly because not very many people know about <span class=dir>*</span> :D. TASM doesn't have any problem with the location counter confliciting with hexadecimalitude, in case you were wondering.<p>
+
+<a name="lit"></a>
+    <h2>Literal Constants</h2>
+A literal constant has a value that is implicit from the characters and symbols that comprise it. You have no difficulty figuring out what the literal constants 86 and "mag ik heb een koekje?" mean by just looking at them. Literal constants are typed in the source code as needed for trivial purposes.<p>
+
+    <h3>Integers</h3>
+An integer constant is a symbol that represents an integer value. As the Z80 only works with bytes and words, it would be pointless to have integers other than 8-bit or 16-bit. All integers must begin with a decimal digit, Therefore, hex integers that start with a letter must be preceeded by a zero if using <i>-h</i> format.<p>
+
+    <h3>Character</h3>
+A single character in single quotation marks is considered as the ASCII code of that character. What is an ASCII code? Without getting into too much detail, ASCII is a universally adopted system for representing characters in memory by assigning each character a number: the ASCII code. ASCII is technically standard only for codes 0 to 127. Everyone and their mother has their own opinion of what 128 to 255 should be used for. Character constants are then no different from integers, and nothing more need be said of them, except that TI doesn't even respect the standard ASCII, and thus the computer and calculator interpret some ASCII codes differently. Particularly vexing is that ASCII 93 is ']' on the PC, but '&theta;' on the TI. For cases like these, and also for TI's extended ASCII set, you should use the more descriptive manifest constants defined in TI83PLUS.INC.<p>
+
+    <h3>String</h3>
+A string is a series of character constants enclosed in double quotation marks, and is interpreted as a sequence of the ASCII codes of each character.<p>
+
+    <h3>Text</h3>
+Text constants are discernable from string constants in that they aren't flanked by quotation marks. Text constants are used by the assembler to create the program. You can think of the entire source file as a text constant. Of course, I'm just telling you this for trivia.<p>
+
+<a name="man"></a>
+    <h2>Manifest Constants</h2>
+A manifest constant is a stand-in for a literal constant. You can assign a literal constant to a valid TASM symbol, and at every place that symbol is encountered it is replaced with the literal constant associated with it. Maybe I should tell you what a "valid TASM symbol" is. It's a sequence of characters such that:
+<ul>
+    <li>It is comprised of letters, digits, underscores, and periods.
+    <li>It is a maximum of 32 characters long.
+    <li>The first character is a letter or an underscore (else it would be confused with a
+    number or directive).
+</ul><p>
+
+    <h3>Equates</h3>
+The equate is the general mechanism for assigning a literal constant to a manifest constant. Either of two directives may be used:
+
+<pre>
+    <span class=mem><i>symbol</i></span>   <span class=dir>=</span>     <i>literal</i>
+    <span class=mem><i>symbol</i></span>   <span class=dir>.EQU</span>  <i>literal</i>
+</pre>
+
+After defining any equate, the symbol may be used anywhere its literal would be acceptable.<p>
+
+    <h3>Labels</h3>
+A label is defined by a symbol followed by a colon and aligned on the first column of the source. When a label definition is encountered, the symbol is assigned the value of the location counter at that point in the source, so you could also make a label by equating a symbol to the value of the location counter. The label can then be used anywhere in the program where a word value can be put. E.g.
+
+<pre>
+   <span class=mem>Lable:</span>               <span class=cmt>; L.C. = $9452</span>
+   <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>Lable</span>      <span class=cmt>; HL = $9452</span>
+</pre>
+
+    <h3>Local Lables</h3>
+One of TASM's features is the ability to make constant names local to a particular section of code known as a module. Denote the start of a module with the <span class=dir>.MODULE</span> directive:
+
+<pre><span class=dir>.MODULE   module_1</span>
+   <i>Code here</i>     <span class=cmt>; This code is in module module_1</span>
+
+<span class=dir>.MODULE   module_2</span>
+   <i>Code here</i>     <span class=cmt>; This code is in module module_2
+                ; (ain't I just the king of originality? :-)</span>
+</pre>
+
+A local label name (which begins with an underscore) can be defined multiple times as long as each new definition occurs in a different module.
+
+<pre>
+<span class=dir>.ORG</span>       $1000
+<span class=dir>.MODULE    x</span>
+<span class=mem>_local:</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>_local</span>    <span class=cmt>; HL equals $1000</span>
+
+<span class=dir>.MODULE   y</span>
+<span class=mem>_local</span>     <span class=dir>.EQU</span>    $5000
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>_local</span>    <span class=cmt>; HL equals $5000</span>
+</pre>
+
+    <h3>Macros</h3>
+A macro is a symbol that is assigned a text constant. Macros are defined as
+
+<pre>    <span class=dir>#define</span>   <span class=mem><i>symbol</i></span>   <i>literal</i></pre>
+
+Macros can be used as replacements for equates, and even to insert equates. But what make macros particularly interesting is that they can be parameterized to create similar, but different, pieces of code.
+
+<pre>
+    <span class=dir>#define</span>    <span class=mem>move(src, dest)</span>    <span class=ins>LD</span> <span class=mem>dest</span>, <span class=mem>src</span>
+</pre>
+
+For this example macro that could be nice if you are used to Motorola's syntax, the parameters <span class=mem>src</span> and <span class=mem>dest</span> are matched to the <span class=mem>src</span> and <span class=mem>dest</span> in the text constant. An example invocation
+
+<pre>   <span class=mem>move(<span class=reg>A</span>, <span class=reg>B</span>)</span></pre>
+
+Would be replaced with
+
+<pre>    <span class=ins>LD</span>    <span class=reg>B</span>, <span class=reg>A</span></pre>
+
+You can have any number of parameters as long as every parameter be used. To have a macro that is many lines long, use <span class=dir>#defcont</span>. Note the backslashes, they are mandatory if you want assembleable code.
+
+<pre>
+    <span class=dir>#define</span>    <span class=mem>add_sto(reg, addr)</span>   <span class=ins>LD</span> <span class=reg>A</span>, <span class=mem>(addr)</span>
+    <span class=dir>#defcont                     \</span> <span class=ins>ADD</span> <span class=reg>A</span>, <span class=mem>reg</span>
+    <span class=dir>#defcont                     \</span> <span class=ins>LD</span> <span class=mem>(addr)</span>, <span class=reg>A</span>
+</pre>
+
+<a name="var"></a>
+    <h2>Variables</h2>
+There are too few registers, and they are modified far too easily for long-term data storage. You will want to store a number in RAM with a variable.<p>
+
+There are two ways to create a "variable" (although these two ways are practically the same):<br>
+At the end of the program, create a label that will be used to access this variable. Immediately after the
+label, allocate memory for the variable using <span class=dir>.DB</span> or <span class=dir>.DW</span>
+(you could instead use <span class=dir>.BYTE</span> and <span class=dir>.WORD</span>).
+
+<pre>
+   <span class=dir>.DB</span>     <i>value_list</i>
+   <span class=dir>.DW</span>     <i>value_list</i>
+</pre>
+
+The <tt><i>value_list</i></tt> is a series of one or optionally more values, each separated by a comma. The only difference between the two directives is that <span class=dir>.DB</span> formats each value as a byte, but <span class=dir>.DW</span> formats each value as a word. <span class=dir>.DB</span> can be used to replace <span class=dir>.DW</span> except for when one of the values is a 16-bit manifest constant.<p>
+
+Also remember that <span class=dir>.DB</span> and <span class=dir>.DW</span> don't intristically create variables, they just insert bytes into your program. If you know the hex codes, you can do machine language and prove yourself to be a wycked &uuml;&beta;3r1337 h4x0r.
+
+<pre>
+   <span class=cmt>; The machine code for LD B, 6  LD A, B  ADD A, H  LD B, A</span>
+   <span class=dir>.DB</span>     $0E, $06, $78, $84, $67
+</pre>
+
+So say you had a variable:
+
+<pre>   <span class=mem>Var_X:</span>     <span class=dir>.DW</span>     1000</pre>
+
+Then you access the data there using parentheses around the label name: <tt><span class=mem>(Var_X)</span></tt>. See the chart earlier for all <span class=ins>LD</span> forms for which this is legal.<p>
+
+The second way to create a variable is to find some free RAM not being used by the calculator. There are 768 bytes of RAM not used by the system at <span class=mem>AppBackUpScreen</span>. And if this isn't enough, you can use <span class=mem>SaveSScreen</span> (another 768 bytes), as long as the Automatic Power Down doesn't trigger. There are a couple other places, but I can't possibly see how you'd need more than 1536 bytes of scrap RAM, so never mind about them.<p>
+
+To create a variable in this way, you use our old pal <span class=dir>.EQU</span>, like this:<p>
+
+<pre><span class=mem>trash</span>    <span class=dir>.EQU</span>    <span class=mem>AppBackUpScreen</span></pre>
+
+<span class=mem>AppBackUpScreen</span> is equal to 39026 (it's moronic to communicate addresses in anything other than hexadecimal, I'm just playing around with ya :-), so when you store to <span class=mem>stuff</span>, you are really storing to the 39027<sup>th</sup> byte of the calculator's RAM. To get access to the other 767 bytes of free RAM, you specify an offset, for example:
+
+<pre>
+<span class=mem>garbage</span> <span class=dir>.EQU</span>    <span class=mem>AppBackUpScreen</span>+4
+<span class=mem>refuse</span>  <span class=dir>.EQU</span>    <span class=mem>AppBackUpScreen</span>+8
+</pre>
+
+The effect is that during assembly, TASM takes the value of <span class=mem>AppBackUpScreen</span> (39026) and adds 4 to it (in the case of variable <span class=mem>garbage</span>, resulting in 39030). So
+<span class=mem>garbage</span> is referencing the 39031<sup>st</sup> byte of RAM. It's a similar deal with <span class=mem>refuse</span>.<p>
+    
+To store to a variable, you use the <span class=reg>A</span> register for one-byte numbers. For two-byte numbers, any two-byte register is fine, but <span class=reg>HL</span> is usually the best choice.
+
+<pre>
+   <span class=ins>LD</span>    <span class=reg>HL</span>, 5611
+   <span class=ins>LD</span>    <span class=mem>(garbage)</span>, <span class=reg>HL</span>
+</pre>
+<p>
+
+    <h4>Caution!</h4>
+If you have a 16-bit number in a 16-bit register, then it follows that you'd need 16 bits  of memory to store it.
+In the above example, 5611 doesn't just take up <span class=mem>(garbage)</span>, but also
+<span class=mem>(garbage + 1)</span>, obliterating whatever was previously stored there. So when defining your variables, put some space between them. And while we're at it, don't store a two-byte value to
+<span class=mem>(AppBackUpScreen + 767)</span> or <span class=mem>(SaveSScreen + 767)</span>, or you could screw up your calculator.<p>
+
+<a name="ind"></a>
+    <h2>Indirect Access</h2>
+You don't have to use just immediate addresses to manipulate your variables, you can actually reference an
+8-bit memory location with a 16-bit register in a practice called indirection or indirect access. Indirect access is
+indicated by enclosing the 16-bit register in parentheses (like immediate addresses). The memory address is then the numerical value of that register. E.g.
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, $4102
+    <span class=ins>LD</span>     <span class=reg>(DE)</span>, <span class=reg>A</span>     <span class=cmt>; Store the value of A to address $4102</span>
+</pre>
+
+See the table from before to see all the legal methods.<p>
+
+But that's not all! You can use <span class=reg>IX</span> for indirection too, but there is a pleasant twist. You can add a constant value (called an offset or displacement) in the range -128 to +127 to the register's value:
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>IX</span>, $8000
+    <span class=ins>LD</span>     <span class=reg>(IX + $26)</span>, 196      <span class=cmt>; Store 196 to address $8026</span>
+</pre><p>
+
+    <hr>
+<div class=NavFooter>
+    <a href="day02.html">PREVIOUS - Day 2: The Components of a Z80 Program</a><p>
+    <a href="day04.html">NEXT - Day 4: Flags</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; TASM Directives and Operators</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+	<a href="#operat">Operators</a><br>
+	<a href="#direct">Directives</a>
+	<hr>
+
+<a name="operat"></a>
+	<h2>Operators</h2>
+	All mathematical operations are done with signed 32-bit values.<p>
+
+<dl>
+<dt>	<h3>+</h3>
+<dt>	<tt><i>expr1</i> + <i>expr2</i></tt>
+<dd>	<tt><i>expr1</i></tt> plus <tt><i>expr2</i></tt>
+</dl>
+
+<dl>
+<dt>	<h3>&ndash;</h3>
+<dt>	<tt><i>expr1</i> - <i>expr2</i></tt>
+<dd>	<tt><i>expr2</i></tt> minus <tt><i>expr1</i></tt>
+<dt>	<tt>-<i>expr</i></tt>
+<dd>	Negation of <tt><i>expr</i></tt>
+</dl>
+
+<dl>
+<dt>	<h3>*</h3>
+<dt>	<tt><i>expr1</i> * <i>expr2</i></tt>
+<dd>	<tt><i>expr1</i></tt> times <tt><i>expr2</i></tt>
+</dl>
+
+<dl>
+<dt>	<h3>/</h3>
+<dt>	<tt><i>expr1</i> / <i>expr2</i></tt>
+<dd>	<tt><i>expr1</i></tt> divided by <tt><i>expr2</i></tt>
+</dl>
+
+<dl>
+<dt>	<h3>%</h3>
+<dt>	<tt><i>expr1</i> % <i>expr2</i></tt>
+<dd>	Remainder of <tt><i>expr1</i></tt> divided by <tt><i>expr2</i></tt>
+</dl>
+
+<dl>
+<dt>	<h3>&lt;&lt;</h3>
+<dt>	<tt><i>expr1</i> &lt;&lt; <i>expr2</i></tt>
+<dd>	Logically shifts <tt><i>expr1</i></tt> left <tt><i>expr2</i></tt> times.
+</dl>
+
+<dl>
+<dt>	<h3>&gt;&gt;</h3>
+<dt>	<tt><i>expr1</i> &gt;&gt; <i>expr2</i></tt>
+<dd>	Logically shifts <tt><i>expr1</i></tt> right <tt><i>expr2</i></tt> times.
+</dl>
+
+<dl>
+<dt>	<h3>~</h3>
+<dt>	<tt>~<i>expr</i></tt>
+<dd>	One's complement of <tt><i>expr</i></tt>
+</dl>
+
+<dl>
+<dt>	<h3>=</h3>
+<dt>	<tt><i>expr1</i> = <i>expr2</i></tt>
+<dd>	<tt>1</tt> if <tt><i>expr1</i></tt> is equal to <tt><i>expr2</i></tt>. <tt>0</tt>
+	otherwise.
+</dl>
+
+<dl>
+<dt>	<h3>==</h3>
+<dt>	<tt><i>expr1</i> == <i>expr2</i></tt>
+<dd>	Same as <tt>=</tt>
+</dl>
+
+<dl>
+<dt>	<h3>!=</h3>
+<dt>	<tt><i>expr1</i> != <i>expr2</i></tt>
+<dd>	<tt>1</tt> if <tt><i>expr1</i></tt> is not equal to <tt><i>expr2</i></tt>. <tt>0</tt>
+	otherwise.
+</dl>
+
+<dl>
+<dt>	<h3>&lt;</h3>
+<dt>	<tt><i>expr1</i> &lt; <i>expr2</i></tt>
+<dd>	<tt>1</tt> if <tt><i>expr1</i></tt> is less than <tt><i>expr2</i></tt>. <tt>0</tt>
+	otherwise.
+</dl>
+
+<dl>
+<dt>	<h3>&gt;</h3>
+<dt>	<tt><i>expr1</i> &gt; <i>expr2</i></tt>
+<dd>	<tt>1</tt> if <tt><i>expr1</i></tt> is greater than <tt><i>expr2</i></tt>. <tt>0</tt>
+	otherwise.
+</dl>
+
+<dl>
+<dt>	<h3>&lt;=</h3>
+<dt>	<tt><i>expr1</i> &lt;= <i>expr2</i></tt>
+<dd>	<tt>1</tt> if <tt><i>expr1</i></tt> is less than or equal to <tt><i>expr2</i></tt>.
+	<tt>0</tt> otherwise.
+</dl>
+
+<dl>
+<dt>	<h3>&gt;=</h3>
+<dt>	<tt><i>expr1</i> &gt;= <i>expr2</i></tt>
+<dd>	<tt>1</tt> if <tt><i>expr1</i></tt> is greater than or equal to <tt><i>expr2</i></tt>.
+	<tt>0</tt> otherwise.
+</dl>
+
+<dl>
+<dt>	<h3>&</h3>
+<dt>	<tt><i>expr1</i> & <i>expr2</i></tt>
+<dd>	Bitwise AND of <tt><i>expr1</i></tt> and <tt><i>expr2</i></tt>.
+</dl>
+
+<dl>
+<dt>	<h3>|</h3>
+<dt>	<tt><i>expr1</i> | <i>expr2</i></tt>
+<dd>	Bitwise OR of <tt><i>expr1</i></tt> and <tt><i>expr2</i></tt>.
+</dl>
+
+<dl>
+<dt>	<h3>^</h3>
+<dt>	<tt><i>expr1</i> ^ <i>expr2</i></tt>
+<dd>	Bitwise XOR of <tt><i>expr1</i></tt> and <tt><i>expr2</i></tt>.
+</dl>
+	<hr>
+<a name="direct"></a>
+	<h2>Directives</h2>
+
+<dl>
+<dt>	<h3>\</h3>
+<dt>	Adds a newline to the source code, for putting multiple instructions on one line.
+</dl>
+
+<dl>
+<dt>	<h3>ADDINSTR</h3>
+<dt>	Defines an additional instruction. See TASMTABS.HTM.
+<dd>	<tt>.addinstr	<i>instr args opcode nbytes rule class shift binor</i></tt><br>
+</dl>
+
+<dl>
+<dt>	<h3>BLOCK</h3>
+<dt>	Advances the instruction pointer a specified number of bytes without assigning values to
+	the skipped over bytes.
+<dd>	<tt>.block	<i>expr</i></tt>
+</dl>
+
+<a name="byte"></a>
+<dl>
+<dt>	<h3>BYTE</h3>
+<dt>	Inserts a byte value or series of byte values.
+<dd>	<tt>.byte	<i>expr</i>[,<i>expr</i> ... ]</tt>
+</dl>
+
+<dl>
+<dt>	<h3>CHK</h3>
+<dt>	Calculates a checksum from a specified address up to but not including the address of the
+	directive. The checksum is the least significant byte of the sum of all bytes.
+<dd>	<tt>.chk	<i>address</i></tt>
+</dl>
+
+<dl>
+<dt>	<h3>DB</h3>
+<dt>	Alternate form of <a href="#byte">BYTE</a>.
+</dl>
+
+<dl>
+<dt>	<h3>DW</h3>
+<dt>	Alternate form of <a href="#word">WORD</a>.
+</dl>
+
+<dl>
+<dt>	<h3>#DEFINE</h3>
+<dt>	See <a href="day03.html">Day 3</a> for a full explanation of this directive.
+</dl>
+
+<dl>
+<dt>	<h3>DEFCONT</h3>
+<dt>	Adds to the last macro started with a DEFINE.
+</dl>
+
+<dl>
+<dt>	<h3>ECHO</h3>
+<dt>	Outputs a string or expression to the screen.
+<dd>	<tt>.echo	"<i>string</i>"<br>
+	.echo	<i>expr</i></tt>
+</dl>
+
+<dl>
+<dt>	<h3>#ELSE</h3>
+<dt>	See <a href="#if">#IF</a>, <a href="#ifdef">#IFDEF</a>, or <a href="#ifndef">#IFNDEF</a>.
+</dl>
+
+<dl>
+<dt>	<h3>END</h3>
+<dt>	Signifies the end of the source file.
+<dd>	<tt>.end</tt>
+</dl>
+
+<dl>
+<dt>	<h3>ENDIF</h3>
+<dt>	See <a href="#if">#IF</a>, <a href="#ifdef">#IFDEF</a>, or <a href="#ifndef">#IFNDEF</a>.
+</dl>
+
+<dl>
+<dt>	<h3>EQU</h3>
+<dt>	See <a href="day03.html">Day 3</a> for a full explanation of this directive.
+<dd>
+</dl>
+
+<dl>
+<dt>	<h3>FILL</h3>
+<dt>	Fills a number of bytes with one value. If the value is ommitted the default value of
+	255 is used.
+<dd>	<tt>.fill	<i>bytes</i>[,<i>value</i>]</tt>
+</dl>
+
+<a name="#if"></a>
+<dl>
+<dt>	<h3>#IF</h3>
+<dt>	Assembles a block of code if the supplied expression evaluates as non-zero. Otherwise,
+	the block of code following the #ELSE directive (if there is one) is assembled.
+<dd>
+<pre>#if	<i>expression
+	code</i>
+[#else
+	<i>code</i>]
+#endif</pre>
+</dl>
+
+<a name="#ifdef"></a>
+<dl>
+<dt>	<h3>#IFDEF</h3>
+<dt>	Assembles a block of code if the supplied macro has been defined. If the macro has not
+	been defined, then the block of code following the #ELSE directive (if there is one) is
+	assembled.
+<dd>
+<pre>#ifdef	<i>macro_name</i>
+	<i>code</i>
+[#else
+	<i>code</i>]
+#endif</pre>
+</dl>
+
+<a name="#ifndef"></a>
+<dl>
+<dt>	<h3>#IFNDEF</h3>
+<dt>	Exactly the same as <a href="#ifdef">#IFDEF</a>, except the block of code is assembled if
+	the supplied macro <i>has not</i> been defined.
+<dd>
+<pre>#ifndef	<i>macro_name</i>
+	<i>code</i>
+[#else
+	<i>code</i>]
+#endif</pre>
+</dl>
+
+<dl>
+<dt>	<h3>#INCLUDE</h3>
+<dt>	Reads the contents of the supplied file into the source file.
+<dd>	<tt>#include	"<i>filename</i>"</tt>
+</dl>
+
+<dl>
+<dt>	<h3>LIST</h3>
+<dt>	Turns on output to the listing file.
+<dd>	<tt>.list</tt>
+</dl>
+
+<dl>
+<dt>	<h3>LOCALLABELCHAR</h3>
+<dt>	Defines the character used to designate a local label.
+<dd>	<tt>.locallabelchar	"<i>character</i>"</tt>
+</dl>
+
+<dl>
+<dt>	<h3>LSFIRST</h3>
+<dt>	Defines byte order for the <a href="#word">WORD</a> directive to be little-endian.
+<dd>	<tt>.lsfirst</tt>
+</dl>
+
+<dl>
+<dt>	<h3>MODULE</h3>
+<dt>	See <a href="day03.html">Day 3</a> for a full explanation of this directive.
+</dl>
+
+<dl>
+<dt>	<h3>MSFIRST</h3>
+<dt>	Defines byte order for the <a href="#word">WORD</a> directive to be big-endian.
+<dd>	<tt>.msfirst</tt>
+</dl>
+
+<dl>
+<dt>	<h3>NOLIST</h3>
+<dt>	Turns off output to the listing file.
+<dd>	<tt>.nolist</tt>
+</dl>
+
+<dl>
+<dt>	<h3>ORG</h3>
+<dt>	Sets the instruction pointer to the supplied value.
+<dd>	<tt>.org	<i>expression</i></tt>
+</dl>
+
+<dl>
+<dt>	<h3>SET</h3>
+<dt>	Changes the value of a manifest constant. This directive often results in "label value
+	misaligned" errors.
+<dd>	<tt><i>symbol</i>	.set	<i>expression</i></tt>
+</dl>
+
+<dl>
+<dt>	<h3>TEXT</h3>
+<dt>	Assigns a sequence of bytes values based on an ASCII string. A zero is automatically
+	added to the end.
+<dd>	<tt>.text	"<i>string</i>"</tt>
+</dl>
+
+<a name="word"></a>
+<dl>
+<dt>	<h3>WORD</h3>
+<dt>	Inserts a word value or series of word values.
+<dd>	<tt>.word	<i>expr</i>[,<i>expr</i> ... ]</tt></dl>
+<hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

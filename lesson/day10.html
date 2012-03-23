@@ -1,0 +1,278 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 10 &mdash; The Other Registers</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day09.html">Previous</a>
+    &middot; <a href="day11.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 10. The Other Registers</h1>
+    <hr>
+    <b><font color=#CCCCCC>novice <font color=#E0E000>intermediate</font> advanced expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#idx">Index Registers</a>
+<li type="disc"><a href="#ixb">Index Register Halves</a>
+<li type="disc"><a href="#stk">Stack Pointer</a>
+<li type="square"><a href="#sto">Fast Load With SP</a>
+<li type="square"><a href="#qui">Quit With SP</a>
+<li type="disc"><a href="#ref">Memory Refresh Register</a>
+<li type="disc"><a href="#ivs">Interrupt Vector/Shadow Registers</a><br>
+</ul>
+    <hr>
+
+On Day 3, you got to look at the nine main registers of the Z80, and a couple were introduced at various other points.
+Now we learn about the remaining ones.<p>
+
+<a name="idx"></a>
+    <h2>Index Registers</h2>
+You already know about the index regs, so here is a quick reveiw. There are two 16-bit index registers:
+<span class=reg>IX</span> and <span class=reg>IY</span>. They are very similar to <span class=reg>HL</span>
+except that they are slower to work with. They can be used anywhere <span class=reg>HL</span> can, with
+the stipulation that the three registers are mutually exclusive. That is, they cannot be mixed within one instruction:
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>IX</span>, $40        <span class=cmt>; Load $0040 into IX</span>
+    <span class=ins>LD</span>     <span class=reg>IY</span>, ($4552)    <span class=cmt>; Load value at byte $4552 into IY</span>
+    <span class=ins>LD</span>     ($8000), <span class=reg>IX</span>    <span class=cmt>; Load the value of IX into byte $8000</span>
+    <span class=ins>ADD</span>    <span class=reg>IX</span>, <span class=reg>BC</span>         <span class=cmt>; Add BC to IX</span>
+    <span class=ins>DEC</span>    <span class=reg>IY</span>            <span class=cmt>; Decrement IY</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>IY</span>         <span class=cmt>; Illegal!</span>
+    <span class=ins>LD</span>     <span class=reg>H</span>, <span class=reg>(IX)</span>        <span class=cmt>; Note that this is okay</span>
+</pre>
+
+When using them to indirectly access memory, you can supply an 8-bit signed offset value:
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>(IX - 5)</span>, <span class=reg>A</span>    <span class=cmt>; Load A to the address in IX minus five.</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>(IY + 0)</span>    <span class=cmt>; Load from address in IY. Could also be simply (IY).</span>
+</pre>
+
+<span class=reg>IX</span> is free to use at any time, but <span class=reg>IY</span> is used by the calculator to access
+the system flags. If you modify its value, you can restore it with
+
+<pre>    <span class=ins>LD</span>     <span class=reg>IY</span>, <span class=mem>Flags</span></pre>
+
+But use of <span class=reg>IY</span> is discouraged for now. There are things called interrupts that have to be taken
+into consideration before it is safe for use.<p>
+
+The index registers are commonly used for addressing when <span class=reg>HL</span> is tied up holding something vital, 
+or where using an index would be more efficient or coherent than a bunch of <span class=ins>INC</span>/<span class=ins>DEC</span>
+<span class=reg>HL</span> tricks. Such a case is accessing complicated structures, such as you saw on Day 5.<p>
+
+<a name="ixb"></a>
+    <h3>More Control Over Index Registers</h3>
+    You know, you can access the high and low bytes of <span class=reg>IX</span> and <span
+    class=reg>IY</span>. It's a little more complicated because the instructions aren't
+    officially supported by ZiLog, and it is a little on the unelegant side. Nevertheless
+    they can be useful in some circumstances, like when all your registers are locked up and
+    you need an 8-bit counter <i>bad</i>.<p>
+
+    The high byte of <span class=reg>IX</span> is called either <span class=reg>IXH</span> or 
+    <span class=reg>HX</span> (remember these are unofficial registers so there are no
+    standard names). The low byte is called either <span class=reg>IXL</span> or <span
+    class=reg>LX</span>. The high and low bytes of <span class=reg>IY</span> are named
+    similarly.<p>
+
+    To use a part of an index register in an instruction:
+<ol>
+    <li>Pick an instruction that allows both <span class=reg>H</span> and <span
+    class=reg>L</span> to be used as an operand, excepting shifts, rotates, <span
+    class=ins>BIT</span>, <span class=ins>SET</span>, and <span class=ins>RES</span>.
+    <li>Use <span class=reg>H</span> if you want the high byte, or <span class=reg>L</span>
+    if you want the low byte.
+    <li>Immediately precede this instruction with <span class=dir>.DB</span> <tt>$DD</tt> to
+    use the <span class=reg>IX</span> half-registers, or <span class=dir>.DB</span>
+    <tt>$FD</tt> to use the <span class=reg>IY</span> half-registers.
+</ol>
+
+    Example: <span class=ins>LD</span> <span class=reg>E</span><tt>, </tt><span class=reg>IXH</span>
+<pre>
+    <span class=dir>.DB</span>    $DD
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>H</span>
+</pre>
+
+    Example: <span class=ins>SUB</span> <span class=reg>IYL</span>
+<pre>
+    <span class=dir>.DB</span>    $FD
+    <span class=ins>SUB</span>    <span class=reg>L</span>
+</pre>
+
+    Be aware that once you specify a prefix, you are locked into using that index register's
+    half-registers. It is impossible to combine the half-registers of <span
+    class=reg>HL</span>, <span class=reg>IX</span>, or <span class=reg>IY</span> in one
+    instruction:
+
+<pre>
+    <span class=dir>.DB</span>    $DD    <span class=cmt>;LD IXH, IXL</span>
+    <span class=ins>LD</span>     <span class=reg>H</span>, <span class=reg>L</span></pre>
+<p>
+
+<a name="stk"></a>
+    <h2>More About the Stack Pointer</h2>
+    To recap, the stack pointer is the 16-bit register <span class=reg>SP</span>. It holds
+    the address of the top of the hardware stack. A <span class=ins>PUSH</span> <span
+    class=reg>HL</span> is identical to the fake instructions
+
+<pre>
+    <span class=ins>DEC</span>    <span class=reg>SP</span>
+    <span class=ins>LD</span>     <span class=reg>(SP)</span>, <span class=reg>H</span>
+    <span class=ins>DEC</span>    <span class=reg>SP</span>
+    <span class=ins>LD</span>     <span class=reg>(SP)</span>, <span class=reg>L</span>
+</pre>
+
+    And a <span class=ins>POP</span> <span class=reg>HL</span> is identical to
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>(SP)</span>
+    <span class=ins>INC</span>    <span class=reg>SP</span>
+    <span class=ins>LD</span>     <span class=reg>H</span>, <span class=reg>(SP)</span>
+    <span class=ins>INC</span>    <span class=reg>SP</span>
+</pre>
+
+What you don't know is that you can use <span class=reg>SP</span> in a number of instructions, even use it
+to store data. Using it in this way is discouraged for the same reasons as for <span class=reg>IY</span>.
+
+<div class=Program>
+<pre>
+    <span class=ins>ADC</span>    <span class=reg>HL</span>, <span class=reg>SP</span>
+
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>SP</span>
+    <span class=ins>ADD</span>    <span class=reg>IX</span>, <span class=reg>SP</span>
+    <span class=ins>ADD</span>    <span class=reg>IY</span>, <span class=reg>SP</span>
+
+    <span class=ins>DEC</span>    <span class=reg>SP</span>
+
+    <span class=ins>EX</span>     <span class=reg>(SP)</span>, <span class=reg>HL</span>
+    <span class=ins>EX</span>     <span class=reg>(SP)</span>, <span class=reg>IX</span>
+    <span class=ins>EX</span>     <span class=reg>(SP)</span>, <span class=reg>IY</span>
+
+    <span class=ins>INC</span>    <span class=reg>SP</span>
+
+    <span class=ins>LD</span>     (imm<sub>16</sub>), <span class=reg>SP</span>
+    <span class=ins>LD</span>     <span class=reg>SP</span>, (imm<sub>16</sub>)
+    <span class=ins>LD</span>     <span class=reg>SP</span>, <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>SP</span>, <span class=reg>IX</span>
+    <span class=ins>LD</span>     <span class=reg>SP</span>, <span class=reg>IY</span>
+    <span class=ins>LD</span>     <span class=reg>SP</span>, imm<sub>16</sub>
+
+    <span class=ins>SBC</span>    <span class=reg>HL</span>, <span class=reg>SP</span></pre>
+</div>
+
+Probably the most valuable of these are the <span class=ins>EX</span> instructions. What they do is swap the most recently pushed value on the stack with the 16-bit register operand making it possible to manipulate two pieces of data alternately.<br>
+The <span class=ins>INC</span> <span class=reg>SP</span> instruction is the next most useful, you can use it to clean off register pushes to the stack, and while you could use <span class=ins>POP</span>, <span class=ins>INC</span> will not store the data on the stack anywhere, which is really nice if you are in a situation where all the registers contain vital data.<p>
+
+<a name="sto"></a>
+    <h3>Additional uses of SP</h3>
+I could go on for pages talking about all the filthy hacks you can do with <span class=reg>SP</span>. Here are just a couple examples.<p>
+
+We can load a block of memory with one or two values really fast with <span class=reg>SP</span>.
+The <span class=ins>DI</span> and <span class=ins>EI</span> instructions are needed because the
+calculator will most likely crash without them:
+
+<pre>
+    <span class=ins>DI</span>                       <span class=cmt>; You don't need to know why this is necessary yet</span>
+    <span class=ins>LD</span>     <span class=mem>(save_sp)</span>, <span class=reg>SP</span>      <span class=cmt>; Save SP away</span>
+    <span class=ins>LD</span>     <span class=reg>SP</span>, $1000+1000     <span class=cmt>; Have to start at the end because SP is    
+                             ; decremented before a PUSH</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, $1050          <span class=cmt>; Memory block will be 1050 1050 ...</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 125             <span class=cmt>; PUSH 125*4=500 times, @ 2 bytes a PUSH = 1000 bytes</span>
+<span class=mem>Loop:</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    <span class=ins>DJNZ</span>   <span class=mem>Loop</span>
+    <span class=ins>LD</span>     <span class=reg>SP</span>, <span class=mem>(save_sp)</span>      <span class=cmt>; Restore SP</span>
+    <span class=ins>EI</span>                       <span class=cmt>; You don't need to know why this is necessary yet</span></pre>
+    
+    Here is a more concrete example, clearing out <span class=mem>AppBackupScreen</span> <i>fast</i>.
+
+<pre>
+    <span class=ins>DI</span>
+    <span class=ins>LD</span>    <span class=mem>(save_sp)</span>, <span class=reg>SP</span>
+    <span class=ins>LD</span>    <span class=reg>SP</span>, <span class=mem>AppBackupScreen</span> + 768    <span class=cmt>; 768 byte area</span>
+    <span class=ins>LD</span>    <span class=reg>HL</span>, $0000
+    <span class=ins>LD</span>    <span class=reg>B</span>, 48        <span class=cmt>; PUSH 48*8=384 times, @ 2 bytes a PUSH = 768 bytes</span>
+<span class=mem>Loop:</span>
+    <span class=ins>PUSH</span>  <span class=reg>HL</span>          <span class=cmt>; Do multiple PUSHes in the loop to save cycles</span>
+    <span class=ins>PUSH</span>  <span class=reg>HL</span>
+    <span class=ins>PUSH</span>  <span class=reg>HL</span>
+    <span class=ins>PUSH</span>  <span class=reg>HL</span>
+    <span class=ins>PUSH</span>  <span class=reg>HL</span>
+    <span class=ins>PUSH</span>  <span class=reg>HL</span>
+    <span class=ins>PUSH</span>  <span class=reg>HL</span>
+    <span class=ins>PUSH</span>  <span class=reg>HL</span>
+    <span class=ins>DJNZ</span>  <span class=mem>Loop</span>
+
+    <span class=ins>LD</span>    <span class=reg>SP</span>, <span class=mem>(save_sp)</span>
+    <span class=ins>EI</span>
+    <span class=ins>RET</span>
+<span class=mem>save_sp:</span>
+    <span class=dir>.DW</span>   0
+</pre>
+
+<a name="qui"></a>
+The stack pointer can be used to terminate the program instantly like C's <tt>exit()</tt>.
+<br>You already know that <span class=ins>RET</span> is like a <span class=ins>POP</span> <span class=reg>PC</span>. Since <span class=ins>RET</span> is used to end a program, you can infer that the TI-OS uses <span class=ins>CALL</span> <tt>$9D95</tt> to execute a program. If the value of <span class=reg>SP</span> was saved at the start of the program, it could be later restored and followed with <span class=ins>RET</span> to stop the program:
+
+<pre>
+    <span class=cmt>;Start of program</span>
+    <span class=ins>LD</span>     <span class=mem>(save_sp)</span>, <span class=reg>SP</span>
+    .
+    .
+    .
+    <span class=cmt>;Somewhere within the program</span>
+    <span class=ins>LD</span>     <span class=reg>SP</span>, <span class=mem>(save_sp)</span>
+    <span class=ins>RET</span>
+</pre>
+
+This could be useful if, say, you had to exit from deep within the program because of an
+error, and you're unable to remove all the stack pushes (such as from within a procedure).<p>
+
+<a name="ref"></a>
+    <h2>Memory Refresh Register</h2>
+This is 8-bit register <span class=reg>R</span>. Bits 0 to 6 are incremented after each
+instruction is executed, bit 7 staying at whatever was loaded. It can be loaded to and from the accumulator.<br>
+I suppose it could be used in a random number generator:
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>A</span>, ($9000)        <span class=cmt>;A random number seed &mdash; make the result "more random"</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>R</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>B</span>
+    <span class=ins>LD</span>    ($9000), <span class=reg>A</span>
+</pre>
+    But aside from that it really has no function for the programmer.<p>
+
+<a name="ivs"></a>
+    <h2>Interrupt Vector Register and Shadow Registers</h2>
+    The Interrupt Vector Register is 8-bit register <span class=reg>I</span>. The Shadow
+    Registers are <span class=reg>AF'</span>, <span class=reg>BC'</span>, <span
+    class=reg>DE'</span>, and <span class=reg>HL'</span>. They are used with interrupts, so
+    there's nothing to be gained by explaining them now. Interrupts are covered in full on
+    <a href="day22.html">Day 22</a>.
+
+    <hr>
+<div class=NavFooter>
+    <a href="day09.html">PREVIOUS - Day 9: Bit Shifting</a><p>
+    <a href="day11.html">NEXT - Day 11: Displaying Text</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

@@ -1,0 +1,401 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 13 &mdash; Bit Shifting</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day08.html">Previous</a>
+    &middot; <a href="day10.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 9. Bit Shifting</h1>
+    <hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#log">Logical Shifts</a><br>
+<li type="disc"><a href="#ari">Arithmetic Shifts</a><br>
+<li type="disc"><a href="#rot">Rotations</a><br>
+<li type="disc"><a href="#wrd">16-Bit Shifts</a><br>
+<li type="square"><a href="#pnt">The Point</a>
+</ul>
+    <hr>
+    
+Bit shifting is taking all the bits in a number and sliding them to the left or right. You know how when you multiply or divide a number by 10 all the digits shift over? It's exactly the same thing with bit shifting, except that it's multiplying/dividing by 2. In fact, you can do a shift for any base by multiplying or dividing by the radix.<p>
+
+There are fourteen shifting instructions, which sounds like a lot, but the variety comes mainly from what direction to shift. Even better, two of them are almost useless to us, and a third is barely available.<p>
+
+<a name="log"></a>
+    <h2>Logical Shifts</h2>
+A logical shift will grab each bit in a register and shift them. No fuss, no muss.
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>SRL</b> { reg<sub>8</sub> | (HL) } </tt></td>
+    <td>Logical right shift. All bits move one place right. 0 to b<sub>7</sub>, b<sub>0</sub> to carry.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects parity</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<div align=center><img src="../img/srl.png" alt="[NO IMAGE]" width=660 height=109></div>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>SLL</b> { reg<sub>8</sub> | (HL) }</tt></td>
+    <td>Logical left shift. All bits move one place left. 1 to b<sub>0</sub>, b<sub>7</sub> to carry.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects parity</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</td>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table><p>
+
+<div align=center><img src="../img/sll.png" alt="[NO IMAGE]" width=651 height=109></div><p>
+
+<span class=ins>SLL</span> is an undocumented instruction, meaning the mnemonic isn't defined in the TASM80.TAB file. Fortunately, it's rarely used: the only place I've ever
+    seen it is in the ZTetris source code. If you <i>really</i> want to use it, you can add
+    these directives near the top of your program.
+
+<pre>
+<span class=dir>.addinstr</span>    <span class=ins>SLL</span> <span class=reg>(HL)</span>    CB36 2 NOP 1
+<span class=dir>.addinstr</span>    <span class=ins>SLL</span> <span class=reg>(IX*)</span>   DDCB 4 ZIX 1 3600
+<span class=dir>.addinstr</span>    <span class=ins>SLL</span> <span class=reg>(IY*)</span>   FDCB 4 ZIX 1 3600
+<span class=dir>.addinstr</span>    <span class=ins>SLL</span> <span class=reg>A</span>       CB37 2 NOP 1
+<span class=dir>.addinstr</span>    <span class=ins>SLL</span> <span class=reg>B</span>       CB30 2 NOP 1
+<span class=dir>.addinstr</span>    <span class=ins>SLL</span> <span class=reg>C</span>       CB31 2 NOP 1
+<span class=dir>.addinstr</span>    <span class=ins>SLL</span> <span class=reg>D</span>       CB32 2 NOP 1
+<span class=dir>.addinstr</span>    <span class=ins>SLL</span> <span class=reg>E</span>       CB33 2 NOP 1
+<span class=dir>.addinstr</span>    <span class=ins>SLL</span> <span class=reg>H</span>       CB34 2 NOP 1
+<span class=dir>.addinstr</span>    <span class=ins>SLL</span> <span class=reg>L</span>       CB35 2 NOP 1</pre>
+
+An <span class=ins>SLL</span> is like multiplying by 2 and adding 1. An <span class=ins>SRL</span> is like dividing by 2 and giving the remainder the finger (two-finger salute, to you Aussies, Limeys, et al.). If you want to do a left shift that is an exact multiplication, you can use the arithmetic left shift.<p>
+
+<a name="ari"></a>
+    <h2>Arithmetic Shifts</h2>
+Arithmetic shifts are designed so that the sign (bit 7) of a number isn't changed. They perform signed multiplication and divison by 2.
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>SRA</b> { reg<sub>8</sub> | (HL) }</tt></td>
+    <td>Right arithmetic shift &mdash; All bits shifted one place to the right. b<sub>0</sub>
+    sent to carry, b<sub>7</sub> is restored.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects parity</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<div align=center><img src="../img/sra.png" alt="[NO IMAGE]" width=615 height=109></div>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>SLA</b> { reg<sub>8</sub> | (HL) }</tt></td>
+    <td>Left arithmetic shift. b<sub>7</sub> to carry, 0 to b<sub>7</sub>.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects parity</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<div align=center><img src="../img/sla.png" alt="[NO IMAGE]" width=662 height=109></div>
+
+Note that there's no need to ignore bit 7 in a left shift. Only numbers less than -64 (%11000000) will have bit 7 cleared, and since -65 times 2 is outside signed 8-bit range, it doesn't matter.<p>
+
+<a name="rot"></a>
+    <h2>Rotations</h2>
+Rotations are designed to keep all the bits in a register intact, just move them around.<p>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>RR</b> { reg<sub>8</sub> | (HL) }</tt></td>
+    <td>Rotate right. Old carry to b<sub>7</sub>. b<sub>0</sub> to carry.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</td>
+        <td><b>detects parity</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<div align=center><img src="../img/rr.png" alt="[NO IMAGE]"></div>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>RL</b> { reg<sub>8</sub> | (HL) }</tt></td>
+    <td>Rotate left. Old carry to b<sub>0</sub>. b<sub>7</sub> to carry.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects parity</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<div align=center><img src="../img/rl.png" alt="[NO IMAGE]" width=665 height=110></div>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>RRC</b> { reg<sub>8</sub> | (HL) }</tt></td>
+    <td>Rotate right with carry. b<sub>0</sub> to b<sub>7</sub> and carry.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects parity</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<div align=center><img src="../img/rrc.png" alt="[NO IMAGE]" width=590 height=109></div>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>RLC</b> { reg<sub>8</sub> | (HL) }</tt></td>
+    <td>Rotate left with carry. b<sub>7</sub> to b<sub>0</sub> and carry.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects parity</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<div align=center><img src="../img/rlc.png" alt="[NO IMAGE]" width=589 height=110></div>
+
+    These four instructions have optimized versions with the accumulator &mdash; <span
+    class=ins>RRA RLA RRCA RLCA</span>. They have the exact same function as <span
+    class=ins>RR A</span> etc., but are quicker, smaller, and only affect the carry flag.<p>
+
+<a name="wrd"></a>
+    <h2>16-Bit Shifts?</h2>
+    All of the shift instructions work only on one-byte values. However, <span class=ins>ADD
+    </span><span class=reg>HL</span><tt>, </tt><span class=reg>HL</span> is basically <span
+    class=ins>SLA </span><span class=reg>HL</span>. Furthermore, by using shifts and rotates:
+
+<pre>        <span class=cmt>; SRL DE            ; SLA LB, whatever that means</span>
+        <span class=ins>SRL</span>    <span class=reg>D</span>            <span class=ins>SLA</span>    <span class=reg>B</span>
+        <span class=ins>RR</span>     <span class=reg>E</span>            <span class=ins>RL</span>     <span class=reg>L</span></pre><p>
+
+<a name="pnt"></a>
+    <h2>What Was the Point of All This!?</h2>
+Shifting is like, the most potent tool you have to manipulate data, man. It's a good way to multiply or divide by 2... but that alone is a gross underuse of their power. One nice little trick is that, since an outgoing bit is always sent to the carry, you can use a loop to check which bits in a register are set and reset (Bonus hint: use rotates to preserve the value being tested).<p>
+
+You can also use them to pack (compress) data. Let's take a classic example: the date. Now, disregarding useless info like time and day of the week, a date has three parts. This would normally take 3 bytes, n'est-ce pas? However, take a look at the minimum bits necessary for each field, or rather, their sum. You'll find this is only 16 bits. That's one byte saved! Not much to get excited about, but imagine how much wasted space your
+computer would have if it didn't compress file info.
+<table class=Info>
+<tr class=Heading>
+    <th>Element</th>
+    <th>Range of Values</th>
+    <th>Minimum Bits required</th>
+</tr>
+<tr>
+    <td>Month</td>
+    <td>0 to 11 (January to December)</td>
+    <td>4 (<tt>2<sup>4</sup> = 16</tt>)</td>
+</tr>
+<tr>
+    <td>Day</td>
+    <td>0 to 30 (zero indexed for convenience)</td>
+    <td>5 (<tt>2<sup>5</sup> = 32</tt>)</td>
+</tr>
+
+<tr>
+    <td>Year</td>
+    <td>0 to 127 (as an offset from 1900)</td>
+    <td>7 (<tt>2<sup>7</sup> = 128</tt>)</td>
+</tr>
+</table>
+
+    To compress from three bytes to two.
+<pre>    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(temp_year)</span>  <span class=cmt>; Temporary uncompressed year</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 7
+<span class=mem>PackYear:</span>
+    <span class=ins>RLA</span>                   <span class=cmt>; Put bit 0 into carry</span>
+    <span class=ins>RR</span>     <span class=reg>H</span>              <span class=cmt>; Transfer to H</span>
+    <span class=ins>DJNZ</span>   <span class=mem>PackYear</span>
+<span class=cmt>; HL = %<font color=#0000FF>yyyyyyy</font>? ????????</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(temp_day)</span>   <span class=cmt>; Temporary uncompressed day</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 5
+<span class=mem>PackDay:</span>
+    <span class=ins>RLA</span>
+    <span class=ins>RR</span>     <span class=reg>H</span>              <span class=cmt>; Transfer to H</span>
+    <span class=ins>RR</span>     <span class=reg>L</span>              <span class=cmt>; Catch runoff</span>
+    <span class=ins>DJNZ</span>   <span class=mem>PackDay</span>
+<span class=cmt>; HL = %<font color=#008000>ddddd</font><font color=#0000FF>yyy yyyy</font>????</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(temp_month)</span> <span class=cmt>; Temporary uncompressed month</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 4
+<span class=mem>PackMonth:</span>
+    <span class=ins>RLA</span>
+    <span class=ins>RR</span>     <span class=reg>H</span>
+    <span class=ins>RR</span>     <span class=reg>L</span>
+    <span class=ins>DJNZ</span>   <span class=mem>PackMonth</span>
+<span class=cmt>; HL = %<font color=#FF0000>mmmm</font><font color=#008000>dddd d</font><font color=#0000FF>yyyyyyy</font></span>
+    <span class=ins>LD</span>     <span class=mem>(packed_date)</span>, <span class=reg>HL</span></pre>    
+
+    I think you'll agree that this isn't quite what you want in a time-critical section of
+    your code (and the decompression code isn't any prettier), but that's just the price you
+    pay.<p>
+
+    There are two other instructions you might find useful for packing: <span class=ins>RRD</span> and
+    <span class=ins>RLD</span>. Since they are for BCD, I won't cover them, but you can see their effect
+    in the <a href="z80is.html" target="_blank">Z80 Instruction Set</a> if you're curious.
+
+    <hr>
+<div class=NavFooter>
+    <a href="day08.html">PREVIOUS - Day 8: Bit-Level Instructions</a><p>
+    <a href="day10.html">NEXT - Day 10: The Other Registers</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+
+</body>
+</html>

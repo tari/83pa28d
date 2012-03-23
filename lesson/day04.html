@@ -1,0 +1,137 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 4 &mdash; Flags</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day03.html">Previous</a>
+    &middot; <a href="day05.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 4. Flags</h1>
+    <hr>
+    <b><font color=#006600>novice</font> <font color=#CCCCCC>intermediate advanced expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#sgn">Sign</a>
+<li type="disc"><a href="#zro">Zero</a>
+<li type="disc"><a href="#hcy">Half-Carry</a>
+<li type="disc"><a href="#par">Parity/Overflow</a>
+<li type="disc"><a href="#ads">Add/Subtract</a>
+<li type="disc"><a href="#cry">Carry</a>
+</ul>
+    <hr>
+
+We briefly touched on the <span class=reg>F</span> register yesterday. Today we'll take a more in-depth look.<p>
+
+    <h2>Flags</h2>
+As you learned on Day 3, The individual bits of the <span class=reg>F</span> register are called flags. Each flag
+signifies whether or not the last instruction triggered a particular event.<p>
+
+These are the flags, from bit 7 of the <span class>F</span> register to bit 0:<p>
+
+<table class=Info>
+<tr class=Heading>
+    <th width=12%>7</th>
+    <th width=13%>6</th>
+    <th width=12%>5</th>
+    <th width=13%>4</th>
+    <th width=12%>3</th>
+    <th width=13%>2</th>
+    <th width=12%>1</th>
+    <th width=13%>0</th>
+</tr>
+<tr class=SubHeading>
+    <th>S</th>
+    <th>Z</th>
+    <th>&ndash;</th>
+    <th>H</th>
+    <th>&ndash;</th>
+    <th>P/V
+</th>
+    <th>N</th>
+    <th>C</th>
+</tr>
+</table>
+
+    The lowdown:<p>
+
+<a name="sgn"></a>
+    <h3>S &mdash; Sign</h3>
+If the accumulator evaluated to a negative number, this flag is set (i.e. the bit equals 1). If the accumulator evaluated
+to a positive number, this flag is reset (i.e. the bit equals 0). The <span class=ins>S</span> flag assumes that
+the accumulator is signed. In other words, it just stores bit 7.<p>
+
+<a name="zro"></a>
+    <h3>Z &mdash; Zero</h3>
+If the last instruction caused a register to equal zero, this flag is set. Otherwise, the flag is reset.<p>
+
+<h3>&ndash; &nbsp; &mdash; Not Used</h3>
+These two bits aren't used as flags.<p>
+
+<a name="hcy"></a>
+    <h3>H &mdash; Half-Carry</h3>
+Functions exactly like the carry flag (below) except that the carry is detected in the least-significant <i>nibble</i>
+(hence the name). Half-Carry is used exclusively with the <span class=ins>DAA</span> instruction, which is used for
+binary coded decimal numbers. Not something we need to be concerned about, and from now on we'll pretend it
+dosen't exist for the sake of simplicity.<p>
+
+<a name="par"></a>
+    <h3>P / V &mdash; Parity/Overflow</h3>
+This flag serves double duty by detecting overflows and partity. An overflow is where a register winds up having a value that exceeeds signed 8-bit range. You could also consider
+an overflow to be when a register's sign bit changes through an operation. Either way you look at it, the flag is set.<br>
+The parity is whether the number of 1s in the accumulator is even (set) or odd (reset).<p>
+Whether this flag reflects parity or an overflow is based on which instruction was used.<p>
+
+<a name="ads"></a>
+    <h3>N &mdash; Add/Subtract</h3>
+If the last instruction was an addition instruction, this flag is reset. If the last instruction was a subtraction instruction, 
+this flag is set. As with <span class=ins>H</span>, it is used exclusively with <span class=ins>DAA</span>, and again we'll
+ignore it.<p>
+
+<a name="cry"></a>
+    <h3>C &mdash; Carry</h3>
+The carry flag is related somewhat to the parity/overflow flag, with the difference that the <span class=ins>P/V</span>
+flag detects <i>signed</i> overflows, while <span class=ins>C</span> detects <i>unsigned</i> overflows. Basically, if the
+result of an addition was too large to fit in an eight- or sixteen-bit register, this flag is set. It is also set if the
+result of a subtraction was negative.<br>
+
+There are two instructions that sprecifically affect the carry flag.<p>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>SCF</b></tt></td>
+    <td>Sets the carry flag.</td>
+</tr>
+</table><p>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>CCF</b></tt></td>
+    <td>Inverts the carry flag.</td>
+</tr>
+</table><p>
+
+    <hr>
+<div class=NavFooter>
+    <a href="day03.html">PREVIOUS - Day 3: Registers, Memory, and Variables</a><p>
+    <a href="day05.html">NEXT - Day 5: Data Manipulation</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

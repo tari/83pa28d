@@ -1,0 +1,409 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 22 &mdash; Low-Level Key Input</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day21.html">Previous</a>
+    &middot; <a href="day23.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 22. Low-Level Key Input</h1>
+    <hr>
+    <b><font color=#CCCCCC>novice intermediate advanced <font color=#CC0000>expert</font></font></b><hr>
+
+<ul class=TopicList>
+<li type="square"><a href="#prt">The Key Port</a>
+<li type="square"><a href="#grp">Switching Key Groups</a>
+<li type="square"><a href="#sim">Simultaneous Keypresses</a>
+</ul>
+    <hr>
+
+<a name="prt"></a>
+<h2>The Key Port</h2>
+It's called low-level because we interface with the keypad hardware itself instead of going through an API (that's a pretty glamourous description of <tt>GetKey</tt>) that does it for us. That's why it'll be complicated, but faaaaaaaaaaast.<p>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>OUT</b> (<i>n</i>), A</tt></td>
+    <td>Sends a byte to port <tt><i>n</i></tt> via the accumulator.</td>
+</tr>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>OUT</b> (C), <i>reg</i></tt></td>
+    <td>Sends a byte to port <tt>C</tt> via register <tt><i>reg</i></tt>.</td>
+</tr>
+</table><p>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>IN</b> A, (<i>n</i>)</tt></td>
+    <td>Receives a byte from port <tt><i>n</i></tt> via the accumulator. Does not affect
+    flags.</td>
+</tr>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>IN</b> <i>reg</i>, (C)</tt></td>
+    <td>Receives a byte from port <tt>C</tt> via register
+    <tt><i>reg</i></tt>.</td>
+</tr>
+<tr>
+    <td class=Transparent colspan=2 align=center>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects parity</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table><p>
+
+    A port is a device that lets the CPU transfer bytes between other pieces of otherwise
+    unconnected hardware. What's that? You want an analogy? Okay, imagine you wanted to get
+    a car from Yokohama to San Francisco; you couldn't just drive it over because they're
+    separated by thousands of miles of open ocean. Instead, you'd take the car to the
+    <i>port</i> of Yokohama, have a boat take it to the <i>port</i> in San Francisco, and
+    drive off. Similarly, the CPU and the keypad have no real connection, so the port is used 
+    to interact.<p>
+
+    The keyport on the TI-83 Plus is port #1, so we replace <i><tt>n</tt></i> in the two
+    instructions with 1.<p>
+
+    The first thing to do is enable the key group we want to read from. This is done by
+    sending the value of that group to the key port. We then read from the key port and
+    check the value returned. You can get the values from this table.<p>
+
+<table class=Info>
+<tr>
+    <td class=Transparent rowspan=2 colspan=2></td>
+    <th class=Heading colspan=8>Key Code</th>
+</td>
+<tr class=SubHeading>
+    <th width=10%>FE</th>
+    <th width=10%>FD</th>
+    <th width=10%>FB</th>
+    <th width=10%>F7</th>
+    <th width=10%>EF</th>
+    <th width=10%>DF</th>
+    <th width=10%>BF</th>
+    <th width=10%>7F</th>
+</tr>
+<tr>
+    <th class=Heading rowspan=7>G<br>r<br>o<br>u<br>p</th>
+    <th class=SubHeading>BF</td>
+    <td>GRAPH</td>
+    <td>TRACE</td>
+    <td>ZOOM</td>
+    <td>WINDOW</td>
+    <td>Y=</td>
+    <td>2nd</td>
+    <td>MODE</td>
+    <td>DEL</td>
+</tr>
+<tr>
+    <th class=SubHeading>DF</td>
+    <td class=Transparent></td>
+    <td>STO</td>
+    <td>LN</td>
+    <td>LOG</td>
+    <td>x<sup>2</sup></td>
+    <td>x<sup>-1</sup></td>
+    <td>MATH</td>
+    <td>ALPHA</td>
+</tr>
+<tr>
+    <th class=SubHeading>EF</td>
+    <td>0</td>
+    <td>1</td>
+    <td>4</td>
+    <td>7</td>
+    <td>, </td>
+    <td>SIN</td>
+    <td>APPS</td>
+    <td>X, T, &theta;, <i>n</i></td>
+</tr>
+<tr>
+    <th class=SubHeading>F7</td>
+    <td>.</td>
+    <td>2</td>
+    <td>5</td>
+    <td>8</td>
+    <td>)</td>
+    <td>COS</td>
+    <td>PRGM</td>
+    <td>STAT</td>
+</tr>
+<tr>
+    <th class=SubHeading>FB</td>
+    <td>(-)</td>
+    <td>3</td>
+    <td>6</td>
+    <td>9</td>
+    <td>(</td>
+    <td>TAN</td>
+    <td>VARS</td>
+    <td class=Transparent></td>
+</tr>
+<tr>
+    <th class=SubHeading>FD</td>
+    <td>ENTER</td>
+    <td>+</td>
+    <td>-</td>
+    <td>&times;</td>
+    <td>&divide;</td>
+    <td>^</td>
+    <td>CLEAR</td>
+    <td class=Transparent></td>
+</tr>
+<tr>
+    <th class=SubHeading>FE</td>
+    <td>down</td>
+    <td>left</td>
+    <td>right</td>
+    <td>up</td>
+    <td class=Transparent colspan=4></td>
+</tr>
+</table><p>
+
+<a name="grp"></a>
+    <h2>Switching Groups</h2>
+
+    Assemble and run this program. When the program is requesting input, enter [&times;] or [<tt>-></tt>], because I said so.<p>
+
+    <h3>Program 22-1</h3>
+<div class=Program>
+<pre>
+<span class=mem>ReadKey:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, %11111101    <span class=cmt>; Check for [-]</span>
+    <span class=ins>OUT</span>    (1), <span class=reg>A</span>
+    <span class=ins>IN</span>     <span class=reg>A</span>, (1)
+    <span class=ins>CP</span>     %11111011
+    <span class=ins>JP     Z</span>, <span class=mem>Minus</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, %11111110    <span class=cmt>; Check for [up]</span>
+    <span class=ins>OUT</span>    (1), <span class=reg>A</span>
+    <span class=ins>IN</span>     <span class=reg>A</span>, (1)
+    <span class=ins>CP</span>     %11110111
+    <span class=ins>JP     Z</span>, <span class=mem>Up</span>
+
+    <span class=ins>JP</span>     <span class=mem>ReadKey</span>
+
+<span class=mem>Minus:</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>zs_minus</span>
+    b_call(_PutS)
+    <span class=ins>RET</span>
+
+<span class=mem>Up:</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>zs_up</span>
+    b_call(_PutS)
+    <span class=ins>RET</span>
+
+<span class=mem>zs_up:</span>    <span class=reg>.DB</span> "You pressed UP !", 0
+<span class=mem>zs_minus:</span> <span class=reg>.DB</span> "You pressed -  !", 0
+</pre>
+</div>
+
+Well that certainly was unexpected. You see, compared to a running program, hardware takes a very long time to react to inputs. So long in fact, that a program can easily execute several instructions before a port is ready. In the case of this program, the key port was read before it could set the correct group. In the case where [&times;] is pressed, 
+
+<ol>
+<li>Group $FD was set, which is the same group for [down] and [&times;].
+<li>The key port was read while it was reacting to the group switch and so garbage was read.
+<li>Group $FE was set.
+<li>The key port was read before it could switch from key group $FD, so the
+[&times;] key was stored in <span class=reg>A</span>.
+<li><span class=reg>A</span> was compared with the key code for [up], which just so happens to
+also be the key code for [&times;], and the rest is history.
+</ol>
+
+To fix this, add a delay of two <span class=ins>NOP</span>s between setting the key group and reading the port.
+<span class=ins>NOP</span> is a do-nothing instruction that just waits for four clock cylces. It's so pointless
+it doesn't even get its own box.<p>
+
+<a name="sim"></a>
+    <h2>Simultaneous Keypresses</h3>
+
+    You could use either <span class=ins>CP</span> or <span class=ins>BIT</span> to check the
+    key code. To see the difference, run Program 22-2. Press and hold [ALPHA], and
+    hit [LOG]... nothing happens. Replace the <tt><span class=ins>CP</span>
+    %11110111</tt> with <tt><span class=ins>BIT</span> 3, <span class=reg>A</span></tt> and
+    reassemble. Do the same thing when running this program... <tt>Done</tt>!<p>
+
+    <h3>Program 22-2</h3>
+    Pause until [LOG] is pressed.
+
+<div class=Program>
+<pre>
+<span class=mem>Loop:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, %11011111    <span class=cmt>; Enable group</span>
+    <span class=ins>OUT</span>    (1), <span class=reg>A</span>
+
+    <span class=ins>IN</span>     <span class=reg>A</span>, (1)          <span class=cmt>; Input a key</span>
+    <span class=ins>CP</span>     %11110111      <span class=cmt>; Check if it's [LOG]</span>
+    <span class=ins>RET    Z</span>              <span class=cmt>; End if so</span>
+
+    <span class=ins>JP</span>     <span class=mem>Loop</span></pre>
+</div>
+
+    The reason for this behaviour lies in the way the key port reacts when
+    multiple keys are pressed. If both <i>key1</i> and <i>key2</i> are
+    pressed at the same time, the key port sends the keycode <i>key1</i> AND
+    <i>key2</i>.<p>
+
+    In Program 22-2 then, the key port was sending the bitwise AND of [LOG] and
+    [ALPHA] which is <tt>%01110111</tt>. <span class=ins>CP</span> didn't work
+    because it was looking for the exact value <tt>%11110111</tt>. <span
+    class=ins>BIT</span>, on the other hand, will work because bit 3 is still zero.<p>
+
+    If you want the calcultor to do something when a key is pressed, regardless of whether
+    any other keys in the group are pressed, you should use <span class=ins>BIT</span> (or
+    a shift instruction if possible). However, if you wanted a different action to be taken
+    when two or more keys are pressed down, then you'd have to either use <span
+    class=ins>CP</span>, or have a kind of a <span class=ins>BIT</span> chain.<p>
+
+    <h3>Program 22-3</h3>
+    Demonstration of multiple keypresses.
+
+<div class=Program>
+<pre> 
+    b_call(_RunIndicOff)
+    <span class=ins>LD</span>     <span class=reg>HL</span>, $1C23
+    <span class=ins>LD</span>     <span class=mem>(x_pos)</span>, <span class=reg>HL</span>
+
+<span class=mem>DispText:</span>
+    b_call(_ClrLCDFull)
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(x_pos)</span>
+    <span class=ins>LD</span>     <span class=mem>(PenCol)</span>, <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>string</span>
+    b_call(_VPutS)
+
+    <span class=ins>LD</span>     <span class=reg>C</span>, 1
+
+<span class=mem>InKey:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, %10111111    <span class=cmt>; Check for [DEL] to exit</span>
+    <span class=ins>OUT</span>    <span class=reg>(C)</span>, <span class=reg>A</span>
+    <span class=ins>IN</span>     <span class=reg>A</span>, <span class=reg>(C)</span>
+    <span class=ins>BIT</span>    7, <span class=reg>A</span>
+    <span class=ins>JR     NZ</span>, <span class=mem>InArrow</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, $FF          <span class=cmt>; Reset key port</span>
+    <span class=ins>OUT</span>    <span class=reg>(C)</span>, <span class=reg>A</span>
+    <span class=ins>RET</span>
+
+<span class=mem>InArrow:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, $FF          <span class=cmt>; Reset key port</span>
+    <span class=ins>OUT</span>    <span class=reg>(C)</span>, <span class=reg>A</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, %11111110
+    <span class=ins>OUT</span>    <span class=reg>(C)</span>, <span class=reg>A</span>
+    <span class=ins>IN</span>     <span class=reg>B</span>, <span class=reg>(C)</span>
+
+    <span class=ins>BIT</span>    0, <span class=reg>B</span>
+    <span class=ins>JP     Z</span>, <span class=mem>Down</span>
+    <span class=ins>BIT</span>    1, <span class=reg>B</span>
+    <span class=ins>JP     Z</span>, <span class=mem>Left</span>
+    <span class=ins>BIT</span>    2, <span class=reg>B</span>
+    <span class=ins>JP     Z</span>, <span class=mem>Right</span>
+    <span class=ins>BIT</span>    3, <span class=reg>B</span>
+    <span class=ins>JP     Z</span>, <span class=mem>Up</span>
+
+    <span class=ins>JP</span>     <span class=mem>InKey</span>
+
+<span class=mem>Down:</span>
+    <span class=ins>CALL</span>   <span class=mem>MoveDown</span>
+    <span class=ins>BIT</span>    1, <span class=reg>B</span>
+    <span class=ins>CALL   Z</span>, <span class=mem>MoveLeft</span>
+    <span class=ins>BIT</span>    2, <span class=reg>B</span>
+    <span class=ins>CALL   Z</span>, <span class=mem>MoveRight</span>
+    <span class=ins>JP</span>    <span class=mem>DispText</span>
+
+<span class=mem>Left:</span>
+<span class=cmt>;There is no need to check for Down key anymore.</span>
+    <span class=ins>CALL</span>   <span class=mem>MoveLeft</span>
+    <span class=ins>BIT</span>    3, <span class=reg>B</span>
+    <span class=ins>CALL   Z</span>, <span class=mem>MoveUp</span>
+    <span class=ins>JP</span>     <span class=mem>DispText</span>
+
+<span class=mem>Right:</span>
+    <span class=ins>CALL</span>   <span class=mem>MoveRight</span>
+    <span class=ins>BIT</span>    3, <span class=reg>B</span>
+    <span class=ins>CALL   Z</span>, <span class=mem>MoveUp</span>
+    <span class=ins>JP</span>     <span class=mem>DispText</span>
+
+<span class=mem>Up:</span>
+    <span class=ins>CALL</span>   <span class=mem>MoveUp</span>
+    <span class=ins>JP</span>     <span class=mem>DispText</span>
+
+<span class=mem>MoveDown:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(y_pos)</span>        <span class=cmt>; Check if at bottom edge of screen</span>
+    <span class=ins>CP</span>     57
+    <span class=ins>RET    Z</span>
+    <span class=ins>INC</span>    <span class=reg>A</span>                <span class=cmt>; Down one pixel</span>
+    <span class=ins>LD</span>     <span class=mem>(y_pos)</span>, <span class=reg>A</span>
+    <span class=ins>RET</span>
+
+<span class=mem>MoveUp:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(y_pos)</span>        <span class=cmt>; Check if at top edge of screen</span>
+    <span class=ins>OR</span>     <span class=reg>A</span>
+    <span class=ins>RET    Z</span>
+    <span class=ins>DEC</span>    <span class=reg>A</span>                <span class=cmt>; Up one pixel</span>
+    <span class=ins>LD</span>     <span class=mem>(y_pos)</span>, <span class=reg>A</span>
+    <span class=ins>RET</span>
+
+<span class=mem>MoveLeft:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(x_pos)</span>        <span class=cmt>; Check if at left edge of screen</span>
+    <span class=ins>OR</span>     <span class=reg>A</span>
+    <span class=ins>RET    Z</span>
+
+    <span class=ins>DEC</span>    <span class=reg>A</span>                <span class=cmt>; Left one pixel</span>
+    <span class=ins>LD</span>     <span class=mem>(x_pos)</span>, <span class=reg>A</span>
+    <span class=ins>RET</span>
+
+<span class=mem>MoveRight:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(x_pos)</span>        <span class=cmt>; Check if at right edge of screen</span>
+    <span class=ins>CP</span>     96-28            <span class=cmt>; 96 - number of pixels the string takes up</span>
+    <span class=ins>RET    Z</span>
+
+    <span class=ins>INC</span>    <span class=reg>A</span>                <span class=cmt>; Right one pixel</span>
+    <span class=ins>LD</span>     <span class=mem>(x_pos)</span>, <span class=reg>A</span>
+    <span class=ins>RET</span>
+
+<span class=mem>x_pos:</span>     <span class=dir>.DB</span>    0
+<span class=mem>y_pos:</span>     <span class=dir>.DB</span>    0
+<span class=mem>string:</span>    <span class=dir>.DB</span>    "Let\'s Go!", 0</pre>
+</div>
+
+    <hr>
+<div class=NavFooter>
+    <a href="day21.html">PREVIOUS - Day 21: The VAT</a><p>
+    <a href="day23.html">NEXT - Day 23: Interrupts</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

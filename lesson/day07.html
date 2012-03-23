@@ -1,0 +1,416 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 7 &mdash; Control Structures</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+<body>
+
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day06.html">Previous</a>
+    &middot; <a href="day08.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 7. Control Structures</h1>
+    <hr>
+    <b><font color=#006600>novice</font> <font color=#CCCCCC>intermediate advanced expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#jmp">Z80 Hopscotch</a>
+<li type="disc"><a href="#cnd">Conditionals</a>
+<li type="square"><a href="#cmp">CP</a>
+<li type="circle"><a href="#chn">Chaining Conditions</a>
+<li type="square"><a href="#lop">Loops</a>
+<li type="disc"><a href="#pro">Procedures</a>
+</ul>
+    <hr>
+
+Left to its own devices, a Z80 program will perform its instructions in the same order that the appear in the source file, starting with the very first, and progressing, step-by-step, until the end. However this order is rarely, if ever, encountered in real Z80 programs. The Z80 vocabulary has a number of instructions that allow you to manipulate execution.<p>
+
+<a name="jmp"></a>
+    <h2>Z80 Hopscotch</h2>
+What we have here are two instructions that correspond to the <tt>goto</tt> statement you see in higher-lever languages.
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>JP</b> <i>label</i></tt></td>
+    <td>Causes execution to jump to <tt><i>label</i></tt>.</td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>JR</b> <i>label</i></tt></b></td>
+    <td>Causes execution to jump to <tt><i>label</i></tt>.</td>
+</tr>
+</table>
+
+At first glance, <span class=ins>JP</span> and <span class=ins>JR</span> look exactly the same. There are a few key differences, though:
+<ol>
+<li><span class=ins>JR</span> has a limited range of where it can jump. Specifically, it can jump forwards 129 bytes, or backwards 126 bytes... though this generally isn't something you can calculate easily. <span class=ins>JP</span> on the other hand, can jump to anywhere in memory you want, even outside your program.
+<li>When compiled <span class=ins>JR</span> takes up one less byte than <span class=ins>JP</span>.
+<li><span class=ins>JR</span> takes 7 or 12 cycles, <span class=ins>JP</span> always takes 10 cycles.
+</ol>
+    
+If you want my opinion, opt for <span class=ins>JR</span> whenever possible, unless you're <i>really</i> desperate for a quick program. You don't have to worry about the range limitation, because when you assemble, TASM will give you a "Range of relative branch exceeded" error for each <span class=ins>JR</span> instruction that's overreaching itself. It's then just a matter of finding each offending <span class=ins>JR</span> and  replacing it.<p>
+
+    Example:
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 25
+    <span class=ins>INC</span>    <span class=reg>A</span>
+    <span class=ins>JR</span>     <span class=mem>SkipOver</span>
+    <span class=ins>SUB</span>    12        <span class=cmt>; These two statements are never executed.</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>B</span>
+<span class=mem>SkipOver:</span>            <span class=cmt>; JR branches to here.</span>
+    <span class=ins>JR</span>     <span class=mem>Exit</span>      <span class=cmt>; Results in an error because the exit label is too far away.
+    ; Pretend a whole lotta stuff is here. ;</span>
+<span class=mem>Exit:</span>
+    <span class=ins>RET</span></pre>
+
+<span class=ins>JR</span> and <span class=ins>JP</span>, when used in this way, are <i>unconditional</i>. That is, execution will <i>always</i> jump to the specified label. This is nice, but not always useful. What we can do is use conditionals so that the jump is taken only when certain conditions are met. If not, the instruction will just be ignored.<p>
+
+<a name="cnd"></a>
+    <h2>Conditionals</h2>
+To jump conditionally, modify the <span class=ins>JP</span>/<span class=ins>JR</span> syntax:
+
+<pre>    <span class=ins>JP</span>    <i>condition</i>, <i>label</i></pre>
+    
+    <tt><i>condition</i></tt> is any one of the conditions listed below.
+
+<table class=Info>
+<tr>
+    <th bgcolor=#A0A0FF width=10%><tt>Z</tt></th>
+    <td bgcolor=#C0C0FF>If the zero flag is set.</td>
+    <th bgcolor=#A0A0FF width=10%><tt>NZ</tt></th>
+    <td bgcolor=#C0C0FF>If the zero flag is reset.</td>
+</tr>
+<tr>
+    <th bgcolor=#A0A0FF><tt>C</tt></th>
+    <td bgcolor=#C0C0FF>If the carry flag is set.</td>
+    <th bgcolor=#A0A0FF><tt>NC</tt></th>
+    <td bgcolor=#C0C0FF>If the carry flag is reset.</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>PE</tt></th>
+    <td>If the parity/overflow flag is set.</td>
+    <th class=SubHeading><tt>PO</tt></th>
+    <td>If the parity/overflow flag is reset.</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>M</tt></th>
+    <td>If the sign flag is set.</td>
+    <th class=SubHeading><tt>P</tt></th>
+    <td>If the sign flag is reset.</td>
+</tr>
+</table>
+
+Four instructions can be used conditionally: <span class=ins>CALL</span> (discussed later on), <span class=ins>RET</span>, <span class=ins>JP</span>, and <span class=ins>JR</span>. <span class=ins>JR</span> is handicapped in that it can only be used with the conditions hilighted in blue.<p>
+
+<a name="cmp"></a>
+One of the best ways to set off a conditional jump is to use the <span class=ins>CP</span> instruction. <span class=ins>CP</span> is identical to the <span class=ins>SUB</span> instruction except that the accumulator is left intact. Its only job is to compare how the accumulator relates to another value.<p>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>CP</b> { imm<sub>8</sub> | reg<sub>8</sub> | (HL) }</tt></td>
+    <td>Subtracts the operand from the accumulator, but does not actually <i>affect</i> the
+    accumulator.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</td>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects overflow</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+By using a series of <span class=ins>CP</span> and <span class=ins>JR</span> instructions, we can create a crude version of the <tt>if...then</tt> statements as seen in C. However, you have to be careful if you are comparing unsigned or signed values.<p>
+
+<table class=Info>
+<tr class=Heading>
+    <th>Comparison</th>
+    <th>Unsigned</th>
+    <th>Signed</th>
+</tr>
+<tr>
+    <td class=SubHeading><tt>A == <i>num</i></tt></td>
+    <td><tt>Z</tt> flag is set</td>
+    <td><tt>Z</tt> flag is set</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>A != <i>num</i></tt></td>
+    <td><tt>Z</tt> flag is reset</td>
+    <td><tt>Z</tt> flag is reset</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>A < <i>num</i></tt></td>
+    <td><tt>C</tt> flag is set</td>
+    <td><tt>S</tt> and <tt>P/V</tt> are different</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>A >= <i>num</i></tt></td>
+    <td><tt>C</tt> flag is reset</td>
+    <td><tt>S</tt> and <tt>P/V</tt> are the same</td>
+</tr>
+</table>
+
+    Example:
+
+<pre>
+    <span class=ins>CP</span>    20
+    <span class=ins>JR    Z</span>, <span class=mem>label1</span>     <span class=cmt>; If the accumulator is 20, then will jump.</span>
+    <span class=ins>CP</span>    15           <span class=cmt>; If it isn't, then...</span>
+    <span class=ins>JR    Z</span>, <span class=mem>label2</span>     <span class=cmt>;         If the accumulator is 15, then will jump.</span>
+    <span class=ins>CP</span>    10           <span class=cmt>; If it isn't, then...</span>
+    <span class=ins>JR    NC</span>, <span class=mem>label3</span>    <span class=cmt>;         If the accumulator is 10 or more, then will jump.</span></pre>
+
+I'm going to guess, that since all you have to do is check the carry flag, and are able to use <span class=ins>JR</span>, you'll be keeping all your comparisons unsigned. Although you may need to a signed comparison now and then. In that case, you'll need to know how to chain conditions.<p>
+
+<a name="chn"></a>
+    <h2>Chaining Conditions</h2>
+At times you may need to have more than one condition at the same time. While checking conditions simultaneously in assembly is impossible, with some clever code ordering you can achieve the same effect.<br>
+For these examples, assume that there is a label in your code called <span class=mem>success</span> that should be executed if the condition passes, and a label called <span class=mem>fail</span> that should be executed if the condition fails.<p>
+
+    <h3>Conjunction (AND)</h3>
+<i>Conjunction junction, what's your function?</i> Sorry, couldn't resist (come to think of it, <i>I'm</i> too young to know what that is. Next I'll be talking about some crappily animated piece of legislation bitching about how a bunch of corrupt Uncle Sam-types won't ratify him. <tt>:D</tt>).<br>
+If we have two conditions, and we want <span class=mem>success</span> to be executed only if both conditions are true, then check each condition in any order, and jump to <span class=mem>fail</span> once a condition fails.<p>
+
+    E.g. this C code
+<pre>
+if( (a >= 7) && (a != 8) )
+    goto success;
+else
+    goto fail;
+</pre>
+
+could be translated into assembly as
+
+<pre>
+    <span class=ins>CP</span>     7
+    <span class=ins>JR     C</span>, <span class=mem>fail</span>
+    <span class=ins>CP</span>     8
+    <span class=ins>JR     Z</span>, <span class=mem>fail</span>
+<span class=mem>success:</span>
+    <span class=cmt>;This code executed if condition passes.</span>
+<span class=mem>fail:</span>
+    <span class=cmt>;This code executed if condition fails.</span></pre>
+
+    <h3>Disjunction (OR)</h3>
+If we have two conditions, and we want <span class=mem>success</span> to be executed if either condition is true, then check each condition in any order, and jump to <span class=mem>success</span> once a condition passes.<p>
+
+    E.g.
+<pre>
+if( (a >= 7) || (a != 8) )
+    goto success;
+else
+    goto fail;
+</pre>
+
+<pre>
+    <span class=ins>CP</span>     7
+    <span class=ins>JR     NC</span>, <span class=mem>success</span>
+    <span class=ins>CP</span>     8
+    <span class=ins>JR     NZ</span>, <span class=mem>success</span>
+<span class=mem>fail:</span>
+    <span class=cmt>;This code executed if condition fails.</span>
+<span class=mem>success:</span>
+    <span class=cmt>;This code executed if condition passes.</span>
+</pre>
+
+    <h3>A Logical Cocktail</h3>
+If you want to mix AND and OR conditions, it's simple. You just have to order the checks the right way.<p>
+
+    E.g.
+<pre>
+if( (a >= 7 && a != 8) || a == 1 )
+    goto success;
+else
+    goto fail;
+</pre>
+
+Let's see? Looking at the expression, because it's OR, if <span class=reg>A</span> equals 1 then the entire expression will be true, so:
+
+<pre>
+    <span class=ins>CP</span>     1
+    <span class=ins>JR</span>     Z, <span class=mem>success</span>
+</pre>
+
+In the event there was no jump, then we can still jump to <span class=mem>success</span> if <span class=reg>A</span> is both greater than or equal to seven while not being equal to eight (again, because it's OR). So you just put in the conjunction construction:
+
+<pre>
+    <span class=ins>CP</span>     7
+    <span class=ins>JR     C</span>, <span class=mem>fail</span>
+    <span class=ins>CP</span>     8
+    <span class=ins>JR     Z</span>, <span class=mem>fail</span>
+<span class=mem>success:</span>
+    .
+    .
+    .
+<span class=mem>fail:</span>
+    .
+    .
+    .
+</pre> 
+
+
+<a name="lop"></a>
+    <h2>Loops</h2>
+If you remember from Day 5 you saw this code to handle an array of structures:
+
+<pre>
+    <span class=ins>LD</span>    <span class=reg>IX</span>, <span class=mem>AppBackupScreen</span>     <span class=cmt>; Get array base</span>
+    <span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>sizeof</span>              <span class=cmt>; Use this to update IX</span>
+
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>x</span>)</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>dx</span>)</span>
+    <span class=ins>LD</span>    <span class=reg>(IX + <span class=mem>x</span>)</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>   <span class=reg>IX</span>, <span class=reg>DE</span>
+
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>x</span>)</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>dx</span>)</span>
+    <span class=ins>LD</span>    <span class=reg>(IX + <span class=mem>x</span>)</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>   <span class=reg>IX</span>, <span class=reg>DE</span>
+
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>x</span>)</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>dx</span>)</span>
+    <span class=ins>LD</span>    <span class=reg>(IX + <span class=mem>x</span>)</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>   <span class=reg>IX</span>, <span class=reg>DE</span>
+
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>x</span>)</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>dx</span>)</span>
+    <span class=ins>LD</span>    <span class=reg>(IX + <span class=mem>x</span>)</span>, <span class=reg>A</span>
+</pre>
+
+You ought to see that there is a set of three instructions (four if you append an extra <span class=reg>ADD</span>) that are repeated over and over. In cases like these it is simply not practical to write out the code again and again for as many times as we require, and furthermore the number of repetitions necessary might change as the program runs. To relieve burdens such as this, you can and should create a loop.<p>
+
+A loop is nothing more than a collection of instructions that are to be executed multiple times. All loops consist of three components: an initialization, a termination test, and a loop body. The initialization is simply the setup before the loop starts. The termination test is used by the loop to see if it should stop or repeat. The loop body is the statements not dedicated to control of the loop that are executed. The permutations of these three components dramatically change the way a loop operates.<p>
+
+<h3>While Loops</h3>
+The most general loop is the while loop. It takes the following form in C:
+
+<pre>
+while (<i>expression</i>)
+{
+   <i>statements</i>
+}
+</pre>
+
+There is one important aspect of the while loop: the test for termination appears at the start of the loop. As a direct consequence, the loop body may never even be executed.<p>
+
+Consider the following implementation of a while loop:
+<pre>int x = 0;
+while (x < 100)
+    x++;</pre>
+
+<tt>x = 0</tt> is the initialization. <tt>x < 100</tt> is the termination condition i.e. the loop will not end as long as <tt>x</tt> is less than 100. <tt>x</tt> is termed a loop control variable, because it controls whether or not the loop will terminate. <tt>x++</tt> is the body and is the code that executes on each pass through the loop.<br>
+You can convert this to Z80 as:
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 0          <span class=cmt>; Initialization</span>
+<span class=mem>While:</span>
+    <span class=ins>CP</span>     100          <span class=cmt>; Loop termination test</span>
+    <span class=ins>JR     C</span>, <span class=mem>EndWhile</span>
+    <span class=ins>INC</span>    <span class=reg>A</span>            <span class=cmt>; Loop body</span>
+    <span class=ins>JR</span>     <span class=mem>While</span>
+<span class=mem>EndWhile:</span>
+</pre><p>
+
+<h3>Do...While Loops</h3>
+The do...while loop differs from the while loop in only one respect: the termination test comes at the end of the loop body. Due to this, a do...while loop is guaranteed to execute a minimum of once.<p>
+
+<pre>int x = 0;
+do
+{
+    x++;
+} while (x < 100);
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, 0
+<span class=mem>Do:</span>
+    <span class=ins>INC</span>    <span class=reg>A</span>
+    <span class=ins>CP</span>     100
+    <span class=ins>JR     NZ</span>, <span class=mem>Do</span>
+</pre><p>
+
+The do-style loop, you'll notice, has one less jump instruction in it than its while counterpart. Therefore the do...while loop runs faster, so <b>always, always use do...while loops!</b> If you need to check the inital value of the test variable, do it just before the loop begins.<p>
+ 
+<h3>For Loops</h3>
+A for loop is a special loop that executes a specific number of times. It does this by increasing or decreasing a loop control variable by a fixed amount on each iteration. For loops such as these, the Z80 provides a single instruction to handle the termination test, jump to the beginning, and variable update. And what a surprise, it does it as a do...while loop.<p>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>DJNZ</b> <i>label</i></tt></td>
+    <td>Subtracts 1 from register <tt>B</tt>, and if it isn't zero, jumps to 
+    <tt><i>label</i></tt>.</td>
+</tr>
+</table>
+
+Example: Suppose you wanted to decrement <span class=reg>A</span> 100 times, and you didn't feel like using <span class=ins>SUB</span>:
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 100
+<span class=mem>loop:</span>
+    <span class=ins>DEC</span>    <span class=reg>A</span>
+    <span class=ins>DJNZ</span>   <span class=mem>loop</span>
+</pre>
+
+<span class=ins>DJNZ</span> is functionally equivalent to the following insructions (minus the modification to the flags), so if circumstances dictate that you can't use <span class=reg>B</span>, you know how to fabricate a replacement:
+<pre>
+    <span class=ins>DEC</span>    <span class=reg>B</span>
+    <span class=ins>JR     NZ</span>, <span class=mem>label</span>
+</pre>
+
+The choice of <span class=reg>JR</span> was intentional, because both instructions are subject to the same range limitations. Be aware, too, that because <span class=ins>DJNZ</span> decrements <span class=reg>B</span> before it checks if it is zero, an initial value of zero for <span class=reg>B</span> will result in an overflow and 256 iterations. Therefore, you may want to check the value of <span class=reg>B</span> before entering the loop if this would be a concern.<p>
+
+<a name="pro"></a>
+    <h2>Procedures</h2>
+A procedure is a set of instructions that perform some task or calculate some value. What separates procedures from normal code is that the procedure is likely to be called upon many times at different points in a program. Rather than put the same code at each of those points, use just one procedure. The instructions <span class=ins>CALL</span> and <span class=ins>RET</span> provide the means to implement procedures.
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>CALL</b> <i>label</i></tt></td>
+    <td>Causes execution to jump to <tt><i>label</i></tt>, returning when a <tt>RET</tt> instruction is executed.</td>
+</tr>
+</table>
+
+To understand <span class=ins>CALL</span> fully, you need to be aware of a specialized register called the program counter <span class=reg>PC</span>. The program counter is analogous to TASM's location counter: it holds the address of the currently executing instruction. What literally happens during <span  class=ins>CALL</span> is that the current program counter value is pushed onto the stack, then a transfer to the label is done. Without saving the program counter, it would be impossible to know where to return. <span class=ins>RET</span> pops the top stack value into the program counter.<p>
+
+Procedures are too intricate to do them justice in just a couple paragraphs. In fact a whole day has been delegated to explain them further.<p>
+
+    <hr>
+<div class=NavFooter>
+    <a href="day06.html">PREVIOUS - Day 6: Stacks</a><p>
+    <a href="day08.html">NEXT - Day 8: Bit-Level Instructions</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

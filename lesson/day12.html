@@ -1,0 +1,248 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 12 &mdash; Key Input</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day11.html">Previous</a>
+    &middot; <a href="day13.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 12. Key Input</h1>
+    <hr>
+
+    <b><font color=#CCCCCC>novice <font color=#E0E000>intermediate</font> advanced expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#key">GetKey</a>
+<li type="disc"><a href="#run">Run Indicator</a>
+<li type="disc"><a href="#csc">GetCSC</a>
+</ul>
+<hr>
+    If you want to have any kind of interactivity with your programs, you'll have to know how 
+    to get input from the user by detecting keypresses.<p>
+    There are three methods of getting a keypress. The two that this lesson covers involve 
+    simple ROM calls. The third is more complex, and is really only useful for games, so 
+    it'll be taken care of later.<p>
+
+<a name="key"></a>
+    <h2>Getting Input With GetKey</h2>
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_GetKey</tt></th>
+    <td colspan=2>Pauses the program until a key is pressed.</td>
+</tr>
+<tr>
+    <th class=Heading>OUTPUT</th>
+    <td class=SubHeading width=12%><tt>A</tt></td>
+    <td><a href="../ref/keycodes.html" target=_blank>Key code</a> of key pressed, or 0 if the [ON] key was pressed.</td>
+</tr>
+<tr>
+    <th class=Heading>DESTROYS</th>
+    <td colspan=2><tt>BC DE HL</tt></td>
+</tr>
+</table>
+
+While <tt>GetKey</tt> is waiting for a key, you can do all sorts of things...
+
+    <ul>
+    <li>Change the contrast (like you normally would).
+    <li>Get screen shots with the Graph Link.
+    <li>Turn the calculator off by hitting [2nd][ON]. In this case, the program will 
+    terminate.
+    </ul>
+
+The third feature is bad: It will cause a memory leak. This means that the RAM the program takes up won't be reclaimed
+until you reset. To avoid this so you can exit the program manually:
+
+<table class=Command>
+<caption>This is an undocumented ROM call. You must put <span class=mem>_GetKeyRetOff</span> <span class=dir>.EQU</span> <tt>$500B</tt> in your program.</caption>
+<tr>
+    <th class=UndocHeading width=25%><tt>_GetKeyRetOff</tt></th>
+    <td class=UndocCell>Exactly the same as <tt>GetKey</tt>, except that [2nd][ON]
+    combination will return <span class=mem>kOff</span> in <span class=reg>A</span>.</td>
+</tr>
+<tr>
+    <th class=UndocHeading>Location</th>
+    <td class=UndocCell><tt><b>$500B</b></tt></td>
+</tr>
+<tr>
+    <th class=UndocHeading>Remarks</th>
+    <td class=UndocCell><tt>7, <span class=reg>(IY + $28)</span></tt> is set. You will learn what this means later.</td>
+</table>
+
+Something about <tt>GetKeyRetOff</tt> you should know: once you execute one <tt>GetKeyRetOff</tt>, all subsequent <tt>_GetKey</tt>s will behave similarly. This
+    includes the <tt>_GetKey</tt> that the TI-OS is running at the homescreen, so you won't
+    be able to turn off the calculator immediately after quitting the program. You need to
+    press [2nd][Quit] or go into certain menus to turn this effect off.<p>
+
+    <h3>Program 12-1</h3>
+    This program couldn't be simpler. It waits for a key, then outputs the keycode.
+
+<div class=Program>
+<pre>
+    b_call(_ClrLCDFull)
+    <span class=ins>LD</span>     <span class=reg>HL</span>, 0
+    <span class=ins>LD</span>     <span class=mem>(CurRow)</span>, <span class=reg>HL</span>
+    b_call(_GetKey)    <span class=cmt>; Get a key</span>
+    <span class=ins>LD</span>     <span class=reg>H</span>, 0
+    <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>A</span>         <span class=cmt>; Store A in HL</span>
+    b_call(_DispHL)
+    b_call(_NewLine)   <span class=cmt>; This will shift the "Done" message down one line.</span>
+    <span class=ins>RET</span>
+</pre>
+</div>
+
+<a name="run"></a>
+    Run this program a few times, hit a few keys, yada-yada-yada. But look at the top-right 
+    part of the screen when <tt>GetKey</tt> is running. You should see the Run Indicator, 
+    the little line scrolling up continuously. Isn't that just slightly annoying? Of course 
+    it is. So let's inspire some envy in all those BASIC programmers, and get rid of it.
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_RunIndicOff</tt></th>
+    <td>Deactivates the Run Indicator.</td>
+</tr>
+</table>
+
+    And, if you want, it's opposite.
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_RunIndicOn</tt></th>
+    <td>Activates the Run Indicator.</td>
+</tr>
+</table>
+
+    Suppose you only want to accept certain keys. Well, in that case, you'd call
+    <tt>GetKey</tt>, follow it with your <span class=ins>CP</span>s and jump if a valid key was pressed, 
+    or loop back to the <tt>GetKey</tt> otherwise.<p>
+
+    <h3>Program 12-2</h3>
+    This program will demonstrate using <tt>GetKey</tt> in a loop. You use the up and down
+    arrow keys to change the number, and press [CLEAR] to terminate.
+
+<div class=Program>
+<pre>
+    b_call(_RunIndicOff)       <span class=cmt>; Kill the run indicator.</span>
+    b_call(_ClrLCDFull)
+    <span class=ins>LD</span>     <span class=reg>B</span>, 127
+    <span class=ins>JR</span>     <span class=mem>Display</span>    <span class=cmt>; Display initial value of B.</span>
+<span class=mem>KeyLoop:</span>
+    <span class=ins>PUSH</span>   <span class=reg>BC</span>         <span class=cmt>; This will prevent B from being destroyed by _GetKey.</span>
+    b_call(_GetKey)
+    <span class=ins>POP</span>    <span class=reg>BC</span>
+    <span class=ins>CP</span>     <span class=mem>kUp</span>        <span class=cmt>; If the up arrow key was pressed.</span>
+    <span class=ins>JR     Z</span>, <span class=mem>Increase</span>
+    <span class=ins>CP</span>     <span class=mem>kDown</span>      <span class=cmt>; If the down arrow key was pressed.</span>
+    <span class=ins>JR     Z</span>, <span class=mem>Decrease</span>
+    <span class=ins>CP</span>     <span class=mem>kClear</span>     <span class=cmt>; If the CLEAR key was pressed.</span>
+    <span class=ins>RET    Z</span>
+    <span class=ins>JR</span>     <span class=mem>KeyLoop</span>    <span class=cmt>; If any other key was pressed, redo _GetKey.</span>
+<span class=mem>Increase:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>B</span>
+    <span class=ins>CP</span>     255        <span class=cmt>; Don't increment B if it's at its maximum value.</span>
+    <span class=ins>JR     Z</span>, <span class=mem>KeyLoop</span>
+    <span class=ins>INC</span>    <span class=reg>B</span>
+    <span class=ins>JR</span>     <span class=mem>Display</span>    <span class=cmt>; Display new value of B.</span>
+<span class=mem>Decrease:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>B</span>
+    <span class=ins>CP</span>     0          <span class=cmt>; Don't decrement B if it's at its minimum value.</span>
+    <span class=ins>JR     Z</span>, <span class=mem>KeyLoop</span>
+    <span class=ins>DEC</span>    <span class=reg>B</span>
+<span class=mem>Display:</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, 0       <span class=cmt>; Reset cursor to top of screen.</span>
+    <span class=ins>LD</span>     <span class=mem>(CurRow)</span>, <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>B</span>
+    <span class=ins>PUSH</span>   <span class=reg>BC</span>         <span class=cmt>; Prevent B from destruction at the hands of _DispHL.</span>
+    b_call(_DispHL)
+    <span class=ins>POP</span>    <span class=reg>BC</span>
+    <span class=ins>JR</span>     <span class=mem>KeyLoop</span>    <span class=cmt>; Get another key.</span>
+</pre>
+</div>
+
+<a name="csc"></a>
+    <h2>Getting Input With GetCSC</h2>
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_GetCSC</tt></th>
+    <td colspan=2>Gets a key. Unlike <tt>GetKey</tt>, does not wait.</td>
+</tr>
+<tr>
+    <th class=Heading>OUTPUT</th>
+    <td class=SubHeading width=12%><tt>A</tt></td>
+    <td><a href="../ref/scancodes.html" target=_blank>Scan code</a> of key pressed, or 0 if no key was pressed.</td>
+</tr>
+<tr>
+    <th class=Heading>DESTROYS</th>
+    <td colspan=2><tt>HL</tt></td>
+</tr>
+</table>
+
+    <tt>GetCSC</tt> does not support any of the special features <tt>GetKey</tt> does. It
+    also doesn't support 2nd or Alpha shift keys. It is a little faster than 
+    <tt>GetKey</tt>, and it also doesn't destroy as many registers.<p>
+
+    <h3>Program 12-3</h3>
+    Okay, Program 12-3 will do the exact same thing as Program 12-2, except now 
+    <tt>GetCSC</tt> will be used.
+
+<div class=Program>
+<pre>
+    b_call(_RunIndicOff)
+    b_call(_ClrLCDFull)
+    <span class=ins>LD</span>     <span class=reg>B</span>, 127
+    <span class=ins>JR</span>     <span class=mem>Display</span>    <span class=cmt>; Display initial value of B.</span>
+<span class=mem>KeyLoop:</span>
+    b_call(_GetCSC)
+    <span class=ins>CP</span>     <span class=mem>skUp</span>       <span class=cmt>; If the up arrow key was pressed.</span>
+    <span class=ins>JR     Z</span>, <span class=mem>Increase</span>
+    <span class=ins>CP</span>     <span class=mem>skDown</span>     <span class=cmt>; If the down arrow key was pressed.</span>
+    <span class=ins>JR     Z</span>, <span class=mem>Decrease</span>
+    <span class=ins>CP</span>     <span class=mem>skClear</span>    <span class=cmt>; If the CLEAR key was pressed.</span>
+    <span class=ins>RET    Z</span>
+    <span class=ins>JR</span>     <span class=mem>KeyLoop</span>    <span class=cmt>; If any other key was pressed, or none, redo _GetCSC.</span>
+<span class=mem>Increase:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>B</span>
+    <span class=ins>CP</span>     255        <span class=cmt>; Don't increment B if it's at its maximum value.</span>
+    <span class=ins>JR     Z</span>, <span class=mem>KeyLoop</span>
+    <span class=ins>INC</span>    <span class=reg>B</span>
+    <span class=ins>JR</span>     <span class=mem>Display</span>    <span class=cmt>; Display new value of B.</span>
+<span class=mem>Decrease:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>B</span>
+    <span class=ins>CP</span>     0          <span class=cmt>; Don't decrement B if it's at its minimum value.</span>
+    <span class=ins>JR     Z</span>, <span class=mem>KeyLoop</span>
+    <span class=ins>DEC</span>    <span class=reg>B</span>
+    <span class=ins>JR</span>     <span class=mem>Display</span>    <span class=cmt>; Display new value of B.</span>
+<span class=mem>Display:</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, 0       <span class=cmt>; Reset cursor to top of screen.</span>
+    <span class=ins>LD</span>     <span class=mem>(CurRow)</span>, <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>B</span>
+    <span class=ins>PUSH</span>   <span class=reg>BC</span>         <span class=cmt>; Prevent B from destruction at the hands of _DispHL.</span>
+    b_call(_DispHL)
+    <span class=ins>POP</span>    <span class=reg>BC</span>
+    <span class=ins>JR</span>     <span class=mem>KeyLoop</span>    <span class=cmt>; Get another key.</span></pre>
+</div>
+
+    <hr>
+<div class=NavFooter>
+    <a href="day11.html">PREVIOUS - Day 11: Displaying Text</a><p>
+    <a href="day13.html">NEXT - Day 13: More Program Control</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<html>
+<head>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<a name="top"></a>
+	<h1>Z80 Instruction Set &mdash; Undocumented</h1>
+	<hr>
+
+<a href="#ixh">IXH</a><br>
+<a href="#ixl">IXL</a><br>
+<a href="#iyh">IYH</a><br>
+<a href="#iyl">IYL</a><br>
+<a href="#in">IN</a><br>
+<a href="#out">OUT</a><br>
+<a href="#sll">SLL</a><br>
+<a href="#auto">Autocopy</a><br>
+<a href="#aka">Aliases</a><br>
+
+	<hr>
+<a name="ixh"></a>
+	<h2>IXH Register</h2><p>
+
+	By preceding the following instructions with <span class=dir>.DB</span><tt> $DD</tt>, the
+	operation will use the MSB of the <span class=reg>IX</span> register instead of
+	<span class=reg>H</span>.<p>
+
+<tt><b>ADD A,H<br>AND H<br>CP H<br>DEC H<br>INC H<br>LD reg<sub>8</sub>,H<br>LD H,reg<sub>8</sub>
+<br>LD H,imm<sub>8</sub><br>OR H<br>SBC A,H<br>SUB H<br>XOR H</b></tt>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="ixl"></a>
+	<h2>IXL Register</h2><p>
+
+	By preceding the following instructions with <span class=dir>.DB</span><tt> $DD</tt>, the
+	operation will use the LSB of the <span class=reg>IX</span> register instead of
+	<span class=reg>L</span>.<p>
+
+<tt><b>ADD A,L<br>AND L<br>CP L<br>DEC L<br>INC L<br>LD reg<sub>8</sub>,L<br>LD L,reg<sub>8</sub>
+<br>LD L,imm<sub>8</sub><br>OR L<br>SBC A,L<br>SUB L<br>XOR L</b></tt>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="iyh"></a>
+	<h2>IYH Register</h2><p>
+
+	By preceding the following instructions with <span class=dir>.DB</span><tt> $FD</tt>, the
+	operation will use the MSB of the <span class=reg>IY</span> register instead of
+	<span class=reg>H</span>.<p>
+
+<tt><b>ADD A,H<br>AND H<br>CP H<br>DEC H<br>INC H<br>LD reg<sub>8</sub>,H<br>LD H,reg<sub>8</sub>
+<br>LD H,imm<sub>8</sub><br>OR H<br>SBC A,H<br>SUB H<br>XOR H</b></tt>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="iyl"></a>
+	<h2>IYL Register</h2><p>
+
+	By preceding the following instructions with <span class=dir>.DB</span><tt> $FD</tt>, the
+	operation will use the LSB of the <span class=reg>IY</span> register instead of
+	<span class=reg>L</span>.<p>
+
+<tt><b>ADD A,L<br>AND L<br>CP L<br>DEC L<br>INC L<br>LD reg<sub>8</sub>,L<br>LD L,reg<sub>8</sub>
+<br>LD L,imm<sub>8</sub><br>OR L<br>SBC A,L<br>SUB L<br>XOR L</b></tt>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="in"></a>
+	<h2>IN</h2><p>
+
+	<tt><b>IN (C)</b></tt>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Inputs a byte from port <tt>C</tt> and affects flags only.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 01110000</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br><tt>C</tt> is not affected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>12</tt></td>
+</tr>
+</table>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="out"></a>
+	<h2>OUT</h2><p>
+
+	<tt><b>OUT (C),0</b></tt>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Outputs a zero to port <tt>C</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 01110001</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>12</tt></td>
+</tr>
+</table>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="sll"></a>
+	<h2>SLL</h2><p>
+
+	<tt><b>SLL reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of <tt>reg<sub>8</sub></tt> are shifted left one bit position. The
+	contents of bit 7 are put into the carry flag and a one is put into bit 0.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11001011 : 00110[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>8 or 15 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>SLL (reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of the memory location pointed to by <tt>reg<sub>index</sub></tt> plus
+	<tt>ofs<sub>8</sub></tt> are shifted left one bit position. The contents of bit 7 are
+	put into the carry and a one is put into bit 0.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11001011 : [ofs<sub>8</sub>] : 00110110</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>23</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="auto"></a>
+	<h2>Autocopy Instructions</h2><p>
+
+	Each autocopy instruction performs an operation on a byte in memory referenced by an
+	index register. After this operation is done, the result is then copied to an 8-bit
+	register. Even if the byte is read-only, the register still holds the modified result.
+
+<pre>	<b>RL	reg<sub>8</sub>,(reg<sub>index</sub> + ofs<sub>8</sub>)
+	RLC	reg<sub>8</sub>,(reg<sub>index</sub> + ofs<sub>8</sub>)
+	RR	reg<sub>8</sub>,(reg<sub>index</sub> + ofs<sub>8</sub>)
+	RRC	reg<sub>8</sub>,(reg<sub>index</sub> + ofs<sub>8</sub>)
+	SLA	reg<sub>8</sub>,(reg<sub>index</sub> + ofs<sub>8</sub>)
+	SLL	reg<sub>8</sub>,(reg<sub>index</sub> + ofs<sub>8</sub>)
+	SRA	reg<sub>8</sub>,(reg<sub>index</sub> + ofs<sub>8</sub>)
+	SRL	reg<sub>8</sub>,(reg<sub>index</sub> + ofs<sub>8</sub>)
+
+	RES	reg<sub>8</sub>,imm<sub>3</sub>,(reg<sub>index</sub> + ofs<sub>8</sub>)
+	SET	reg<sub>8</sub>,imm<sub>3</sub>,(reg<sub>index</sub> + ofs<sub>8</sub>)</b></pre>
+
+	The opcodes for the autocopy instruction are built as follows:
+
+<ol>
+	<li>Take the opcode for the non-autocopy version. E.g. in the case of <b><tt>RL
+	C,(IX + 2)</tt></b>, the opcode is the one for <b><tt>RL (IX + 2)</tt></b>:<br>
+	<tt>11011101 : 11001011 : 00000010 : 00010110</tt>
+
+	<li>Change the last three bits of the last byte of the opcode to the bit field
+	corresponding to <tt>reg<sub>8</sub></tt>:
+
+<table class=Flags align=center>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(reg<sub>index</sub>)</tt><br>(no autocopy)</td>
+		<td><tt>110</tt></td>
+	</tr>
+</table>
+
+	The final opcode for <b><tt>RL C,(IX + 2)</tt></b> is then<br><tt>11011101 : 11001011 :
+	00000010 : 00010001</tt>
+</ol>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="aka"></a>
+	<h2>Aliases</h2><p>
+	The following opcodes mimic certain instructions. There could be some SMC potential
+	here.<br>
+	I really should point out, that some of these opcodes might be labelled wrong. My
+	advice would be to stay the hell away from all of these.<p>
+
+	This opcode mimics <tt>LD HL,(imm<sub>16</sub>)</tt>
+
+<pre>11101101 : 01100011 : [imm<sub>LSB</sub>] : [imm<sub>MSB</sub>]</pre>
+
+	This opcode mimics <tt>LD (imm<sub>16</sub>),HL</tt>
+
+<pre>11101101 : 01101011 : [imm<sub>LSB</sub>] : [imm<sub>MSB</sub>]</pre>
+
+	These opcodes mimic <tt>NEG</tt> (first opcode byte is always <tt>$ED</tt>).
+
+<pre>$4C	$54	$5C	$64	$6C	$74	$7C</pre>
+
+	These opcodes mimic <tt>RETN</tt> (first opcode byte is always <tt>$ED</tt>).
+
+<pre>$55	$5D	$65	$6D	$75	$7D</pre>
+
+	These opcodes mimic <tt>NOP</tt> (first opcode byte is always <tt>$ED</tt>):
+<pre>$00-$3F	$80-$9F	$A4-$A7	$AC-$AF	$B4-$B7
+$BC-$BF	$C0-$FF	$4E	$66	$6E
+$76	$77	$7E	$7F</pre>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>

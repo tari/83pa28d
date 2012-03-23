@@ -1,0 +1,867 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 5 &mdash; Data Manipulation</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day04.html">Previous</a>
+    &middot; <a href="day06.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 5. Data Manipulation</h1>
+    <hr>
+    <b><font color=#006600>novice</font> <font color=#CCCCCC>intermediate advanced expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#ext">Extension</a>
+<li type="disc"><a href="#add">Adding and Subtracting</a>
+<li type="square"><a href="#mul">Multiplying</a>
+<li type="square"><a href="#div">Dividing</a>
+<li type="disc"><a href="#wra">Overflow</a>
+<li type="square"><a href="#ram">Registers and RAM</a>
+<li type="square"><a href="#arr">Arrays</a>
+<li type="square"><a href="#str">Structures</a>
+</ul>
+    <hr>
+
+On Day 3, you developed an elementary understanding of registers and memory, and how to integrate the two. We will now do something more interesting than merely moving data around and actually operate on it, then finish things off by introducing two very simple, but very useful data stuctures: the array and the structure.<p>
+
+<a name="ext"></a>
+    <h2>Extension</h2>
+On Day 3 I said that two's complement integers have a fixed length. There is also a limit, to some extent, on the size of unsigned numbers. What if you want to increase the number of bits, yet want to retain the value? This problem is solved with zero extension and sign extension.<p>
+
+To do a sign extension, consider the numbers 64 and -64. Let's derive these numbers for various bit sizes and see if anything interesting happens.
+
+<table class=Info>
+<tr>
+    <th class=Heading>Size</th>
+    <th class=Heading>64</th>
+    <th class=Heading>-64</th>
+</tr>
+<tr>
+    <th class=SubHeading>8-bit</th>
+    <td>$40</td>
+    <td>$C0</td>
+</tr>
+<tr>
+    <th class=SubHeading>16-bit</th>
+    <td>$0040</td>
+    <td>$FFC0</td>
+</tr>
+<tr>
+    <th class=SubHeading>24-bit</th>
+    <td>$000040</td>
+    <td>$FFFFC0</td>
+</tr>
+<tr>
+    <th class=SubHeading>32-bit</th>
+    <td>$00000040</td>
+    <td>$FFFFFFC0</td>
+</tr>
+</table>
+    
+From this, we can deduce that to perform a sign extension, you copy the sign bit into every additional bit, and a zero extension is just a special case of sign extensioning where you consider the sign bit to always be zero (regardless of whether it is or not).<p>
+
+    Zero extension on the Z80 is easy:
+
+<pre>
+    <span class=cmt>;Zero extend DE</span>
+    <span class=ins>LD</span>    <span class=reg>D</span>, 0
+</pre>
+
+Sign extension is tougher, you need to decide whether to store $00 or $FF. The instructions to do this
+haven't been learned yet, and I don't want to introduce them out of their context, so...<p>
+
+<a name="add"></a>
+    <h2>Fun With Data</h2>
+Okay! Let's play around with some data manipulation instructions.<p>
+
+    <h3>Adding and Subtracting</h3>
+    Just a whole slew of instructions:
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>INC</b> { reg<sub>8</sub> | reg<sub>16</sub> | (HL) }</tt></td>
+    <td>Adds one to the operand.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects overflow</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>not affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>DEC</b> { reg<sub>8</sub> | reg<sub>16</sub> | (HL) }</tt></td>
+    <td>Subtracts one from the operand.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects overflow</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>not affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>ADD</b> A, { reg<sub>8</sub> | imm<sub>8</sub> | (HL) }</tt></td>
+    <td>Adds to the accumulator.</td>
+</tr>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>ADD</b> HL, reg<sub>16</sub></tt></td>
+    <td>Adds to HL.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects overflow</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>SUB</b> { reg<sub>8</sub> | imm<sub>8</sub> | (HL) }</tt></td>
+    <td>Subtracts from the accumulator.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects overflow</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>SBC</b> HL, reg<sub>16</sub></tt></td>
+    <td>Subtracts <tt>reg<sub>16</sub></tt> and the carry flag from <tt>HL</tt>.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects overflow</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+    Examples:
+
+<table class=Info>
+<tr class=Heading>
+    <th>Before</th>
+    <th>Instruction</th>
+    <th>After</th>
+</tr>
+<tr>
+    <td><tt><span class=reg>A</span> = 45</tt></td>
+    <td><span class=ins>INC</span> <span class=reg>A</span></td>
+    <td><tt><span class=reg>A</span> = 46</tt></td>
+</tr>
+<tr>
+    <td><tt><span class=reg>DE</span> = 12116</tt></td>
+    <td><span class=ins>INC</span> <span class=reg>DE</span></td>
+    <td><tt><span class=reg>DE</span> = 12117</tt>
+</tr>
+<tr>
+    <td><tt><span class=reg>B</span> = 19</tt></td>
+    <td><span class=ins>DEC</span> <span class=reg>B</span></td>
+    <td><tt><span class=reg>B</span> = 18</tt></td>
+</tr>
+<tr>
+    <td><tt><span class=reg>A</span> = 5<br><span class=reg>L</span> = 21</tt></td>
+    <td><tt><span class=ins>ADD</span> <span class=reg>A</span>, <span
+    class=reg>L</span></tt></td>
+    <td><tt><span class=reg>A</span> = 26</tt></td>
+</tr>
+<tr>
+    <td><tt><span class=reg>A</span> = 95</tt></td>
+    <td><tt><span class=ins>SUB</span> 90</tt></td>
+    <td><tt><span class=reg>A</span> = 5</tt></td>
+</tr>
+<tr>
+    <td><tt><span class=reg>HL</span> = 5516<br><span class=reg>DE</span> = 1102<br><span class=ins>CY</span> = 1</tt></td>
+    <td><tt><span class=ins>SBC</span> <span class=reg>HL</span>, <span class=reg>DE</span></tt></td>
+    <td><tt><span class=reg>HL</span> = 4413</tt></td>
+</tr>
+</table>
+
+The last instruction incorporates the carry flag into the calculation, which implies that there would be situations
+where this would be desirable. In fact, these instructions exist for a significant technique, but you won't get to know it for a long time. So why do I bring <span class=ins>SBC</span> up now? Because <span class=ins>SBC</span> is the only 16-bit subtraction instruction!<p>
+
+One thing that needs to be pointed out about the instructions that allow two 16-bit operands, is that the registers
+<span class=reg>HL</span> and <span class=reg>IX</span> are mutually exclusive. What that means is that if the first operand is <span class=reg>HL</span>, the second can be any other 16-bit register <i>except</i> <span class=reg>IX</span> (and, of course, <span class=reg>AF</span>). Similarly for <span class=reg>IX</span>. Also, <span class=reg>IX</span> can <i>never</i> be an operand for <span class=reg>SBC</span>. Anyway, if you're ever confused, just look in the <a href="../ref/z80is.html" target="_blank">Z80 Instruction Set Reference</a>.<p>
+
+If you want to subtract a constant number <i>x</i> from <span class=reg>HL</span>, you should use
+<span class=reg>ADD</span> and load into the other operand the negative of <i>x</i>.<p>
+
+    Example:
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, 46243
+    <span class=ins>LD</span>     <span class=reg>BC</span>, -1000
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>BC</span>
+<span class=cmt>; HL now equals 45243</span>
+</pre><p>
+
+However, if the number is already in a register from a previous calculation, you have to use <span class=reg>SBC</span>.
+This becomes quite a sticky situation, because you might not know what the carry flag's value is, thus giving an erroneous
+result 50% of the time. The solution is to ensure that the carry is reset before doing the subtraction. How to do that?
+
+<pre>
+    <span class=ins>SCF</span>    <span class=cmt>; Force carry = 1</span>
+    <span class=ins>CCF</span>    <span class=cmt>; Flip carry so it is 0</span>
+    <span class=ins>SBC</span>    <span class=reg>HL</span>, <span class=reg>BC</span>
+</pre>
+
+This is actually the most idiotic way to force the carry to zero, since it can be done in just one instruction. Problem
+is, that instruction doesn't <i>just</i> reset the carry flag, and it belongs to a family of instructions that do
+similar operations, and the whole thing would be just too much and too messy for one day.<p>
+
+Finally, before I forget, what if you wanted to do the above, but with <span class=reg>IX</span>? Since <span class=ins>SBC</span>
+won't accept an index register, you must use <span class=ins>ADD</span>, and manually negate the second register.
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>B</span>
+    <span class=ins>CPL</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>C</span>
+    <span class=ins>CPL</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>A</span>
+<span class=cmt>; We have now found the one's complement of BC so, by definition of
+; the two's complement:</span>
+    <span class=ins>INC</span>    <span class=reg>BC</span>
+    <span class=ins>ADD</span>    <span class=reg>IX</span>, <span class=reg>BC</span>
+</pre><p>
+
+<a name="mul"></a>     
+    <h3>Multiplying</h3>
+If the number you want to multiply happens to be a power of two, then it's a cake walk, because you only need a
+sequence of <span class=ins>ADD</span> instructions.<p>
+    
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, 10
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>        <span class=cmt>; 10 * 2<sup>1</sup> = 20</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>        <span class=cmt>; 10 * 2<sup>2</sup> = 40</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>        <span class=cmt>; 10 * 2<sup>3</sup> = 80
+    ; et cetera</span>
+</pre>
+     
+If the number is not a power of two, but can be expressed as the sum or difference of two powers of two, then its still
+pretty easy, just a little less efficient.<p>
+
+<pre>
+<span class=cmt>; Calculate HL * 40 as (HL * 32) + (HL * 8)</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>        <span class=cmt>; HL * 8</span>
+    <span class=ins>LD</span>     <span class=reg>D</span>, <span class=reg>H</span>
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>L</span>          <span class=cmt>; Save it for later</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>        <span class=cmt>; HL * 32</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>        <span class=cmt>; HL * 32 + HL * 8</span>
+</pre>
+
+<pre>
+<span class=cmt>; Calculate HL * 15 as (HL * 16) - (HL * 1)</span>
+    <span class=ins>LD</span>     <span class=reg>D</span>, <span class=reg>H</span>
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>L</span>          <span class=cmt>; Save HL * 1 for later</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>        <span class=cmt>; HL * 16</span>
+    <span class=ins>SCF</span>
+    <span class=ins>CCF</span>
+    <span class=ins>SBC</span>    <span class=reg>HL</span>, <span class=reg>DE</span>        <span class=cmt>; HL * 16 - HL * 1</span>
+</pre>
+
+What if it is an awkward number like 13? In this case, it might be better to follow this general-purpose algorithm:
+
+<ol>
+<li>If the multiplier is even, divide it by 2 and type <span class=ins>ADD</span> <span class=reg>HL</span>, <span class=reg>HL</span>.
+<li>If the multiplier is odd, subtract 1 and type <span class=ins>ADD</span> <span class=reg>HL</span>, <span class=reg>DE</span>.
+<li>Go to step one until you have one. This time, type each instruction <i>above</i> the preceding one.
+<li>Load <span class=reg>HL</span> into <span class=reg>DE</span>.
+</ol>
+
+<pre>
+<span class=cmt>;Calculate HL * 13</span>
+    <span class=ins>LD</span>     <span class=reg>D</span>, <span class=reg>H</span>
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>L</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>    <span class=cmt>; HL * 2</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>    <span class=cmt>; HL * 3</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>    <span class=cmt>; HL * 6</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>    <span class=cmt>; HL * 12</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>    <span class=cmt>; HL * 13</span>
+</pre>
+
+<a name="div"></a>
+    <h3>Dividing</h3>
+Dividing is trickier still. The best way to do this is to take a page out of your math text book and multiply by a
+reciprocal.<br>
+So now the question on everyone's minds is how to generate a reciprocal when all you've got are integers. The answer
+to that, as with everything else in life, is to cheat.<p>
+
+<ol>
+<li>Determine the number you want to divide by (the divisor). Figure out 256 divided by this number and round.
+This is the number to multiply by.
+<li>Put the dividend into <span class=reg>HL</span>.
+<li>Look in <span class=reg>H</span> for the quotient.
+</ol>
+
+    Example: 127 &divide; 52 (expect 2).
+<pre>
+    <span class=ins>LD</span>    <span class=reg>HL</span>, 127
+    <span class=ins>LD</span>    <span class=reg>D</span>, <span class=reg>H</span>
+    <span class=ins>LD</span>    <span class=reg>E</span>, <span class=reg>L</span>
+
+<span class=cmt>; 256 &divide; 52 = 5, find 127 &times; 5</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>    <span class=cmt>; HL = $00FE</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>    <span class=cmt>; HL = $01FC</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>    <span class=cmt>; HL = $027B</span>
+</pre>
+
+Please note that this this method gives only a very rough approximation for the quotient. Later on, I will show you a way
+to divide a number perfectly, and even get the remainder!<p>
+
+<a name="wra"></a>
+    <h2>Overflow</h2>
+When a register's value is increased beyond the largest value it can contain, it's value will start over at the smallest
+value and continue incrementing:
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 203
+    <span class=ins>ADD</span>    <span class=reg>A</span>, 119
+</pre>
+
+If we add 119 to 203, we would get 322, but this does not fit in eight bits, so we have to wrap around. If we look at the
+binary value of 322, which is %101000010, then eliminating all but the rightmost eight bits will give us the value
+<span class=reg>A</span> will hold. The end result is that <span class=reg>A</span> holds 66, but the carry flag is set to
+hold that ninth bit of the result. This affect applies equally if we consider <span class=reg>A</span> to be signed (in this case, the largest and smallest possible values are 127 and -128). There is a similar phenomenon when subtracting.<p>
+
+<a name="ram"></a>
+    <h3>Registers and RAM</h3>
+    Suppose you type out an instruction like
+
+<pre>    <span class=ins>LD</span>    <span class=reg>HL</span>, $D361</pre>
+
+Which puts $D361 into <span class=reg>HL</span>. No big suprise there, but since 
+16-bit registers are just two 8-bit registers taken together, what happens to
+<span class=reg>H</span> and <span class=reg>L</span>?<br>
+<img src="../img/hex.png" alt="[H <- D3] [L <- 61]" align=left vspace=15 hspace=30 width=217 height=93>Two hex digits mean one byte, so $D3 is one byte and $61 is one byte. Since $D3 and <span class=reg>H</span> are first from the left, it makes sense that $D3 is stored into <span class=reg>H</span>. Similarily, $61 would be stored into <span class=reg>L</span>.<br clear=left><p>
+
+    Now take this instruction
+
+<pre>    <span class=ins>LD</span>    ($2315), <span class=reg>HL</span></pre>
+
+<table width=100%>
+<tr>
+ <td class=transparent>
+    Since <span class=reg>H</span> comes before <span class=reg>L</span>, You'd figure that
+    register <span class=reg>H</span> would be stored in byte $2315 and
+    <span class=reg>L</span> would be stored into byte $2316. I mean, it just makes
+    sense, right?
+ </td>
+ <td class=transparent>
+ 
+<table class=Info
+<tr class=Heading>
+ <th>$2314</th>
+ <th>$2315</th>
+ <th>$2316</th>
+ <th>$2317</th>
+ <th>$2318</th>
+ <th>$2319</th>
+</tr>
+<tr>
+ <td>&nbsp;</td>
+ <td>D3</td>
+ <td>61</td>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+</tr>
+<tr>
+ <td class=Transparent>&nbsp;</td>
+ <td class=Transparent><b><span style="font-size: 24px">&Lambda;<br>H</span></b>
+ <td class=Transparent><b><span style="font-size: 24px">&Lambda;<br>L</span></b>
+ <td colspan=3 class=Transparent><span style="color: #CC0000; font-size: 42px; font-weight: bold">&times;</span></td>
+</tr>
+</table>
+
+</table>
+
+<table width=100%>
+<tr>
+ <td class=transparent>
+    Wrong. Because the Z80 is what's called a "little-endian processor", when you store <span class=reg>HL</span>
+    to memory, the number gets "twisted around": The byte in register <span class=reg>L</span> is loaded 
+    first, <i>then</i> the byte in <span class=reg>H</span> (the number is stored
+    "little-end" first). When you store from RAM to <span class=reg>HL</span>, the first byte
+    goes into <span class=reg>L</span> and the next byte goes into <span class=reg>H</span>. </td>
+ <td class=transparent>
+ 
+<table class=Info
+<tr class=Heading>
+ <th>$2314</th>
+ <th>$2315</th>
+ <th>$2316</th>
+ <th>$2317</th>
+ <th>$2318</th>
+ <th>$2319</th>
+</tr>
+<tr>
+ <td>&nbsp;</td>
+ <td>61</td>
+ <td>D3</td>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+</tr>
+<tr>
+ <td class=Transparent>&nbsp;</td>
+ <td class=Transparent><b><span style="font-size: 24px">&Lambda;<br>L</span></b>
+ <td class=Transparent><b><span style="font-size: 24px">&Lambda;<br>H</span></b>
+ <td colspan=3 class=Transparent><span style="color: #009900; font-size: 42px; font-weight: bold">=)</span></td>
+</tr>
+</table>
+
+</table>
+
+    You should stop and think about these points until it's second-nature to you. It is
+    amazing how many people get confused about little-endian. It is <i>very</i> important to
+    remember when dealing with memory.<p>
+    
+<a name="arr"></a>
+    <h2>Arrays</h2>
+    An array is an collection of data structures, each exactly the same. The data structure
+    you use can be as simple as a single byte or as complex as a set of records, as long as
+    you are consistent with regards to handling the array. Each of these data structures is
+    otherwise unique and is referred to as an array <i>element</i>, distinguished from each
+    other with an <i>index</i>, which will range from zero to some number. The elements
+    should be contiguous in memory (though this is by no means required, just more
+    efficient).<p>
+
+    <h3>1-D Arrays</h3>
+    A one-dimensional array can be though of as a list of elements. To access an element, 
+    you need a function to convert an element's index into that element's address:
+
+<div align=center>
+<b><i>element_address</i> = <i>base_address</i> + (<i>index</i> &times; <i>element_size</i>)</b>
+</div>
+
+    Where <i>base_address</i> is the address of the array's first element, <i>index</i>
+    is the element you want to get (starting from zero), and <i>element_size</i> is the
+    size (in bytes) of each element.<p>
+
+    Example, using this array, and considering each element to be an 8-bit number...<p>
+<table class=info>
+<caption>Base Address: $8000<br>
+Element Size: One Byte
+<tr class=Heading>
+    <th>Address</th>
+    <th>$8000</th>
+    <th>$8001</th>
+    <th>$8002</th>
+    <th>$8003</th>
+    <th>$8004</th>
+    <th>$8005</th>
+    <th>$8006</th>
+    <th>$8007</th>
+    <th>$8008</th>
+    <th>$8009</th>
+    <th>$800A</th>
+    <th>$800B</th>
+</tr>
+<tr class=SubHeading>
+    <th class=Heading>Element N<sup>o</sup></th>
+    <th>0</th>
+    <th>1</th>
+    <th>2</th>
+    <th>3</th>
+    <th>4</th>
+    <th>5</th>
+    <th>6</th>
+    <th>7</th>
+    <th>8</th>
+    <th>9</th>
+    <th>10</th>
+    <th>11</th>
+</tr>
+<tr>
+    <th class=Heading>Value</th>
+    <td>232</td>
+    <td>37</td>
+    <td>131</td>
+    <td>103</td>
+    <td>187</td>
+    <td>11</td>
+    <td>86</td>
+    <td>254</td>
+    <td>51</td>
+    <td>204</td>
+    <td>243</td>
+    <td>56</td>
+</tr>
+</table>
+
+...access the 5<sup>th</sup> element and store it into <span class=reg>C</span>:
+
+<pre>
+<span class=mem>array_base</span>      <span class=dir>.EQU</span>    $8000
+<span class=mem>element_size</span>    <span class=dir>.EQU</span>    3
+    <span class=ins>LD</span>     <span class=reg>A</span>, (<span class=mem>array_base</span>+(4*<span class=mem>element_size</span>))
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>A</span></pre>
+
+    If the index is in a register, you have a bit more work to do.
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 3              <span class=cmt>; Put index in A</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>A</span>              <span class=cmt>; Multiply by element size</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>B</span>
+
+    <span class=ins>LD</span>     <span class=reg>D</span>, 0
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>A</span>              <span class=cmt>; Put A in DE</span>
+
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>array_base</span>    <span class=cmt>; Add index to base</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>(HL)</span>
+</pre><p>
+
+    <h3>2-D Arrays</h3>
+    Whereas a 1-D array can be thought of as a list, a 2-D array is probably best thought of
+    as a matrix or table. Instead of one index, you have two, which, for the sake of
+    comprehension, are called the <i>row index</i> and the <i>column index</i>. However, the
+    array's elements are still stored sequentially in memory. Which brings up an important
+    question: how do you represent an n&times;m array? Well, you have your choice of two
+    options.<p>
+
+    With <i>row-major</i> ordering, you fill up each row from left to right, then move down
+    to the next row when you have exhausted a row.<p>
+
+<table class=Info>
+<tr>
+    <td class=Transparent colspan=2 rowspan=2></td>
+    <th class=Heading colspan=4>Column</th>
+</tr>
+<tr>
+    <th class=SubHeading width=18%>0</th>
+    <th class=SubHeading width=18%>1</th>
+    <th class=SubHeading width=18%>2</th>
+    <th class=SubHeading width=18%>3</th>
+</tr>
+<tr>
+    <th class=Heading rowspan=3>R<br>o<br>w</th>
+    <th class=SubHeading width=18%>0</th>
+    <td>232</td>
+    <td>37</td>
+    <td>131</td>
+    <td>103</td>
+</tr>
+<tr>
+    <th class=SubHeading>1</th>
+    <td>187</td>
+    <td>11</td>
+    <td>86</td>
+    <td>254</td>
+</tr>
+<tr>
+    <th class=SubHeading>2</th>
+    <td>51</td>
+    <td>204</td>
+    <td>243</td>
+    <td>56</td>
+</tr>
+</table>
+
+    Or you could have <i>column-major</i> ordering, where each column is filled up top to
+    bottom before moving to the next one:
+
+<table class=Info>
+<tr>
+    <td class=Transparent colspan=2 rowspan=2></td>
+    <th class=Heading colspan=4>Column</th>
+</tr>
+<tr>
+    <th class=SubHeading width=18%>0</th>
+    <th class=SubHeading width=18%>1</th>
+    <th class=SubHeading width=18%>2</th>
+    <th class=SubHeading width=18%>3</th>
+</tr>
+<tr>
+    <th class=Heading rowspan=3>R<br>o<br>w</th>
+    <th class=SubHeading width=18%>0</th>
+    <td>232</td>
+    <td>103</td>
+    <td>86</td>
+    <td>204</td>
+</tr>
+<tr>
+    <th class=SubHeading>1</th>
+    <td>37</td>
+    <td>187</td>
+    <td>234</td>
+    <td>243</td>
+</tr>
+<tr>
+    <th class=SubHeading>2</th>
+    <td>131</td>
+    <td>11</td>
+    <td>51</td>
+    <td>56</td>
+</tr>
+</table>
+
+    As you might've guessed, you need a different function to match an index to an array.<p>
+
+<dl>
+<dt>Row major:
+<dd><b><i>address</i> = <i>base_address</i> + (<i>col_index</i> &times; <i>row_size</i> + <i>row_index</i>) &times; <i>element_size</i></b>
+<dt>Column major:
+<dd><b><i>address</i> = <i>base_address</i> + (<i>row_index</i> &times; <i>col_size</i> + <i>col_index</i>) &times; <i>element_size</i></b>
+</dl>
+
+Example, let's say we have a 4&times;6 row-major array of words with a base address of $8000, and we have row index
+in <span class=reg>B</span> and a column index in <span class=reg>C</span>. What we would like to do is get the indexed
+element into <span class=reg>HL</span>.
+
+<pre>
+<span class=mem>array_base</span>    <span class=dir>.EQU</span>    $8000
+<span class=mem>row_size</span>      <span class=dir>.EQU</span>    4
+<span class=mem>col_size</span>      <span class=dir>.EQU</span>    3
+
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>array_base</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>C</span>       <span class=cmt>; Multiply by row size</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>B</span>       <span class=cmt>; Add in row index</span>
+    <span class=ins>LD</span>     <span class=reg>D</span>, 0
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>H</span>, <span class=reg>(HL)</span>
+    <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>A</span>
+</pre>
+
+<a name="str"></a>
+    <h2>Structures</h2>
+Whereas an array's elements are all the same type, a structure's elements can vary. The whole purpose of a structure is to
+encapsulate data that is different but logically connected. If you were managing a CD database, you might use this
+hypothetical example:
+
+<pre>
+struct CD {
+    byte  title[32];   // Name of the CD
+    byte  band[32];    // The guys what made it
+    word  release;     // Year of release
+    byte  tracks;      // Number of songs
+    word  length;      // Total disc length in seconds
+    byte  rating;      // How am I reflecting upon having thrown
+}                      // my hard-earned cash at the RIAA today? (/10)</pre>
+
+The structure's elements are allocated one after another in memory, just like an array is. To access an element of the
+structure, you need to know the offset from the beginning of the structure to the first byte of that element. Continuing
+with the example, we might define some manifest constants to help us:
+
+<pre>
+<span class=mem>CD.title</span>    <span class=dir>.EQU</span>  0
+<span class=mem>CD.band</span>     <span class=dir>.EQU</span>  32
+<span class=mem>CD.release</span>  <span class=dir>.EQU</span>  64
+<span class=mem>CD.tracks</span>   <span class=dir>.EQU</span>  66
+<span class=mem>CD.length</span>   <span class=dir>.EQU</span>  67
+<span class=mem>CD.rating</span>   <span class=dir>.EQU</span>  69
+</pre>
+
+These equates will help enormously in maintaining readability. To access an element, you can put the structure base
+address into <span class=reg>HL</span>, then add the offset. Alternatively, you might use <span class=reg>IX</span> and
+use the equated displacement. Slow, but easy to follow.<p>
+
+Example, given this instance of our CD:
+<pre>
+    CD.title   =  "P·u·l·s·e"
+    CD.band    =  "Pink Floyd"
+    CD.release =  1995
+    CD.tracks  =  23
+    CD.length  =  8863
+    CD.rating  =  10   // Watch the video, it ownz.
+</pre>
+	
+And say we wanted to set the <tt>length</tt> element to its proper value:
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>disc01</span> + <span class=mem>length</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, $9F
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, $22
+
+    <span class=ins>LD</span>     <span class=reg>IX</span>, <span class=mem>disc01</span>
+    <span class=ins>LD</span>     <span class=reg>(IX + <span class=mem>CD.length</span>)</span>, $9F
+    <span class=ins>LD</span>     <span class=reg>(IX + <span class=mem>CD.length</span> + 1)</span>, $22
+
+<span class=mem>disc01:</span>
+<span class=dir>.DB</span>   "Pulse"
+<span class=dir>.DB</span>   "Pink Floyd"
+<span class=dir>.DW</span>   1995
+<span class=dir>.DB</span>   23
+<span class=dir>.DW</span>   6502
+<span class=dir>.DB</span>   10
+</pre>
+
+	<h3>Arrays of Structures</h3>
+Oh, to be sure, you can have an array of structures. I mean, a database would be pretty useless if all you keep
+track of was one measly CD. To access a structure element, just index the array and go for it.
+
+E.g. Suppose we have an array for 4 sprites in a game located at <span class=mem>AppBackupScreen</span>, and each
+element has this structure:
+<pre>
+struct sprite {
+    byte  x;      // x-position
+    byte  y;      // y-position
+    byte  dx;     // delta-x each frame
+    byte  dy;     // delta-y each frame
+    byte  hp;     // hit points
+    byte  frame;  // animation frame
+}</pre>
+
+    And suppose we wanted to add the <tt>dx</tt> byte to the <tt>x</tt> byte, and the
+    <tt>dy</tt> byte to the <tt>y</tt> byte of each element. This could be done
+
+<pre>
+<span class=mem>x</span>       <span class=dir>.EQU</span>  0
+<span class=mem>y</span>       <span class=dir>.EQU</span>  1
+<span class=mem>dx</span>      <span class=dir>.EQU</span>  2
+<span class=mem>dy</span>      <span class=dir>.EQU</span>  3
+<span class=mem>hp</span>      <span class=dir>.EQU</span>  4
+<span class=mem>frame</span>   <span class=dir>.EQU</span>  5
+<span class=mem>sizeof</span>  <span class=dir>.EQU</span>  6     <span class=cmt>; Size of each element</span>
+
+    <span class=ins>LD</span>    <span class=reg>IX</span>, <span class=mem>AppBackupScreen</span>     <span class=cmt>; Get array base</span>
+    <span class=ins>LD</span>    <span class=reg>DE</span>, <span class=mem>sizeof</span>              <span class=cmt>; Use this to update IX</span>
+
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>x</span>)</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>dx</span>)</span>
+    <span class=ins>LD</span>    <span class=reg>(IX + <span class=mem>x</span>)</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>   <span class=reg>IX</span>, <span class=reg>DE</span>
+
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>x</span>)</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>dx</span>)</span>
+    <span class=ins>LD</span>    <span class=reg>(IX + <span class=mem>x</span>)</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>   <span class=reg>IX</span>, <span class=reg>DE</span>
+
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>x</span>)</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>dx</span>)</span>
+    <span class=ins>LD</span>    <span class=reg>(IX + <span class=mem>x</span>)</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>   <span class=reg>IX</span>, <span class=reg>DE</span>
+
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>x</span>)</span>
+    <span class=ins>ADD</span>   <span class=reg>A</span>, <span class=reg>(IX + <span class=mem>dx</span>)</span>
+    <span class=ins>LD</span>    <span class=reg>(IX + <span class=mem>x</span>)</span>, <span class=reg>A</span>
+</pre>
+    
+    <hr>
+<div class=NavFooter>
+    <a href="day04.html">PREVIOUS - Day 4: Flags</a><p>
+    <a href="day06.html">NEXT - Day 6: Stacks</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 17 &mdash; Character Sets</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day16.html">Previous</a>
+    &middot; <a href="day18.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 17. Character Sets</h1>
+    <hr>
+    <b><font color=#CCCCCC>novice intermediate <font color=#FF6600>advanced</font> expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="circle"><a href="#set">Sets and Set Theory</a>
+<li type="disc"><a href="#imp">Implementation of Character Sets</a>
+<li type="disc"><a href="#cre">Creating a Character Set</a>
+<li type="disc"><a href="#ops">Performing Set Operations on Character Sets</a>
+<li type="disc"><a href="#tst">Testing Character Sets</a>
+</ul>
+    <hr>
+Yesterday we looked at character strings, which are complex data objects based upon characters. Character sets are also complex data objects based upon characters that differ from strings in a very key way: with character strings we care about, nor do we even depend upon the ordering of the characters within the string. With a character set we only care whether a character is in the set or not.<p>
+
+<a name="set"></a>
+<h2>Sets and Set Theory</h2>
+A <i>set</i> is  any collection of items with three properties.
+<ol>
+<li>Each member of the set is unique, there can never be more than one of the same set member.
+<li>The members of a set are unordered.
+<li>An element can either be a member to a set or not, there are no in-betweens.
+</ol>
+
+Notationally, a set is indicated using braces. The elements can be defined as a list, descriptive sentence, or equation:<p>
+
+<tt>{ 0, x, &ouml;, 9, 12, A }</tt><br>
+The set of the letters 'x', '&ouml;', 'A', and the integers '0', '9', '12'.<p>
+
+<tt>{ all positive small integers }</tt><br>
+The set 1, 3, 5, 7, ...<p>
+
+<tt>{ x | x! <= 120 }</tt><br>
+The set 1, 2, 6, 24, 120<p>
+
+If a set has no members, it is called the empty set and is denoted <b><font face="symbol">&AElig;</font></b>, which must be at least just a little annoying to the Swedes.<p>
+
+<h3>Things to do to Your Sets</h3>
+There are some fundamental set operations defined. To apprehend them fully, we will graphically represent a set as the set members enclosed in circles. E.g.<br>
+<div align=center><img src="../img/set1.png" alt="(1 2 4 6 11 10) 3 5 7 8 13 9 12 14" width=168 height=145></div><p>
+
+<h3>Complement</h3>
+The complement of a set <i>S</i> is written <i>S</i>', and is the set of all elements not in the set. Thus, <i>S</i>' = {3, 5, 7, 8, 9, 12, 13}. Complement literally means "that which completes", and if you combine a set with its complement, you get everything.<p>
+
+<h3>Union</h3>
+If you union two sets together, you get a new set containing all the members in each set (the blue area in the Venn diagram).<br>
+<div align=center><img src="../img/union.png" alt="(2 6 10 (1 4 11) 3 5 9 12) 7 8 13 14" width=254 height=141></div><p>
+
+<h3>Intersection</h3>
+The intersection of two sets is the set whose members exist in both sets.<br>
+<div align=center><img src="../img/intersec.png" alt="(2 6 10 (*1 4 11*) 3 5 9 12) 7 8 13 14" width=254 height=141></div><p>
+
+<h3>Difference</h3>
+The difference of two sets is the set whose elements are in the first set <i>but not</i> in the second.<br>
+<div align=center><img src="../img/diff.png" alt="(*2 6 10* (1 4 11) 3 5 9 12) 7 8 13 14" width=254 height=141></div><p>
+
+<h3>Subset</h3>
+A subset of a set is like a refinement for the conditions for inclusion into the set. A subset of a set will never add new elemnets, but it may lose some. E.g. take the set of all books, the set of all paperback books is a subset of that set, because all paperback books are books.<p>
+
+A proper subset is one that is dissimilar to its parent set. E.g. if you were a real tightwad and bought all your books paperbacked and second-hand, then for you the set of you paperback books would be a subset of all you books, but it would not be a proper subset.<p>
+
+<h3>Superset</h3>
+A superset is the exact opposite of a subset. If set <i>R</i> is a subset of set <i>S</i>, then <i>S</i> is a superset of set <i>R</i>. If <i>R</i> has fewer members than <i>S</i>, then <i>S</i> is a proper superset of <i>R</i>.<p>
+
+<a name="imp"></a>
+<h2>Implementation of Character Sets</h2>
+A character set is best implemented as an array of bits, where each bit is a particular ASCII code. That meands that for strings that are standard ASCII, 128 bits, or 16 bytes are needed for a full character set.<p>
+<div align=center>
+<table>
+<tr>
+  <th class=SubHeading colspan=8>Byte 0</th>
+  <th class=Transparent>. . .</td>
+  <th class=SubHeading colspan=8>Byte 15</th>
+</tr>
+<tr>
+  <th width=30>0</td>
+  <th width=30>1</td>
+  <th width=30>2</td>
+  <th width=30>3</td>
+  <th width=30>4</td>
+  <th width=30>5</td>
+  <th width=30>6</td>
+  <th width=30>7</td>
+  <th class=transparent>. . .</td>
+  <th width=30>120</td>
+  <th width=30>121</td>
+  <th width=30>122</td>
+  <th width=30>123</td>
+  <th width=30>124</td>
+  <th width=30>125</td>
+  <th width=30>126</td>
+  <th width=30>127</td>
+</tr>
+<tr>
+  <th class=Heading></th>
+  <th class=Heading></th>
+  <th class=Heading></th>
+  <th class=Heading></th>
+  <th class=Heading></th>
+  <th class=Heading></th>
+  <th class=Heading></th>
+  <th class=Heading></th>
+  <th class=Transparent>. . .</th>
+  <th class=Heading></th>
+  <th class=Heading></th>
+  <th class=Heading></th>
+  <th class=Heading></th>
+  <th class=Heading></th>
+  <th class=Heading></th>
+  <th class=Heading></th>
+  <th class=Heading></th>
+  </tr>
+</table>
+</div><p>
+
+Bit seven of byte 0 corresponds to ASCII code 0. If this bit is set, the character set contains ASCII 0 as a member. The next bit over is for ASCII 1, and so on up to ASCII 127. Here is what a set corresponding to the string "Electromagnetic radiation" would look like:
+<pre>
+<span class=reg>                                     !"#$%&' ()*+, -./ 01234567 89:;&lt;=&gt;?</span>
+00000000 00000000 00000000 00000000 10000000 00000000 00000000 00000000
+<span class=reg>@ABCDEFG HIJKLMNO PQRSTUVW XYZ[\]^_ `abcdefg hijklmno pqrstuvw xyz{|}~</span>
+00000100 00000000 00000000 00000000 01011101 01001111 00101000 00000000
+</pre><p>
+
+<a name="cre"></a>
+<h2>Creaing a Character Set</h2>
+The easiest character set to make is the null set. For that you just set sixteen bytes to zero. Not the hardest thing in the world.<p>
+
+How about adding a character to a pre-existing character set? We can do that with a little bitmasking.<br>
+To set a bit we want a bitmask that, when ORed with the character set, sets the bit for the character. For that we need to know a) the byte and b) the bit in that byte. To get the byte, the charset is 16 bytes long and contains 128 elements. 128 &divide; 16 = 8, so divide the character's ASCII code by 8. Add the quotient to the base address and we have our byte. To get the bit, find the remainder of that division.<br>
+Now, create a bitmask by rotating the value %10000000 to the right by the bit number, and then OR it with the byte of the charset.<p>
+
+E.g. To our previous character set, we would like to add the letter 'U' (ASCII 85). Divide 85 by 8 to get 10, therefore we will be working with the eleventh byte of the charset. The remainder of 85 &divide; 8 is 5, so rotate %10000000 five times to the right to get %00000100, and OR it. The character set is now:
+
+<pre>
+<span class=reg>                                     !"#$%&' ()*+, -./ 01234567 89:;&lt;=&gt;?</span>
+00000000 00000000 00000000 00000000 10000000 00000000 00000000 00000000
+<span class=reg>@ABCDEFG HIJKLMNO PQRSTUVW XYZ[\]^_ `abcdefg hijklmno pqrstuvw xyz{|}~</span>
+00000100 00000000 00000100 00000000 01011101 01001111 00101000 00000000
+</pre><p>
+
+<pre>
+    <span class=ins>LD</span>    <span class=reg>C</span>, <span class=reg>A</span>
+    <span class=ins>SRL</span>   <span class=reg>C</span>
+    <span class=ins>SRL</span>   <span class=reg>C</span>
+    <span class=ins>SRL</span>   <span class=reg>C</span>
+    <span class=ins>LD</span>    <span class=reg>B</span>, 0
+    <span class=ins>ADD</span>   <span class=reg>HL</span>, <span class=reg>BC</span>
+    <span class=ins>AND</span>   7
+    <span class=ins>LD</span>    <span class=reg>B</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, %10000000
+    <span class=ins>JR    Z</span>, <span class=mem>Insert</span>
+<span class=mem>Shift:</span>
+    <span class=ins>RRCA</span>
+    <span class=ins>DJNZ</span>  <span class=mem>Shift</span>
+<span class=mem>Insert:</span>
+    <span class=ins>OR</span>    <span class=reg>(HL)</span>
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, <span class=reg>A</span>
+</pre><p>
+
+A character set for an entire string can be created by starting with the empty set and adding each character of the string in sequence.<p>
+
+It might be useful to remove a character from a character set. It follows the same principle for insertion, only use %01111111 as the initial bitmask, and use AND logic.<p>
+
+<a name="ops"></a>
+<h2>Performing Set Operations on Character Sets</h2>
+A union operation on two character sets would result in a set that is the collection of all characters in either set or both. With our bit array character sets, if a bit was one in either operand set, we would expect it to be one in the resulting set. This is of course the logical OR operation. Thus, the union of two character sets can be determined by ORing their bytes together.<p>
+
+<pre>
+<span class=cmt>; Union of the character set pointed to by HL and the one pointed to by DE</span>
+    <span class=ins>LD</span>    <span class=reg>B</span>, 16
+<span class=mem>Loop:</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=reg>(DE)</span>
+    <span class=ins>OR</span>    <span class=reg>(HL)</span>
+    <span class=ins>LD</span>    <span class=reg>(HL)</span>, <span class=reg>A</span>
+    <span class=ins>DJNZ</span>  <span class=mem>Loop</span>
+</pre><p>
+
+The other set operations are likewise calculated using the appropriate boolean instructions: <span class=ins>AND</span> for intersection, <span class=ins>AND CPL</span> for difference.<p>
+
+<a name="tst"></a>
+<h2>Testing Character Sets</h2>
+You might on occasion want to see if a character set is empty. The easiest way to do this is to OR each byte of the set together. If the set has absolutely no members, the <span class=ins>Z</span> flag is set.<p>
+
+Most often, you will want to see if a specific character is in a character set. The way to do this is with an AND bitmask that is entirely made up of zeros save for the bit corresponding to the character to test for set membership. The mask clears all of the other seven bits, and if the character does indeed belong to the set, the <span class=ins>Z</span> will be reset (because, you know, it'll be a 1 ANDed with a 1).<p>
+
+Two character sets are equal if the all the bits are equal. You can check two sets for equality or inequality by performing a multiprecision comparison of the sets.<p>
+
+<pre>
+    <span class=ins>LD</span>    <span class=reg>BC</span>, 16
+<span class=mem>Loop:</span>
+    <span class=ins>LD</span>    <span class=reg>A</span>, <span class=mem>(DE)</span>
+    <span class=ins>CPI</span>
+    <span class=ins>JR    NZ</span>, <span class=mem>Break</span>
+    <span class=ins>INC</span>   <span class=reg>DE</span>
+    <span class=ins>JP    PE</span>, <span class=mem>Loop</span>
+<span class=mem>Break:</span>
+</pre><p>
+
+To test for a subset, you first have to find the set intersection. If the intersection is equal to the first set, then the second set is a subset of the first. If the set intersection is also not equal to the second set, then you have a proper subset on your hands. The implementation of the superset and proper superset test are identical.<p>
+
+    <hr>
+<div class=NavFooter>
+    <a href="day16.html">PREVIOUS - Day 16: Character Strings</a><p>
+    <a href="day18.html">NEXT - Day 18: Floating-Point Numbers</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

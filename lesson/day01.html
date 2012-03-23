@@ -1,0 +1,202 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 1 &mdash; Introduction</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day02.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 1. Introduction</h1>
+    <hr>
+    <b><font color=#006600>novice</font> <font color=#CCCCCC>intermediate advanced expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#req">Requirements for Learning</a>
+<li type="disc"><a href="#dev">Development</a>
+<li type="disc"><a href="#asm">Assembling</a>
+<li type="disc"><a href="#pgm">Sample Program</a>
+<li type="square"><a href="#dos">DOS</a>
+<li type="disc"><a href="#lnk">Sending</a>
+</ul>
+    <hr>
+    
+<a name="req"></a>
+    <h2>Requirements for Learning</h2>
+    To learn assembly programming for the TI-83 Plus, you will require a few things.
+
+<table class=Info>
+<tr>
+    <td width=50%>TI-83 Plus Calculator</td>
+    <td width=50%><a href="http://www.ticalc.org/archives/files/fileinfo/129/12922.html">DevPac8x</a> linker</td>
+</tr>
+
+<tr>
+    <td>Graph Link cable with associated software</td>
+    <td>TI83PLUS.INC file (included)</td>
+</tr>
+
+<tr>
+    <td><a href="http://www.ticalc.org/archives/files/fileinfo/250/25051.html">TASM assembler</a></td>
+    <td>TASM Z80 table file (<tt>tasm80.tab</tt>)</td>
+</tr>
+</table>
+
+It is also highly recommended that you be fairly competent in any programming language. And when I say "any programming language", I mean, of course, C.  If z80 is your first venture into programming, I guarantee you, reading this guide will give you a brain aneurysm. Well, maybe that's a bit harsh, but I will use C as a kind of "pseudocode" from time to time, so if you know any kind of high-level language (with the definite exception of TI-BASIC) you should do okay.<p>
+
+<a name="dev"></a>
+    <h2>Development of a Z80 Program</h2>
+The first step is to create the source code in a text editor. Use Notepad for this, because it saves its files in ASCII text format. As your programs get more involved, it might be a good idea to switch to a specialized <a style="cursor: help" onClick="alert('Integrated Developer Environment: provides all the tools necessary to assemble a program with special treats like syntax coloring'); return false">IDE</a> (Crimson Editor is a good one). When you save your source file, give it a name descriptive of its function, and add a .z80 extension.<p>
+
+There is a minor irritant we have to fix first, though: when you save your source file, Notepad will name it <tt>source.z80.txt</tt> because it's stupid enough to think it knows better than you. This is definitely not what you want. To fix this, follow these steps (Windows 98).
+<ol>
+    <li>Open Windows Explorer.
+    <li>Click the View menu, and select Folder Options...
+    <li>In the File Types tab, click New Type...
+    <li>Fill out the fields like this:<br>
+    <div align=center><img src="../img/ftype1.png" alt="[NO IMAGE]" width=440 height=149></div>
+    <li>Click New... and fill out the fields like this:<br>
+    <div align=center><img src="../img/ftype2.png" alt="[NO IMAGE]" width=459 height=161></div>
+    <li>Click OK and Close.
+</ol>
+
+The next step in development is to transform the source code (called "assembling") into machine language that makes sense to the calculator, using a program called (of all things) an Assembler. The assembler we will be using is called TASM (this is not Borland's Turbo Assembler).<p>
+
+Once the program is assembled, a linker is used to alter the machine language slightly in order
+for the calculator to be able to read it. We will be using a linker called DevPac8x.<p>
+
+Finally, you ship the program to the calculator and run it.<p>
+
+<a name="asm"></a>
+    <h2>Assembling</h2>
+If you didn't do it while you were viewing the readme file, create a new folder off the C:\ drive and call it <tt>Asm</tt>. In this folder create three new folders:
+
+<table class=Info>
+<tr>
+    <td class=Heading width=20%><tt>Source</tt></td>
+    <td>Put your source files here</td>
+</tr>
+<tr>
+    <td class=Heading><tt>Tasm</tt></td>
+    <td>Put <tt>TASM.EXE, TASM80.TAB, TI83PLUS.INC, DEVPAC8X.COM </tt>here</td>
+</tr>
+<tr>
+    <td class=Heading><tt>Exec</tt></td>
+    <td>Look here for compiled programs</td>
+</tr>
+</table>
+    
+In the <tt>Tasm</tt> folder, make a new text file and type in this:
+
+<div class=Program>
+<pre>@echo off
+echo ==== Now assembling %1.z80 for the TI-83 Plus ====
+tasm -80 -i -b c:\asm\source\%1.z80 c:\asm\exec\%1.bin
+if errorlevel 1 goto ERRORS
+rem This is necessary because of a DevPac8x bug
+cd c:\asm\exec
+c:\asm\tasm\devpac8x %1
+cd c:\asm\tasm
+echo ==== Job finished. Program saved as %1.8xp ====
+goto DONE
+:ERRORS
+echo ==== Errors!!! ====
+:DONE
+del c:\asm\source\%1.lst > NUL
+del c:\asm\exec\%1.bin > NUL
+echo ==== Done ====</pre></div>
+
+And save as <tt>asm.bat</tt>. What you just made is called a batch file and is similar in purpose to TI-BASIC programs.<p>
+
+<a name="pgm"></a>
+    <h2>Sample Z80 Program</h2>
+Now to make sure that everything has been set up satisfactorialy, we are going to write, assemble, link, and send a little do-nothing program.  Enter the following source code and don't bother trying to understand it... yet.
+
+<div class=Program>
+<pre>.nolist
+#include "ti83plus.inc"
+#define    ProgStart    $9D95
+.list
+.org    ProgStart - 2
+    .db    t2ByteTok, tAsmCmp
+    b_call(_ClrLCDFull)
+    ld    hl, 0
+    ld    (PenCol), hl
+    ld    hl, msg
+    b_call(_PutS)            ; Display the text
+    b_call(_NewLine)
+    ret
+
+msg:
+    .db "Hello world!", 0
+.end
+.end</pre>
+</div>
+
+And save as <tt>hello.z80</tt> in the <tt>source</tt> directory<br>
+to compile, open up DOS (try Start menu, Run, then whichever of <tt>command.com</tt> or <tt>cmd.exe</tt> works) and go to the TASM directory. Type <tt>asm hello</tt> and press Enter.<p>
+
+After a second or two (or more, depending on your computer's speed), assembly will finish, and
+the program is ready to be transmitted to the calculator.<p>
+
+<a name="dos"></a>
+    <h3>Navigating Within DOS</h3>
+Since Windows completely replaced DOS as the operating system for PCs, most newer computer users will be at somewhat of a loss when confronted with the DOS command prompt. Here are a few things about DOS that you will find helpful when navigating through your directory structure. I presume that you have enough experience with file managers like Explorer to know what things like "subdirectory" and "parent directory" mean.<p>
+
+<dl>
+    <dt>Command Prompt</dt>
+    <dd>At the extreme left of the screen is the command prompt. This is the name of the
+current drive, current directory, and all parent directories. The format of internet URLs are directly based on the command prompt (although not specifically the DOS prompt), so you shouldn't have any trouble interpreting it.<p>
+
+    <dt><tt>cd <i>directory</i></tt>
+    <dd>Changes the current directory. The directory changed to must be a subdirectory of the
+    current one.<p>
+
+    <dt><tt>cd ..</tt>
+    <dd>Moves to the parent directory of the current directory.<p>
+
+    <dt><tt>cd \</tt>
+    <dd>Moves to the root directory.<p>
+
+    <dt><tt>dir /p</tt>
+    <dd>Displays a list of all files in the current directory. Useful for getting your
+    bearings.
+</dl><p>
+
+<a name="lnk"></a>
+    <h2>Sending to the Calculator</h2>
+Start the Graph Link software. Other programs like TI-Connect I am unfamiliar with and cannot give any help. Click on <tt><u>L</u>ink</tt>, <tt><u>S</u>end To ></tt>, then <tt><u>R</u>AM</tt>. Navigate to the <tt>C:\Asm\Exec</tt> folder and send <tt>hello.8xp</tt> over.<p>
+
+To run the program, paste <tt>Asm(</tt> from the catalog and <tt>HELLO</tt> from the PRGM menu...<p>
+
+And you should get this:
+<div align=center><img src="../img/hello.png" alt="[NO IMAGE]" width=300 height=204></div>
+
+GAHHHHHHHHHHHHHHHHHHH! Okay, so maybe I <i>don't</i> have a creative bone in my body :-) but, if
+the screen went blank, it means that there's an error in the program that's caused the calculator 
+to crash. All you can do is turn the calculator back on and be greeted by a "RAM Cleared" message, which means exactly what you think it does. <a href="../ref/crash.html" target=_blank>Crashes</a> wipe out the RAM and reset the calculator's defaults (fortunately, archived variables are safe). Go back to the "Sample Z80 Program" section and try again.<p>
+
+    <h2>One Last Important Thing</h2>
+Assembly programs for the TI-83 Plus cannot be more than 8811 bytes in size. Well they can, but just keep them below that.
+
+    <hr>
+<div class=NavFooter>
+    <a href="day02.html">NEXT - Day 2: The Components of a Z80 Program</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+
+</body>
+</html>

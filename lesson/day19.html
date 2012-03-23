@@ -1,0 +1,934 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 19 &mdash; User Variables</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day18.html">Previous</a>
+    &middot; <a href="day20.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 19. User Variables</h1>
+    <hr>
+    <b><font color=#CCCCCC>novice intermediate <font color=#FF6600>advanced</font> expert</font></b><hr>
+
+<ul class=TopicList>    
+<li type="disc"><a href="#nam">Variable Names</a><br>
+<li type="disc"><a href="#tok">Tokens</a><br>
+<li type="square"><a href="#fmt">Variable Name Formats</a><br>
+<li type="disc"><a href="#crt">Creating Variables</a><br>
+<li type="square"><a href="#ini">Initializing Variables</a>
+</ul>
+    <hr>
+
+    User variables are all those variables that you can create and delete. There are the
+    real/complex variables A-Z, &theta;; lists, matrices, programs, etc.<p>
+
+<a name="nam"></a>
+    <h2>Variable Names</h2>
+    Each variable has its own unique name. Variable names are built to be stored in the
+    OP registers, so they can be at most nine bytes long. While each variable
+    type has its own naming conventions, the general form is this:<p>
+
+<table class=Info>
+<tr>
+    <th class=Heading>OP1</th>
+    <th class=Heading>+1</th>
+    <th class=Heading>+2</th>
+    <th class=Heading>+3</th>
+    <th class=Heading>+4</th>
+    <th class=Heading>+5</th>
+    <th class=Heading>+6</th>
+    <th class=Heading>+7</th>
+    <th class=Heading>+8</th>
+</tr>
+<tr>
+    <td><b>TYPE</b></td>
+    <td colspan=8><i>Variable name</i></td>
+</tr>
+</table>
+
+<b>TYPE</b> is a number specifying the object type. Each variable type has a unique number. Object types not listed
+are undefined or for internal useage only.<p>
+
+<table class=Info>
+<tr>
+    <th class=Heading>Value</th>
+    <th class=Heading>Equate</th>
+    <th class=Heading>Variable Type</th>
+</tr>
+<tr>
+    <td class=SubHeading>$00</td>
+    <td><tt>RealObj</tt></td>
+    <td>Real number</td>
+</tr>
+<tr>
+    <td class=SubHeading>$01</td>
+    <td><tt>ListObj</tt></td>
+    <td>List</td>
+</tr>
+<tr>
+    <td class=SubHeading>$02</td>
+    <td><tt>MatObj</tt></td>
+    <td>Matrix</td>
+</tr>
+<tr>
+    <td class=SubHeading>$03</td>
+    <td><tt>EquObj</tt></td>
+    <td>Equation</td>
+</tr>
+<tr>
+    <td class=SubHeading>$04</td>
+    <td><tt>StrngObj</tt></td>
+    <td>String</td>
+</tr>
+<tr>
+    <td class=SubHeading>$05</td>
+    <td><tt>ProgObj</tt></td>
+    <td>Program</td>
+</tr>
+<tr>
+    <td class=SubHeading>$06</td>
+    <td><tt>ProtProgObj</tt></td>
+    <td>Protected program<br>(Hidden from EDIT menu)</td>
+</tr>
+<tr>
+    <td class=SubHeading>$07</td>
+    <td><tt>PictObj</tt></td>
+    <td>Picture</td>
+</tr>
+<tr>
+    <td class=SubHeading>$08</td>
+    <td><tt>GDBObj</tt></td>
+    <td>Graph Database</td>
+<tr>
+    <td class=SubHeading>$0B</td>
+    <td><tt>NewEquObj</tt></td>
+    <td>New Equation</td>
+</tr>
+<tr>
+    <td class=SubHeading>$0C</td>
+    <td><tt>CplxObj</tt></td>
+    <td>Complex number</td>
+</tr>
+<tr>
+    <td class=SubHeading>$0D</td>
+    <td><tt>CListObj</tt></td>
+    <td>Complex list</td>
+</tr>
+<tr>
+    <td class=SubHeading>$15</td>
+    <td><tt>AppVarObj</tt></td>
+    <td>AppVar</td>
+</tr>
+<tr>
+    <td class=SubHeading>$16</td>
+    <td><tt>TempProgObj</tt></td>
+    <td>Temporary program</td>
+</tr>
+</table>
+
+    The rest is the name, spelled with tokens.<p>
+
+<a name="tok"></a>
+    <h2>Tokens</h2>
+    A token is a code that represents system commands, variables, etc. We use tokens to save
+    space. For example, the command <tt>Disp </tt> is four letters and a space. This would
+    normally be five bytes if stored as individual characters. By using a token, we save four
+    bytes (which is a lot on a 64K machine). There are way too many tokens to list here; you
+    can find them in the TI83PLUS.INC file (hint: they all begin with '<tt>t</tt>').<p>
+
+    <h3>Two-Byte Tokens</h3>
+    There is no way in hell we could assign a one-byte token to every single command, so some
+    tokens are defined with two bytes. Their format is <i>token_class</i>, <i>token</i>. The token class is the
+    type of token wanted.<p>
+
+<table class=info>
+<tr>
+ <th class=Heading>Token Value</th>
+ <th class=Heading>Class</th>
+</tr>
+<tr>
+ <th class=SubHeading><tt>tVarStrng</tt></th>
+ <td>String variables</td>
+</tr>
+<tr>
+ <th class=SubHeading><tt>tVarMat</tt></th>
+ <td>Matrix variables</td>
+</tr>
+<tr>
+ <th class=SubHeading><tt>tVarLst</tt></th>
+ <td>List variables</td>
+</tr>
+<tr>
+ <th class=SubHeading><tt>tVarEqu</tt></th>
+ <td>Equation variables</td>
+</tr>
+<tr>
+ <th class=SubHeading><tt>tVarPict</tt></th>
+ <td>Picture variables</td>
+</tr>
+<tr>
+ <th class=SubHeading><tt>tVarGDB</tt></th>
+ <td>Graph database variables</td>
+</tr>
+<tr>
+ <th class=SubHeading><tt>tVarOut</tt></th>
+ <td>Output-only variables</td>
+</tr>
+<tr>
+ <th class=SubHeading><tt>tVarSys</tt></th>
+ <td>System IO variables</td>
+</tr>
+<tr>
+ <th class=SubHeading><tt>t2ByteTok</tt></th>
+ <td>Extra general tokens</td>
+</tr>
+</table>
+
+    Anyway, the .INC file has all the token descriptions with ample comments. Just search for "2nd byte of".<p>
+
+<a name="fmt"></a>
+    <h2>Variable Name Formats</h2>
+    <h3>Real/Complex Numbers</h3>
+    Spelled with object type (<span class=mem>RealObj</span> or <span
+    class=mem>CplxObj</span>) followed by one token (<span class=mem>tA</span> to <span
+    class=mem>tZ</span> and <span class=mem>tTheta</span>), and two nulls.<p>
+
+<table class=Info>
+<tr class=Heading>
+    <th width=10% class=Heading>OP1</th>
+    <th width=8% class=Heading>+1</th>
+    <th width=8% class=Heading>+2</th>
+    <th width=8% class=Heading>+3</th>
+    <th width=8% class=Heading>+4</th>
+    <th width=8% class=Heading>+5</th>
+    <th width=8% class=Heading>+6</th>
+    <th width=8% class=Heading>+7</th>
+    <th width=8% class=Heading>+8</th>
+    <td class=Transparent width=25%></td>
+</tr>
+<tr>
+    <td><tt>RealObj</tt></td>
+    <td><tt>tX</tt></td>
+    <td><tt>t00</tt></td>
+    <td><tt>$00</tt></td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td class=Transparent align=right>Real variable <tt>X</tt></td>
+</tr>
+<tr>
+    <td><tt>CplxObj</tt></td>
+    <td><tt>tTheta</tt></td>
+    <td><tt>$00</tt></td>
+    <td><tt>$00</tt></td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td class=Transparent align=right>Complex variable &theta;</td>
+</tr>
+</table>
+
+    <h3>Lists</h3>
+    Spelled with object type (<span class=mem>ListObj</span> or <span
+    class=mem>CListObj</span>), followed by token <span class=mem>tVarLst</span>, and either:
+
+<ul>
+    <li>A list name token and a null. <i>or</i>
+    <li>Up to five tokens and a null.
+</ul>
+
+<table class=Info>
+<tr class=Heading>
+    <th width=10% class=Heading>OP1</th>
+    <th width=8% class=Heading>+1</th>
+    <th width=8% class=Heading>+2</th>
+    <th width=8% class=Heading>+3</th>
+    <th width=8% class=Heading>+4</th>
+    <th width=8% class=Heading>+5</th>
+    <th width=8% class=Heading>+6</th>
+    <th width=8% class=Heading>+7</th>
+    <th width=8% class=Heading>+8</th>
+    <td class=Transparent width=25%></td>
+</tr>
+<tr>
+    <td><tt>RealObj</tt></td>
+    <td><tt>tVarLst</tt></td>
+    <td><tt>tL1</tt></td>
+    <td><tt>$00</tt></td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td class=Transparent align=right>List <tt>L</tt><span style="font-size: 9px; font-family:
+    verdana, arial, helvetica, sans-serif">1</span></td>
+</tr>
+<tr>
+    <td><tt>CListObj</tt></td>
+    <td><tt>tVarLst</tt></td>
+    <td><tt>tD</tt></td>
+    <td><tt>tI</tt></td>
+    <td><tt>tS</tt></td>
+    <td><tt>tT</tt></td>
+    <td><tt>$00</tt></td>
+    <td>??</td>
+    <td>??</td>
+    <td class=Transparent align=right>Complex list <span style="font-size: 9px; font-family:
+    verdana, arial, helvetica, sans-serif">L</span><tt>DIST</tt></td>
+</tr>
+</table><p>
+
+    <h3>Matrices, Pictures, Strings</h3>
+    Spelled with appropriate object type (<span class=mem>MatObj</span>, <span
+    class=mem>PictObj</span>, <span class=mem>StrngObj</span>), followed by corresponding
+    token <span class=mem>tVarMat</span>, <span class=mem>tVarPict</span>, or <span
+    class=mem>tVarStrng</span>, appropriate name token (<span class=mem>tMatA</span> to
+    <span class=mem>tMatJ</span>, <span class=mem>tPic0</span> to <span
+    class=mem>tPic9</span>, <span class=mem>tStr0</span> to <span class=mem>tStr9</span>), 
+    and a null.<p>
+
+<table class=Info>
+<tr class=Heading>
+    <th width=10% class=Heading>OP1</th>
+    <th width=8% class=Heading>+1</th>
+    <th width=8% class=Heading>+2</th>
+    <th width=8% class=Heading>+3</th>
+    <th width=8% class=Heading>+4</th>
+    <th width=8% class=Heading>+5</th>
+    <th width=8% class=Heading>+6</th>
+    <th width=8% class=Heading>+7</th>
+    <th width=8% class=Heading>+8</th>
+    <td class=Transparent width=25%></td>
+</tr>
+<tr>
+    <td><tt>MatObj</tt></td>
+    <td><tt>tVarMat</tt></td>
+    <td><tt>tMatC</tt></td>
+    <td><tt>$00</tt></td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td class=Transparent align=right>Matrix <tt>[C]</tt></td>
+</tr>
+<tr>
+    <td><tt>PictObj</tt></td>
+    <td><tt>tVarPict</tt></td>
+    <td><tt>tPic5</tt></td>
+    <td><tt>$00</tt></td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td class=Transparent align=right>Picture <tt>Pic5</tt></td>
+</tr>
+<tr>
+    <td><tt>StrngObj</tt></td>
+    <td><tt>tVarStrng</tt></td>
+    <td><tt>tStr1</tt></td>
+    <td><tt>$00</tt></td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td class=Transparent align=right>String <tt>Str1</tt></td>
+</tr>
+</table><p>
+
+    <h3>Equation</h3>
+    An object type of <span class=mem>EquObj</span> or <span class=mem>NewEquObj</span> (no, 
+    I can't tell you the difference). Followed by token <span class=mem>tVarEqu</span>, one
+    of the equation variable names from the below table, and a null.<p>
+
+<table class=Info>
+<tr>
+    <td class=Heading width=30%><tt>tY0</tt> to <tt>tY9</tt></td>
+    <td>Function equations Y<span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, 
+    sans-serif">0</span> to Y<span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, 
+    sans-serif">9</span></td>
+</tr>
+<tr>
+    <td class=Heading><tt>tX1T</tt> to <tt>tX6T</tt></td>
+    <td>Parametric equations X<span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, 
+    sans-serif">1T</span> to X<span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, 
+    sans-serif">6T</span></td>
+</tr>
+<tr>
+    <td class=Heading><tt>tY1T</tt> to <tt>tY6T</tt></td>
+    <td>Parametric equations Y<span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, 
+    sans-serif">1T</span> to Y<span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, 
+    sans-serif">6T</span></td>
+</tr>
+<tr>
+    <td class=Heading><tt>tR1</tt> to <tt>tR6</tt></td>
+    <td>Polar equations r<span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, 
+    sans-serif">1</span> to r<span style="font-size: 9px; font-family: Verdana, Arial, Helvetica, 
+    sans-serif">6</span></td>
+</tr>
+<tr>
+    <td class=Heading><tt>tun</tt></td>
+    <td>Sequence u(<i>n</i>)</td>
+</tr>
+<tr>
+    <td class=Heading><tt>tvn</tt></td>
+    <td>Sequence v(<i>n</i>)</td>
+</tr>
+<tr>
+    <td class=Heading><tt>twn</tt></td>
+    <td>Sequence w(<i>n</i>)</td>
+</tr>
+</table><p>
+
+<table class=Info>
+<tr class=Heading>
+    <th width=10% class=Heading>OP1</th>
+    <th width=8% class=Heading>+1</th>
+    <th width=8% class=Heading>+2</th>
+    <th width=8% class=Heading>+3</th>
+    <th width=8% class=Heading>+4</th>
+    <th width=8% class=Heading>+5</th>
+    <th width=8% class=Heading>+6</th>
+    <th width=8% class=Heading>+7</th>
+    <th width=8% class=Heading>+8</th>
+    <td class=Transparent width=25%></td>
+</tr>
+<tr>
+    <td><tt>EquObj</tt></td>
+    <td><tt>tVarEqu</tt></td>
+    <td><tt>tY1</tt></td>
+    <td><tt>$00</tt></td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td class=Transparent width=25% align=right>Equation <tt>Y<span style="font-size: 9px;
+    font-family: Verdana, Arial, Helvetica, sans-serif">1</span></tt></td>
+</tr>
+</table>
+
+    <h3>Programs/AppVars</h3>
+    Spelled with object type (<span class=mem>tProgObj</span>, <span
+    class=mem>tProtProgObj</span>, or <span class=mem>tAppVarObj</span>), followed by up to
+    eight tokens. If less than eight, then followed by a null.<p>
+
+<table class=Info>
+<tr class=Heading>
+    <th width=10% class=Heading>OP1</th>
+    <th width=8% class=Heading>+1</th>
+    <th width=8% class=Heading>+2</th>
+    <th width=8% class=Heading>+3</th>
+    <th width=8% class=Heading>+4</th>
+    <th width=8% class=Heading>+5</th>
+    <th width=8% class=Heading>+6</th>
+    <th width=8% class=Heading>+7</th>
+    <th width=8% class=Heading>+8</th>
+    <td class=Transparent width=25%></td>
+</tr>
+<tr>
+    <td><tt>ProgObj</tt></td>
+    <td><tt>tP</tt></td>
+    <td><tt>tR</tt></td>
+    <td><tt>tO</tt></td>
+    <td><tt>tG</tt></td>
+    <td><tt>tR</tt></td>
+    <td><tt>tA</tt></td>
+    <td><tt>tM</tt></td>
+    <td><tt>t1</tt></td>
+    <td class=Transparent align=right>Program <tt>PROGRAM1</tt></td>
+</tr>
+<tr>
+    <td><tt>ProtProgObj</tt></td>
+    <td><tt>tN</tt></td>
+    <td><tt>tO</tt></td>
+    <td><tt>tE</tt></td>
+    <td><tt>tD</tt></td>
+    <td><tt>tI</tt></td>
+    <td><tt>tT</tt></td>
+    <td><tt>$00</tt></td>
+    <td>??</td>
+    <td class=Transparent align=right>Protected program <tt>NOEDIT</tt></td>
+</tr>
+<tr>
+    <td><tt>AppVarObj</tt></td>
+    <td><tt>tL</tt></td>
+    <td><tt>tA</tt></td>
+    <td><tt>tS</tt></td>
+    <td><tt>tT</tt></td>
+    <td><tt>tU</tt></td>
+    <td><tt>tS</tt></td>
+    <td><tt>tE</tt></td>
+    <td><tt>tR</tt></td>
+    <td class=Transparent align=right>AppVar <tt>LASTUSER</tt></td>
+</tr>
+</table>
+
+<a name="crt"></a>
+    <h2>Creating Variables</h2>
+    Now we'll actually create variables. There are some rules to follow to prevent problems.
+
+<ul>
+    <li>Check if the variable already exists. If it does, either delete it or abort creation.
+    <br>Equations always exist, so there's no point in looking them up. Just delete and
+    recreate them.
+    <li>Don't create variables with illegal sizes.
+    <li>Store data to the variable before the program ends, or the calculator will freeze.
+</ul>
+
+    To check if a variable exists
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_FindSym</th>
+    <td colspan=2>Finds variables that aren't programs, AppVars, or groups.</td>
+</tr>
+<tr>
+    <th class=Heading>INPUT</th>
+    <td class=SubHeading width=12%><tt>OP1</tt></td>
+    <td>Variable name. Not necessary to have the object type set.</td>
+</tr>
+<tr>
+    <th class=Heading rowspan=5>OUTPUT</th>
+    <td class=SubHeading><tt>F</tt></td>
+    <td>Carry set if not found, reset if exists.</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>A</tt></td>
+    <td>Object type. Bits 5-7 are basically garbage, so if you want to use it, do
+    <span class=ins>AND</span><tt> $1F</tt></a>.</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>B</tt></td>
+    <td>Archive status. 0 if in RAM</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>DE</tt></td>
+    <td>Address of first byte of data</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>HL</tt></td>
+    <td>Address of symbol table entry</td>
+</tr>
+<tr>
+    <th class=Heading>DESTROYS</th>
+    <td colspan=2>If variable is found, then <tt>C</tt>. If variable is not
+    found, then <tt>All</tt>.
+</tr>
+</table><p>
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_ChkFindSym</th>
+    <td colspan=2>Finds any variable.</td>
+</tr>
+<tr>
+    <th class=Heading>INPUT</th>
+    <td class=SubHeading width=12%><tt>OP1</tt></td>
+    <td>Variable name.</td>
+</tr>
+<tr>
+    <th class=Heading>OUTPUT</td>
+    <td colspan=2>See <tt><b>_FindSym<b></tt></td>
+</tr>
+</table><p>
+
+    To delete a variable
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_DelVar</td>
+    <td colspan=2>Deletes a variable if it's in RAM.</td>
+</tr>
+<tr>
+    <th class=Heading rowspan=3>INPUT</th>
+    <td class=SubHeading width=12%><tt>HL</tt></td>
+    <td>Pointer to start of symbol table entry.</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>DE</tt></td>
+    <td>Pointer to start of variable's data storage.</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>B</tt></td>
+    <td>0 if variable resides in RAM. Otherwise the Flash ROM page it is archived on.</td>
+</tr>
+<tr>
+    <th class=Heading>DESTROYS</th>
+    <td colspan=2><tt>All</tt></td>
+</tr>
+<tr>
+    <th class=Heading>Remarks</th>
+    <td colspan=2>System error if the variable is archived. Use <tt><b>_DelVarArc</b></tt> to
+    delete any variable. Notice that the inputs to this routine are the same as the outputs
+    of <tt><b>_FindSym</b></tt>.</td>
+</tr>
+</table><p>
+
+    The routines to create variables are
+
+<table class=Info>
+<tr>
+    <th class=Heading>Routine</th>
+    <th class=Heading>Variable</th>
+    <th class=Heading>Input HL</th>
+</tr>
+<tr>
+    <td class=SubHeading><tt>_CreateCList</tt></td>
+    <td>Complex list</td>
+    <td>Number of elements (&lt;1000)</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>_CreateCplx</tt></td>
+    <td>Complex number</td>
+    <td>None</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>_CreateEqu</tt></td>
+    <td>Equation</td>
+    <td>Number of bytes</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>_CreatePict</tt></td>
+    <td>Picture</td>
+    <td>None</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>_CreateProg</tt></td>
+    <td>Program</td>
+    <td>Number of bytes</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>_CreateProtProg</tt></td>
+    <td>Protected program</td>
+    <td>Number of bytes</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>_CreateReal</tt></td>
+    <td>Real Number</td>
+    <td>None</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>_CreateRList</tt></td>
+    <td>Real list</td>
+    <td>Number of elements (&lt;1000)</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>_CreateRMat</tt></td>
+    <td>Matrix</td>
+    <td><tt>H</tt> = rows (&lt;100)<br><tt>L</tt> = columns (&lt;100)</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>_CreateStrng</tt></td>
+    <td>String</td>
+    <td>Number of bytes</td>
+</tr>
+</table><p>
+
+For these routines, <span class=reg>HL</span> is the dimensions of the variable (see the table) and <span class=mem>OP1</span>
+holds the variable name. They output <span class=reg>HL</span> as a pointer to the VAT entry (more info later), 
+<span class=reg>DE</span> as a pointer to the data, and <span class=mem>OP4</span> holding a copy of the name.<p>
+
+When creating a parametric equation, you have to create both X and Y parts or you'll get a crash.<p>
+
+<a name="ini"></a>
+    <h2>Initializing Variables</h2>
+    Variables must be initialized before the program ends or a freeze is very likely. Each
+    variable has a different structure for its data.<p>
+
+    <h3>Real</h3>
+    9 bytes in FP-number format.
+<table class=Info>
+<tr>
+    <td>$00</td>
+    <td>$80</td>
+    <td>$31</td>
+    <td>$41</td>
+    <td>$59</td>
+    <td>$26</td>
+    <td>$53</td>
+    <td>$57</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td colspan=9 class=Transparent>3.14159265357</td>
+</tr>
+</table><p>
+
+    <h3>Complex</h3>
+    18 bytes in complex FP-number format.
+<table class=Info>
+<tr>
+    <td>$0C</td>
+    <td>$83</td>
+    <td>$52</td>
+    <td>$18</td>
+    <td>$86</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td>$8C</td>
+    <td>$7F</td>
+    <td>$18</td>
+    <td>$21</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td colspan=9 class=Transparent>5219.86 - 0.1821<i>i</i></td>
+</tr>
+</table><p>
+
+    <h3>List</h3>
+    Two bytes with the number of elements. Followed by <i>n</i> &times; 9 bytes, where
+    <i>n</i> is the number of elements. Each element is an FP-number.
+<table class=Info>
+<tr>
+    <td class=SubHeading>$03</td>
+    <td class=SubHeading>$00</td>
+    <td class=Transparent colspan=7></td>
+</tr>
+<tr>
+    <td>$80</td>
+    <td>$82</td>
+    <td>$23</td>
+    <td>$45</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td>$00</td>
+    <td>$7E</td>
+    <td>$10</td>
+    <td>$00</td>
+    <td>$57</td>
+    <td>$12</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td>$00</td>
+    <td>$80</td>
+    <td>$50</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td colspan=9 class=Transparent>{-234.5, 0.01005712, 5}</td>
+</tr>
+</table><p>
+
+    <h3>Complex List</h3>
+    Two bytes with the number of elements. Followed by 18 &times; <i>n</i> bytes, where
+    <i>n</i> is the number of elements. Each element is a complex FP-number.
+<table class=Info>
+<tr>
+    <td class=SubHeading>$02</td>
+    <td class=SubHeading>$00</td>
+    <td class=Transparent colspan=7></td>
+</tr>
+<tr>
+    <td>$0C</td>
+    <td>$80</td>
+    <td>$10</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td>$0C</td>
+    <td>$80</td>
+    <td>$20</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td>$8C</td>
+    <td>$80</td>
+    <td>$40</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td>$0C</td>
+    <td>$80</td>
+    <td>$80</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td colspan=9 class=Transparent>{1+2<i>i</i>, -4+8<i>i</i>}</td>
+</tr>
+</table><p>
+
+    <h3>Matrix</h3>
+    One byte with the number of columns, one byte with the number of rows. Followed by
+    <i>r</i> &times; <i>c</i> &times 9 bytes, each of which is a real FP-number. Matrices are
+    organized in row-major order.
+<table class=Info>
+<tr>
+    <td class=SubHeading>$03</td>
+    <td class=SubHeading>$02</td>
+    <td class=Transparent colspan=7></td>
+</tr>
+<tr>
+    <td>$00</td>
+    <td>$81</td>
+    <td>$14</td>
+    <td>$95</td>
+    <td>$72</td>
+    <td>$75</td>
+    <td>$75</td>
+    <td>$00</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td>$80</td>
+    <td>$82</td>
+    <td>$83</td>
+    <td>$67</td>
+    <td>$57</td>
+    <td>$54</td>
+    <td>$74</td>
+    <td>$00</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td>$80</td>
+    <td>$81</td>
+    <td>$33</td>
+    <td>$57</td>
+    <td>$61</td>
+    <td>$43</td>
+    <td>$96</td>
+    <td>$00</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td>$00</td>
+    <td>$80</td>
+    <td>$48</td>
+    <td>$48</td>
+    <td>$78</td>
+    <td>$16</td>
+    <td>$76</td>
+    <td>$24</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td>$80</td>
+    <td>$81</td>
+    <td>$85</td>
+    <td>$56</td>
+    <td>$56</td>
+    <td>$72</td>
+    <td>$78</td>
+    <td>$00</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td>$00</td>
+    <td>$80</td>
+    <td>$86</td>
+    <td>$56</td>
+    <td>$01</td>
+    <td>$97</td>
+    <td>$47</td>
+    <td>$00</td>
+    <td>$00</td>
+</tr>
+<tr>
+    <td colspan=9 class=Transparent>[ [14.95727575, -836.7575474, -33.57614396]<br>&nbsp; [4.878167624, 
+    -85.56567278, 8.656019747 ] ]</td>
+</tr>
+</table><p>
+
+    <h3>Picture</h3>
+Two bytes with the number of bytes, which is a complete waste of RAM since it's <i>always</i> $02F4. Followed by a
+96&times;63 bitmap (the bottom row of pixels is not recorded) &mdash; 12 bytes to one row of pixels. The format of a
+picture variable is explained on Day 24.<p>
+If you think for one second that I'm gonna give a full example, then you've just gotta be high.<p>
+
+    <h3>Equation, Program, AppVar, String</h3>
+    Two bytes with the number of bytes. Followed by a bunch of tokens or a mass of arbitrary
+    data.
+<table class=Info>
+<tr>
+    <td class=SubHeading>$09</td>
+    <td class=SubHeading>$00</td>
+    <td class=Transparent colspan=7></td>
+</tr>
+<tr>
+    <td width=11%>tC</td>
+    <td width=11%>tA</td>
+    <td width=11%>tS</td>
+    <td width=11%>tI</td>
+    <td width=11%>tO</td>
+    <td width=11%>tSpace</td>
+    <td width=11%>tS</td>
+    <td width=11%>tU</td>
+    <td width=11%>tX</td>
+</tr>
+<tr>
+    <td colspan=9 class=transparent>Probably string "CASIO SUX"</td>
+</tr>
+</table>
+
+    <hr>
+<div class=NavFooter>
+    <a href="day18.html">PREVIOUS - Day 18: Floating-Point Arithmetic</a><p>
+    <a href="day20.html">NEXT - Day 20: Program and System Variables</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

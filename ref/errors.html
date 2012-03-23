@@ -1,0 +1,124 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Tasm Error Messages</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+	<h1>Tasm Error Messages</h1>
+	<hr>
+<dl>
+<dt><span class=ins>Binary operator where value expected</span>
+<dd>Two of TASM's binary operators are used in a row:
+
+<pre>	<span class=ins>LD</span>	<span class=reg>A</span>,6 + / 3</pre>
+
+<dt><span class=ins>Cannot malloc for label storage</span>
+<dd>TASM has run out of memory for any more labels.<p>
+
+<dt><span class=ins>Duplicate label</span>
+<dd>A label or manifest constant already exists.<p>
+
+<pre><span class=mem>stuff</span>	<span class=dir>.equ</span>	20
+<span class=mem>stuff:</span></pre>
+
+<dt><span class=ins>File name too short</span>
+<dd>You have specified a file name that is fewer than three characters.<p>
+
+<dt><span class=ins>Forward reference in equate</span>
+<dd>You are using a manifest constant on the right side of an equate, and that constant is not
+defined until later in the code.
+
+<pre><span class=mem>stuff</span>	<span class=dir>.equ</span>	<span class=mem>more_stuff</span>
+<span class=mem>more_stuff</span>	<span class=dir>.equ</span>	20</pre>
+
+<dt><span class=ins>Heap overflow on label definition</span>
+<dd>TASM has run out of memory for any more labels.<p>
+
+<dt><span class=ins>Imbalanced conditional</span>
+<dd>There is a mismatch between the number of <span class=dir>#if</span>s and the number of
+<span class=dir>#endif</span>s.<p>
+
+<dt><span class=ins>Invalid operand</span>
+<dd>The first character for an instruction operand was a left parenthesis, but indirection is
+illegal for the instruction.<p>
+
+<dt><span class=ins>Invalid token where value expected</span>
+<dd>There are two binary operators in a row.<p>
+
+<dt><span class=ins>Label too long</span>
+<dd>A label is composed of more than 31 characters.<p>
+
+<dt><span class=ins>Label not found</span>
+<dd>You have used a manifest constant that has not yet been defined.<p>
+
+<dt><span class=ins>Label must pre-exist for SET</span>
+<dd>
+	<ul>
+	<li>You have tried to equate whitespace.
+<pre>	<span class=dir>.equ</span>	20</pre>
+	<li>You have used <span class=dir>SET</span> on a manifest constant that doesn't exist.
+	</ul>
+
+<dt><span class=ins>Label table overflow</span>
+<dd>There are too many labels.<p>
+
+<dt><span class=ins>Macro expansion too long</span>
+<dd>A macro expansion yielded a line of code that was too long.<p>
+
+<dt><span class=ins>Max number of nested conditionals exceeded</span>
+<dd>There are too many <span class=dir>#if</span> levels.<p>
+
+<dt><span class=ins>Maximum number of args exceeded</span>
+<dd>Too many arguments were passed to a macro.<p>
+
+<dt><span class=ins>Maximum number of macros exceeded</span>
+<dd>There are too many <span class=dir>#define</span> directives</span>.<p>
+
+<dt><span class=ins>No END directive before EOF</span>
+<dd>The source file did not have a <span class=dir>.end</span> followed by a newline.<p>
+
+<dt><span class=ins>No files specified</span>
+<dd>No source file was supplied to assemble.<p>
+
+<dt><span class=ins>No terminating quote</span>
+<dd>A text string did not get a terminating double quote.<p>
+
+<dt><span class=ins>No indirection for this instruction</span>
+<dd>An operand has parentheses around it when it shouldn't.<p>
+
+<dt><span class=ins>Range of argument exceeded</span>
+<dd>The offset for an index register is outside signed 8-bit range.<p>
+
+<dt><span class=ins>Range of relative branch exceeded</span>
+<dd>The target for <span class=ins>JR</span> or <span class=ins>DJNZ</span> is more than 128
+bytes away.<p>
+
+<dt><span class=ins>Source file open error</span>
+<dd>TASM couldn't open the file to assemble, usually because it was misspelled.<p>
+
+<dt><span class=ins>Unrecognized directive</span>
+<dd>A statement starting with <tt>.</tt> or <tt>#</tt> is not a TASM directive.<p>
+
+<dt><span class=ins>Unrecognized instruction</span>
+<dd>A statement uses an assembler mnemonic that doesn't exist.<p>
+
+<dt><span class=ins>Unrecognized argument</span>
+<dd>A statement uses an invalid operand.<p>
+
+<dt><span class=ins>Unknown token</span>
+<dd>Symbols with no meaning were encountered in an expression.<p>
+
+<dt><span class=ins>Unused data in MS byte of argument</span>
+<dd>The most significant byte of an argument was left unused.<p>
+</dl>
+
+<hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

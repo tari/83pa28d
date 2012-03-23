@@ -1,0 +1,530 @@
+<html>
+<head>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<a name="top"></a>
+	<h1>Z80 Instruction Set &mdash; Hardware</h1>
+	<hr>
+<a href="#di">DI</a><br>
+<a href="#ei">EI</a><br>
+<a href="#halt">HALT</a><br>
+<a href="#im">IM</a><br>
+<a href="#in">IN</a><br>
+<a href="#ind">IND</a><br>
+<a href="#indr">INDR</a><br>
+<a href="#ini">INI</a><br>
+<a href="#inir">INIR</a><br>
+<a href="#otdr">OTDR</a><br>
+<a href="#otir">OTIR</a><br>
+<a href="#out">OUT</a><br>
+<a href="#outd">OUTD</a><br>
+<a href="#outi">OUTI</a><br>
+
+	<hr>
+
+<a name="di"></a>
+	<h2>DI</h2><p>
+
+	<tt><b>DI</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Resets both interrupt flip-flops, thus preventing maskable interrupts from
+	triggering.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11110011</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="ei"></a>
+	<h2>EI</h2><p>
+
+	<tt><b>EI</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Sets both interrupt flip-flops, thus allowing maskable interrupts to occur. An interrupt will not occur until after the immediatedly following instruction.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11111011</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="halt"></a>
+	<h2>HALT</h2><p>
+
+	<tt><b>HALT</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Suspends CPU operation until an interrupt or reset occurs.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>01110110</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="im"></a>
+
+	<h2>IM</h2><p>
+
+	<tt><b>IM 0</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Sets interrupt mode 0.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 01000110</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>8</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>IM 1</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Sets interrupt mode 1.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 01010110</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>8</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>IM 2</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Sets interrupt mode 2.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 01011110</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="in"></a>
+	<h2>IN</h2><p>
+
+	<tt><b>IN A,(imm<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>A byte from port <tt>imm<sub>8</sub></tt> is written to <tt>A</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11011011 : [imm<sub>8</sub>]</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>11</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>IN reg<sub>8</sub>,(C)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>A byte from port <tt>C</tt> is written to <tt>reg<sub>8</sub>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101011 : 01[reg<sub>8</sub>]000</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br><tt>C</tt> is not affected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>12</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="ind"></a>
+	<h2>IND</h2><p>
+
+	<tt><b>IND</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>A byte from port <tt>C</tt> is written to the memory location pointed to by
+	<tt>HL</tt>. <tt>HL</tt> and <tt>B</tt> are then decremented.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10101010</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S H P/V</tt> are scrambled<br><tt>Z</tt> is set if <tt>B</tt> becomes zero<br>
+	<tt>N</tt> is set<br><tt>C</tt> is not affected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="indr"></a>
+	<h2>INDR</h2><p>
+
+	<tt><b>INDR</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>A byte from port <tt>C</tt> is written to the memory location pointed to by
+	<tt>HL</tt>. <tt>HL</tt> and <tt>B</tt> are then decremented. If <tt>B</tt> is not zero,
+	this operation is repeated.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10111010</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S H P/V</tt> are scrambled<br><tt>Z N</tt> are set<br><tt>C</tt> is not
+	affected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td>If <tt>B != 0</tt>: <tt>21</tt><br>If <tt>B == 0</tt>: <tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="ini"></a>
+	<h2>INI</h2><p>
+
+	<tt><b>INI</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>A byte from port <tt>C</tt> is written to the memory location pointed to by
+	<tt>HL</tt>. <tt>HL</tt> is incremented and <tt>B</tt> is decremented.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10100010</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S H P/V</tt> are scrambled<br><tt>Z</tt> is set if <tt>B</tt> becomes zero<br>
+	<tt>N</tt> is set<br><tt>C</tt> is not affected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="inir"></a>
+	<h2>INIR</h2><p>
+
+	<tt><b>INIR</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>A byte from port <tt>C</tt> is written to the memory location pointed to by
+	<tt>HL</tt>. <tt>HL</tt> is incremented and <tt>B</tt> is decremented. If <tt>B</tt> is
+	not zero, this operation is repeated.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10110010</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S H P/V</tt> are scrambled<br><tt>Z N</tt> are set<br><tt>C</tt> is not
+	affected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td>If <tt>B != 0</tt>: <tt>21</tt><br>If <tt>B == 0</tt>: <tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="otdr"></a>
+	<h2>OTDR</h2><p>
+
+	<tt><b>OTDR</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>A byte from the memory location pointed to by <tt>HL</tt> is written to port
+	<tt>C</tt>. <tt>HL</tt> and <tt>B</tt> are then decremented. If <tt>B</tt> is not zero,
+	this operation is repeated.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10111011</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S H P/V</tt> are scrambled<br><tt>Z N</tt> are set<br><tt>C</tt> is not
+	affected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td>If <tt>B != 0</tt>: <tt>21</tt><br>If <tt>B == 0</tt>: <tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="otir"></a>
+	<h2>OTIR</h2><p>
+
+	<tt><b>OTIR</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>A byte from the memory location pointed to by <tt>HL</tt> is written to port
+	<tt>C</tt>. <tt>HL</tt> is incremented and <tt>B</tt> is decremented. If <tt>B</tt> is
+	not zero, this operation is repeated.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10110011</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S H P/V</tt> are scrambled<br><tt>Z N</tt> are set<br><tt>C</tt> is not
+	affected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td>If <tt>B != 0</tt>: <tt>21</tt><br>If <tt>B == 0</tt>: <tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="out"></a>
+	<h2>OUT</h2><p>
+
+	<tt><b>OUT (imm<sub>8</sub>),A</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The value of <tt>A</tt> is written to port <tt>imm<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11010011 : [imm<sub>8</sub>]</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>11</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>OUT (C),reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The value of <tt>reg<sub>8</sub></tt> is written to port <tt>C</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101011 : 01[reg<sub>8</sub>]001</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>12</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+<a name="outd"></a>
+	<h2>OUTD</h2><p>
+
+	<tt><b>OUTD</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>A byte from the memory location pointed to by <tt>HL</tt> is written to port
+	<tt>C</tt>. <tt>HL</tt> and <tt>B</tt> are then	decremented.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10101011</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S H P/V</tt> are scrambled<br><tt>Z</tt> is set if <tt>B</tt> becomes zero<br>
+	<tt>N</tt> is set<br><tt>C</tt> is not affected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="outi"></a>
+	<h2>OUTI</h2><p>
+
+	<tt><b>OUTI</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>A byte from the memory location pointed to by <tt>HL</tt> is written to port
+	<tt>C</tt>. <tt>HL</tt> is incremented and <tt>B</tt> is decremented.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10100011</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S H P/V</tt> are scrambled<br><tt>Z</tt> is set if <tt>B</tt> becomes zero<br>
+	<tt>N</tt> is set<br><tt>C</tt> is not affected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>

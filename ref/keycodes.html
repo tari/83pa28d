@@ -1,0 +1,706 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Key Codes</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+	<h1>Key Codes</h1>
+<hr>
+	These are the codes returned from the <tt>GetKey</tt> routine. They are grouped into
+	four categories:
+<a name="top"></a>
+<ul>
+	<li><a href="#primary">Primary-Function Keys</a> (press the key)
+	<li><a href="#second">2nd-Function Keys</a> (press [2nd])
+	<li><a href="#alpha">Alpha-Function Keys</a> (press [ALPHA]) 
+	<li><a href="#alpha2">Alpha-Alpha-Function Keys</a> (press [ALPHA] twice)
+</ul>
+	There are no codes for 2nd+Up or 2nd+Down, they always change the contrast.<p>
+
+	Alpha-Alpha keys must be enabled with
+<pre>	<span class=ins>SET</span>	<span class=mem>LwrCaseActive</span>,<span class=reg>(IY+<span class=mem>AppLwrCaseFlag</span>)</span></pre>
+	<span class=mem>kExtendEcho2</span> ($FC) is always returned in <span
+	class=reg>A</span>. <span class=mem>(KeyExtend)</span> holds the keycode.
+<hr>
+<a name="primary"></a>
+
+<h3>Primary-Function Keys</h3>
+<table class=Info>
+   <tr class=Heading>
+	<th>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+	<th>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+	<th>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+   </tr>
+   <tr>
+	<td class=SubHeading>[Y=]</td>
+	<td><tt>kYEqu</tt></td>
+	<td>$49</td>
+	<td class=SubHeading>[MODE]</td>
+	<td><tt>kMode</tt></td>
+	<td>$45</td>
+	<td class=SubHeading>[X,T,&theta;,<i>n</i>]</td>
+	<td><tt>kVarX</tt></td>
+	<td>$B4</td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[WINDOW]</td>
+	<td><tt>kWindow</tt></td>
+	<td>$48</td>
+	<td class=SubHeading>[DEL]</td>
+	<td><tt>kDel</tt></td>
+	<td>$0A</td>
+	<td class=SubHeading>[STAT]</td>
+	<td><tt>kStat</tt></td>
+	<td>$31</td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[ZOOM]</td>
+	<td><tt>kZoom</tt></td>
+	<td>$2E</td>
+	<td class=SubHeading>&lt;</td>
+	<td><tt>kLeft</tt></td>
+	<td>$02</td>
+	<td class=SubHeading>V</td>
+	<td><tt>kDown</tt></td>
+	<td>$04</td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[TRACE]</td>
+	<td><tt>kTrace</tt></td>
+	<td>$5A</td>
+	<td class=SubHeading>&Lambda;</td>
+	<td><tt>kUp</tt></td>
+	<td>$03</td>
+	<td class=Transparent colspan=3 rowspan=2></td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[GRAPH]</td>
+	<td><tt>kGraph</tt></td>
+	<td>$44</td>
+	<td class=SubHeading>&gt;</td>
+	<td><tt>kRight</tt></td>
+	<td>$01</td>
+   </tr>
+   <tr height=4><td class=Transparent colspan=9></td></tr>
+   <tr>
+	<td class=SubHeading>[MATH]</td>
+	<td><tt>kMath</tt></td>
+	<td>$32</td>
+	<td class=SubHeading>[x<sup>-1</sup>]</td>
+	<td><tt>kInv</tt></td>
+	<td>$86</td>
+	<td class=SubHeading>[x<sup>2</sup>]</td>
+	<td><tt>kSquare</tt></td>
+	<td>$BD</td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[APPS]</td>
+	<td><tt>kAppsMenu</tt></td>
+	<td>$2C</td>
+	<td class=SubHeading>[SIN]</td>
+	<td><tt>kSin</tt></td>
+	<td>$B7</td>
+	<td class=SubHeading>[,]</td>
+	<td><tt>kComma</tt></td>
+	<td>$8B</td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[PRGM]</td>
+	<td><tt>kPrgm</tt></td>
+	<td>$2D</td>
+	<td class=SubHeading>[COS]</td>
+	<td><tt>kCos</tt></td>
+	<td>$B9</td>
+	<td class=SubHeading>[(]</td>
+	<td><tt>kLParen</tt></td>
+	<td>$85</td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[VARS]</td>
+	<td><tt>kVars</tt></td>
+	<td>$35</td>
+	<td class=SubHeading>[TAN]</td>
+	<td><tt>kTan</tt></td>
+	<td>$BB</td>
+	<td class=SubHeading>[)]</td>
+	<td><tt>kRParen</tt></td>
+	<td>$86</td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[CLEAR]</td>
+	<td><tt>kClear</tt></td>
+	<td>$09</td>
+	<td class=SubHeading>[^]</td>
+	<td><tt>kExpon</tt></td>
+	<td><tt>84</td>
+	<td class=SubHeading>[&divide;]</td>
+	<td><tt>kDiv</tt></td>
+	<td>$83</td>
+   </tr>
+   <tr height=4><td class=Transparent colspan=9></td></tr>
+   <tr>
+	<td class=SubHeading>[LOG]</td>
+	<td><tt>kLog</tt></td>
+	<td>$C1</td>
+	<td class=SubHeading>[LN]</td>
+	<td><tt>kLn</tt></td>
+	<td>$BF</td>
+	<td class=SubHeading>[STO=>]</td>
+	<td><tt>kStore</tt></td>
+	<td>$8A</td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[7]</td>
+	<td><tt>k7</tt></td>
+	<td>$95</td>
+	<td class=SubHeading>[4]</td>
+	<td><tt>k4</tt></td>
+	<td>$92</td>
+	<td class=SubHeading>[1]</td>
+	<td><tt>k1</tt></td>
+	<td>$8F</td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[8]</td>
+	<td><tt>k8</tt></td>
+	<td>$96</td>
+	<td class=SubHeading>[5]</td>
+	<td><tt>k5</tt></td>
+	<td>$93</td>
+	<td class=SubHeading>[2]</td>
+	<td><tt>k2</tt></td>
+	<td>$90</td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[9]</td>
+	<td><tt>k9</tt></td>
+	<td>$97</td>
+	<td class=SubHeading>[6]</td>
+	<td><tt>k6</tt></td>
+	<td>$94</td>
+	<td class=SubHeading>[3]</td>
+	<td><tt>k3</tt></td>
+	<td>$91</td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[&times;]</td>
+	<td><tt>kMul</tt></td>
+	<td>$82</td>
+	<td class=SubHeading>[-]</td>
+	<td><tt>kSub</tt></td>
+	<td>$81</td>
+	<td class=SubHeading>[+]</td>
+	<td><tt>kAdd</tt></td>
+	<td>$80</td>
+   </tr>
+   <tr height=4><td class=Transparent colspan=9></td></tr>
+   <tr>
+	<td class=SubHeading>[0]</td>
+	<td><tt>k0</tt></td>
+	<td>$8E</td>
+	<td class=Transparent colspan=6 rowspan=4></td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[.]</td>
+	<td><tt>kDecPnt</tt></td>
+	<td>$8D</td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[(-)]</td>
+	<td><tt>kChs</tt></td>
+	<td>$8C</td>
+   </tr>
+   <tr>
+	<td class=SubHeading>[ENTER]</td>
+	<td><tt>kEnter</tt></td>
+	<td>$05</td>
+   </tr>
+</table>
+<hr>
+
+<a name="second"></a>
+<h3>Second-Function Keys</h3>
+<table class=Info>
+<tr class=Heading>
+	<th>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+	<th>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+	<th>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+</tr>
+<tr>
+	<td class=SubHeading>[STAT PLOT]</td>
+	<td><tt>kStatEd</tt></td>
+	<td>$43</td>
+	<td class=SubHeading>[QUIT]</td>
+	<td><tt>kQuit</tt></td>
+	<td>$40</td>
+	<td class=SubHeading>[LINK]</td>
+	<td><tt>kLinkIO</tt></td>
+	<td>$41</td>
+</tr>
+<tr>
+	<td class=SubHeading>[TBLSET]</td>
+	<td><tt>kTblSet</tt></td>
+	<td>$4B</td>
+	<td class=SubHeading>[INS]</td>
+	<td><tt>kIns</tt></td>
+	<td>$0B</td>
+	<td class=SubHeading>[LIST]</td>
+	<td><tt>kList</tt></td>
+	<td>$3A</td>
+</tr>
+<tr>
+	<td class=SubHeading>[FORMAT]</td>
+	<td><tt>kFormat</tt></td>
+	<td>$57</td>
+	<td class=SubHeading>[2nd] + &lt;</td>
+	<td><tt>kBOL</tt></td>
+	<td>$0E</td>
+	<td class=Transparent colspan=3 rowspan=2></td>
+</tr>
+<tr>
+	<td class=SubHeading>[CALC]</td>
+	<td><tt>kCalc</tt></td>
+	<td>$3B</td>
+	<td class=SubHeading>[2nd] + &gt;</td>
+	<td><tt>kEOL</tt></td>
+	<td>$0F</td>
+</tr>
+<tr>
+	<td class=SubHeading>[TABLE]</td>
+	<td><tt>kTable</tt></td>
+	<td>$4A</td>
+	<td class=Transparent colspan=6></td>
+</tr>
+<tr height=4>	<td class=Transparent colspan=9></td></tr>
+<tr>
+	<td class=SubHeading>[TEST]</td>
+	<td><tt>kTest</tt></td>
+	<td>$33</td>
+	<td class=SubHeading>[MATRX]</td>
+	<td><tt>kMatrix</tt></td>
+	<td>$37</td>
+	<td class=SubHeading>[<font face="SYMBOL">&#214;`</font>]</td>
+	<td><tt>kSqrt</tt></td>
+	<td>$BE</td>
+</tr>
+<tr>
+	<td class=SubHeading>[ANGLE]</td>
+	<td><tt>kAngle</tt></td>
+	<td>$39</td>
+	<td class=SubHeading>[SIN<sup>-1</sup>]</td>
+	<td><tt>kASin</tt></td>
+	<td>$B8</td>
+	<td class=SubHeading>[EE]</td>
+	<td><tt>kEE</tt></td>
+	<td>$98</td>
+</tr>
+<tr>
+	<td class=SubHeading>[DRAW]</td>
+	<td><tt>kDraw</tt></td>
+	<td>$2F</td>
+	<td class=SubHeading>[COS<sup>-1</sup>]</td>
+	<td><tt>kACos</tt></td>
+	<td>$BA</td>
+	<td class=SubHeading>[{]</td>
+	<td><tt>kLBrace</tt></td>
+	<td>$EC</td>
+</tr>
+<tr>
+	<td class=SubHeading>[DISTR]</td>
+	<td><tt>kDist</tt></td>
+	<td>$38</td>
+	<td class=SubHeading>[TAN<sup>-1</sup>]</td>
+	<td><tt>kATan</tt></td>
+	<td>$BC</td>
+	<td class=SubHeading>[}]</td>
+	<td><tt>kRBrace</tt></td>
+	<td>$ED</td>
+</tr>
+<tr>
+	<td class=Transparent colspan=3></td>
+	<td class=SubHeading>[<font face="symbol">p</font>]</td>
+	<td><tt>kPi</tt></td>
+	<td>$B5</td>
+	<td class=SubHeading>[e]</td>
+	<td><tt>kCONSTeA</tt></td>
+	<td>$EF</td>
+</tr>
+<tr height=4>	<td class=Transparent colspan=9></td>	</tr>
+<tr>
+	<td class=SubHeading>[10<sup>x</sup>]</td>
+	<td><tt>kALog</tt></td>
+	<td>$C2</td>
+	<td class=SubHeading>[e<sup>x</sup>]</td>
+	<td><tt>kExp</tt></td>
+	<td>$C0</td>
+	<td class=SubHeading>[RCL]</td>
+	<td><tt>kRecall</tt></td>
+	<td>$0C</td>
+</tr>
+<tr>
+	<td class=SubHeading>[u]</td>
+	<td><tt>kUnA</tt></td>
+	<td>$F9</td>
+	<td class=SubHeading>[L4]</td>
+	<td><tt>kL4A</tt></td>
+	<td>$F6</td>
+	<td class=SubHeading>[L1]</td>
+	<td><tt>kL1A</tt></td>
+	<td>$F3</td>
+</tr>
+<tr>
+	<td class=SubHeading>[v]</td>
+	<td><tt>kVnA</tt></td>
+	<td>$FA</td>
+	<td class=SubHeading>[L5]</td>
+	<td><tt>kL5A</tt></td>
+	<td>$F7</td>
+	<td class=SubHeading>[L2]</td>
+	<td><tt>kL2A</tt></td>
+	<td>$F4</td>
+</tr>
+<tr>
+	<td class=SubHeading>[w]</td>
+	<td><tt>kWnA</tt></td>
+	<td>$FB</td>
+	<td class=SubHeading>[L6]</td>
+	<td><tt>kL6A</tt></td>
+	<td>$F8</td>
+	<td class=SubHeading>[L3]</td>
+	<td><tt>kL3A</tt></td>
+	<td>$F5</td>
+</tr>
+<tr>
+	<td class=SubHeading>[<b>[</b>]</td>
+	<td><tt>kLBrack</tt></td>
+	<td>$87</td>
+	<td class=SubHeading>[<b>]</b>]</td>
+	<td><tt>kRBrack</tt></td>
+	<td>$88</td>
+	<td class=SubHeading>[MEM]</td>
+	<td><tt>kMem</tt></td>
+	<td>$36</td>
+</tr>
+<tr height=4>	<td class=Transparent colspan=9></td>	</tr>
+<tr>
+	<td class=SubHeading>[OFF]</td>
+	<td><tt>kOff</tt></td>
+	<td>$3F</td>
+	<td class=Transparent colspan=6 rowspan=5></td>
+</tr>
+<tr>
+	<td class=SubHeading>[CATALOG]</td>
+	<td><tt>kCatalog</tt></td>
+	<td>$3E</td>
+</tr>
+<tr>
+	<td class=SubHeading>[<i>i</i>]</td>
+	<td><tt>kI</tt></td>
+	<td>$EE</td>
+</tr>
+<tr>
+	<td class=SubHeading>[ANS]</td>
+	<td><tt>kAns</tt></td>
+	<td>$C5</td>
+</tr>
+<tr>
+	<td class=SubHeading>[ENTRY]</td>
+	<td><tt>kLastEnt</tt></td>
+	<td>$0D</td>
+</tr>
+</table>
+<hr>
+
+<a name="alpha"></a>
+<h3>Alpha-Function Keys</h3>
+<table class=Info>
+<tr class=Heading>
+	<th>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+	<th>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+	<th>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+</tr>
+<tr>
+	<td class=SubHeading>Page Up</td>
+	<td><tt>kAlphaUp</tt></td>
+	<td>$07</td>
+	<td class=SubHeading>[A]</td>
+	<td><tt>kCapA</tt></td>
+	<td>$9A</td>
+	<td class=SubHeading>[D]</td>
+	<td><tt>kCapD</tt></td>
+	<td>$9D</td>
+</tr>
+<tr>
+	<td class=SubHeading>Page Down</td>
+	<td><tt>kAlphaDown</tt></td>
+	<td>$08</td>
+	<td class=SubHeading>[B]</td>
+	<td><tt>kCapB</tt></td>
+	<td>$9B</td>
+	<td class=SubHeading>[E]</td>
+	<td><tt>kCapE</tt></td>
+	<td>$9E</td>
+</tr>
+<tr>
+	<td class=Transparent colspan=3></td>
+	<td class=SubHeading>[C]</td>
+	<td><tt>kCapC</tt></td>
+	<td>$9C</td>
+	<td class=SubHeading>[F]</td>
+	<td><tt>kCapF</tt></td>
+	<td>$9F</td>
+</tr>
+<tr>
+	<td class=Transparent colspan=6 rowspan=2>
+	<td class=SubHeading>[G]</td>
+	<td><tt>kCapG</tt></td>
+	<td>$A0</td>	
+</tr>
+<tr>
+	<td class=SubHeading>[H]</td>
+	<td><tt>kCapH</tt></td>
+	<td>$A1</td>
+</tr>
+<tr height=4>	<td class=Transparent colspan=9></td>	</tr>
+<tr>
+	<td class=SubHeading>[I]</td>
+	<td><tt>kCapI</tt></td>
+	<td>$A2</td>
+	<td class=SubHeading>[N]</td>
+	<td><tt>kCapN</tt></td>
+	<td>$A7</td>
+	<td class=SubHeading>[S]</td>
+	<td><tt>kCapS</tt></td>
+	<td>$AC</td>
+</tr>
+<tr>
+	<td class=SubHeading>[J]</td>
+	<td><tt>kCapJ</tt></td>
+	<td>$A3</td>
+	<td class=SubHeading>[O]</td>
+	<td><tt>kCapO</tt></td>
+	<td>$A8</td>
+	<td class=SubHeading>[T]</td>
+	<td><tt>kCapT</tt></td>
+	<td>$AD</td>
+</tr>
+<tr>
+	<td class=SubHeading>[K]</td>
+	<td><tt>kCapK</tt></td>
+	<td>$A4</td>
+	<td class=SubHeading>[P]</td>
+	<td><tt>kCapP</tt></td>
+	<td>$A9</td>
+	<td class=SubHeading>[U]</td>
+	<td><tt>kCapU</tt></td>
+	<td>$AE</td>
+</tr>
+<tr>
+	<td class=SubHeading>[L]</td>
+	<td><tt>kCapL</tt></td>
+	<td>$A5</td>
+	<td class=SubHeading>[Q]</td>
+	<td><tt>kCapQ</tt></td>
+	<td>$AA</td>
+	<td class=SubHeading>[V]</td>
+	<td><tt>kCapV</tt></td>
+	<td>$AF</td>
+</tr>
+<tr>
+	<td class=SubHeading>[M]</td>
+	<td><tt>kCapM</tt></td>
+	<td>$A6</td>
+	<td class=SubHeading>[R]</td>
+	<td><tt>kCapR</tt></td>
+	<td>$AB</td>
+	<td class=SubHeading>[W]</td>
+	<td><tt>kCapW</tt></td>
+	<td>$B0</td>
+</tr>
+<tr height=4>	<td class=Transparent colspan=9></td>	</tr>
+<tr>
+	<td class=SubHeading>[X]</td>
+	<td><tt>kCapX</tt></td>
+	<td>$B1</td>
+	<td class=Transparent colspan=6></td>
+</tr>
+<tr>
+	<td class=SubHeading>[Y]</td>
+	<td><tt>kCapY</tt></td>
+	<td>$B2</td>
+	<td class=SubHeading>[_]</td>
+	<td><tt>kSpace</tt></td>
+	<td>$99</td>
+	<td class=Transparent colspan=3 rowspan=4></td>
+</tr>
+<tr>
+	<td class=SubHeading>[Z]</td>
+	<td><tt>kCapZ</tt></td>
+	<td>$B3</td>
+	<td class=SubHeading>[:]</td>
+	<td><tt>kColon</tt></td>
+	<td>$C6</td>
+</tr>
+<tr>
+	<td class=SubHeading>[&theta;]</td>
+	<td><tt>kThetA</td>
+	<td>$CC</td>
+	<td class=SubHeading>[?]</td>
+	<td><tt>kQuest</tt></td>
+	<td>$CA</td>
+</tr>
+<tr>
+	<td class=SubHeading>["]</td>
+	<td><tt>kQuotE</td>
+	<td>$CB</td>
+	<td class=SubHeading>[SOLVE]</td>
+	<td><tt>kAlphaEnter</tt></td>
+	<td>$06</td>
+</tr>
+</table>
+<hr>
+
+<a name="alpha2"></a>
+<h3>Alpha-Alpha-Function Keys</h3>
+<table class=Info>
+<tr class=Heading>
+	<th>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+	<th>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+	<th>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+</tr>
+<tr>
+	<td class=SubHeading>[a]</td>
+	<td><tt>kLa</tt></td>
+	<td>$E2</td>
+	<td class=SubHeading>[d]</td>
+	<td><tt>kLd</tt></td>
+	<td>$E5</td>
+	<td class=SubHeading>[i]</td>
+	<td><tt>kLi</tt></td>
+	<td>$EA</td>
+</tr>
+<tr>
+	<td class=SubHeading>[b]</td>
+	<td><tt>kLb</tt></td>
+	<td>$E3</td>
+	<td class=SubHeading>[e]</td>
+	<td><tt>kLe</tt></td>
+	<td>$E6</td>
+	<td class=SubHeading>[j]</td>
+	<td><tt>kLj</tt></td>
+	<td>$EB</td>
+</tr>
+<tr>
+	<td class=SubHeading>[c]</td>
+	<td><tt>kLc</tt></td>
+	<td>$E4</td>
+	<td class=SubHeading>[f]</td>
+	<td><tt>kLf</tt></td>
+	<td>$E7</td>
+	<td class=SubHeading>[k]</td>
+	<td><tt>kLk</tt></td>
+	<td>$EC</td>
+</tr>
+<tr>
+	<td class=Transparent rowspan=2 colspan=3></td>
+	<td class=SubHeading>[g]</td>
+	<td><tt>kLg</tt></td>
+	<td>$E8</td>	
+	<td class=SubHeading>[l]</td>
+	<td><tt>kLl</tt></td>
+	<td>$ED</td>
+</tr>
+<tr>
+	<td class=SubHeading>[h]</td>
+	<td><tt>kLh</tt></td>
+	<td>$E9</td>
+	<td class=SubHeading>[m]</td>
+	<td><tt>kLm</tt></td>
+	<td>$EE</td>
+</tr>
+<tr height=4>	<td class=Transparent colspan=9></td>	</tr>
+<tr>
+	<td class=SubHeading>[n]</td>
+	<td><tt>kLSmalln</tt></td>
+	<td>$EF</td>
+	<td class=SubHeading>[s]</td>
+	<td><tt>kLs</tt></td>
+	<td>$F4</td>
+	<td class=SubHeading>[x]</td>
+	<td><tt>kLx</tt></td>
+	<td>$F9</td>
+</tr>
+<tr>
+	<td class=SubHeading>[o]</td>
+	<td><tt>kLo</tt></td>
+	<td>$F0</td>
+	<td class=SubHeading>[t]</td>
+	<td><tt>kLt</tt></td>
+	<td>$F5</td>
+	<td class=SubHeading>[y]</td>
+	<td><tt>kLy</tt></td>
+	<td>$FA</td>
+</tr>
+<tr>
+	<td class=SubHeading>[p]</td>
+	<td><tt>kLp</tt></td>
+	<td>$F1</td>
+	<td class=SubHeading>[u]</td>
+	<td><tt>kLu</tt></td>
+	<td>$F6</td>
+	<td class=SubHeading>[z]</td>
+	<td><tt>kLz</tt></td>
+	<td>$FB</td>
+</tr>
+<tr>
+	<td class=SubHeading>[q]</td>
+	<td><tt>kLq</tt></td>
+	<td>$F2</td>
+	<td class=SubHeading>[v]</td>
+	<td><tt>kLv</tt></td>
+	<td>$F7</td>
+	<td class=Transparent colspan=3 rowspan=2></td>
+</tr>
+<tr>
+	<td class=SubHeading>[r]</td>
+	<td><tt>kLSmallr</tt></td>
+	<td>$F3</td>
+	<td class=SubHeading>[w]</td>
+	<td><tt>kLw</tt></td>
+	<td>$F8</td>
+</tr>
+</table>
+<hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; System Flags</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+	<h1>Table of System Flags</h1>
+	<hr>
+	Not an exhaustive list, but all the useful ones have been given.<p>
+
+<table class=Info>
+<tr class=Heading>
+	<th>Flag</th>
+	<th>Value</th>
+	<th><tt>IY</tt> Offset</th>
+	<th>Value</th>
+	<th>Effect</th>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>TrigDeg</tt></td>
+	<td>2</td>
+	<td class=SubHeading><tt>TrigFlags</tt></td>
+	<td>0</td>
+	<td>0 - Radian Mode<br>1 - Degree Mode</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>DonePrgm</tt></td>
+	<td>5</td>
+	<td class=SubHeading><tt>DoneFlags</tt></td>
+	<td>0</td>
+	<td>1 - Display "Done" after program</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>PlotLoc</tt></td>
+	<td>1</td>
+	<td rowspan=2 class=SubHeading><tt>PlotFlags</tt></td>
+	<td rowspan=2>2</td>
+	<td>0 - Graph and draw routines sent to screen and <tt>PlotSScreen</tt><br>1 - Graph and
+		draw routines sent to screen only.</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>PlotDisp</tt></td>
+	<td>2</tt>
+	<td>0 - Homescreen is displayed<br>1 - Graph screen is displayed.</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>GrfFuncM</tt></td>
+	<td>4</td>
+	<td rowspan=4 class=SubHeading><tt>GrfModeFlags</tt></td>
+	<td rowspan=4>2</td>
+	<td>1 - Function graphing mode</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>GrfPolarM</tt></td>
+	<td>5</td>
+	<td>1 - Polar graphing mode</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>GrfParamM</tt></td>
+	<td>6</td>
+	<td>1 - Parametric graphing mode</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>GrfRecurM</tt></td>
+	<td>7</td>
+	<td>1 - Recursive (Sequence) graphing mode</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>GraphDraw</tt></td>
+	<td>0</td>
+	<td class=SubHeading><tt>GraphFlags</tt></td>
+	<td>3</td>
+	<td>1 - Graph must be redrawn<br>0 - Graph is okay.</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>GrfDot</tt></td>
+	<td>0</td>
+	<td class=SubHeading rowspan=7><tt>GrfDBFlags</tt></td>
+	<td rowspan=7>4</td>
+	<td>1 - Dot graph mode<br>0 - Connected graph mode</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>GrfSimul</tt></td>
+	<td>1</td>
+	<td>1 - Simultaneous graphing<br>0 - Sequential graphing</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>GrfGrid</tt></td>
+	<td>2</td>
+	<td>1 - Grid displayed<br>0 - No grid</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>GrfPolar</tt></td>
+	<td>3</td>
+	<td>1 - Polar coordinates<br>0 - Rectangular coordinates</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>GrfNoCoord</tt></td>
+	<td>4</td>
+	<td>1 - Don't display coordinates<br>0 - Display coordinates</td>
+</tr>
+<tr valign=top> 
+	<td class=SubHeading><tt>GrfNoAxis</tt></td>
+	<td>5</td>
+	<td>1 - Don't display the axis<br>0 - Display the axis</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>GrfLabel</tt></td>
+	<td>6</td>
+	<td>1 - Display axis labels<br>0 - Don't display axis labels</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>TextEraseBelow</tt></td>
+	<td>1</td>
+	<td class=SubHeading rowspan=4><tt>TextFlags</tt></td>
+	<td rowspan=4>5</td>
+	<td>1 - When displaying a small character, erase the pixels below it.</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>TextScrolled</tt></td>
+	<td>2</td>
+	<td>1 - Text display caused screen to scroll</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>TextInverse</tt></td>
+	<td>3</td>
+	<td>1 - Display text as white-on-black.</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>TextInsMode</tt></td>
+	<td>4</td>
+	<td>1 - Insert mode<br>0 - Overstrike mode</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>ApdAble</tt></td>
+	<td>2</td>
+	<td class=SubHeading rowspan=2><tt>ApdFlags</tt></td>
+	<td rowspan=2>8</td>
+	<td>1 - APD&trade; is active</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>ApdRunning</tt></td>
+	<td>3</td>
+	<td>1 - APD&trade; clock is running</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>OnRunning</tt></td>
+	<td>3</td>
+	<td class=SubHeading rowspan=2><tt>OnFlags</tt></td>
+	<td rowspan=2>9</td>
+	<td>1 - Calculator is on.</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>OnInterrupt</tt></td>
+	<td>4</td>
+	<td>1 - The <tt>[ON]</tt> key was pressed</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>StatsValid</tt></td>
+	<td>6</td>
+	<td class=SubHeading rowspan=2><tt>StatFlags</tt></td>
+	<td rowspan=2>9</td>
+	<td>1 - Statistics results are valid</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>StatANSDisp</tt></td>
+	<td>7</td>
+	<td>1 - Display statistics results</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>FmtExponent</tt></td>
+	<td>0</td>
+	<td class=SubHeading rowspan=8><tt>FmtFlags</tt></td>
+	<td rowspan=8>10</td>
+	<td>1 - Show exponent<br>0 - No exponent</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>FmtEng</tt></td>
+	<td>1</td>
+	<td>1 - Engineering notation<br>0 - Scientific Notation</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>FmtHex</tt></td>
+	<td>2</td>
+	<td rowspan=3>If <tt>FmtHex</tt> and <tt>FmtOct</tt> are 1, then<p><br>1 - Display answer 
+		as <tt>x/y</tt><br>0 - Display answer as <tt>x&deg;y'z"</tt></td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>FmtOct</tt></td>
+	<td>3</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>FmtBin</tt></td>
+	<td>4</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>FmtReal</tt></td>
+	<td>5</td>
+	<td>1 - Real math mode</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>FmtRect</tt></td>
+	<td>6</td>
+	<td>1 - Rectangular complex mode (<tt>a+b<i>i</i></tt>)</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>FmtPolar</tt></td>
+	<td>7</td>
+	<td>1 - Polar complex mode (<tt>r<i>e</i>^&theta;<i>i</i></tt>)
+		</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>CurAble</tt></td>
+	<td>2</td>
+	<td class=SubHeading rowspan=3><tt>CurFlags</tt></td>
+	<td rowspan=3>12</td>
+	<td>1 - Cursor flash is enabled</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>CurOn</tt></td>
+	<td>3</td>
+	<td>1 - Cursor is showing</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>CurLock</tt></td>
+	<td>4</td>
+	<td>1 - Cursor is locked off</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>AppTextSave</tt></td>
+	<td>1</td>
+	<td class=SubHeading rowspan=2><tt>AppFlags</tt></td>
+	<td rowspan=2>13</td>
+	<td>1 - Written characters are saved in the <tt>TextShadow</tt> buffer.</td>
+ </tr>
+<tr valign=top>
+	<td class=SubHeading><tt>AppAutoScroll</tt></td>
+	<td>2</td>
+	<td>1 - Screen automatically scrolls when the 5x7 font is written and goes beyond the 
+		edge of the screen.</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>WebMode</tt></td>
+	<td>0</td>
+	<td class=SubHeading rowspan=4><tt>SeqFlags</tt></td>
+	<td rowspan=4>15</td>
+	<td>1 - Web mode<br>0 - Normal sequence mode</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>SeqUV</tt></td>
+	<td>2</td>
+	<td>1 - Sequence mode: U vs. V</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>SeqVW</tt></td>
+	<td>3</td>
+	<td>1 - Sequence mode: V vs. W</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>SeqUW</tt></td>
+	<td>4</td>
+	<td>1 - Sequence mode: U vs. W</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>IndicRun</tt></td>
+	<td>0</td>
+	<td class=SubHeading rowspan=2><tt>IndicFlags</tt></td>
+	<td rowspan=2>18</td>
+	<td>1 - Run indicator is on.<br>0 - Run indicator is off</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>IndicOnly</tt></td>
+	<td>2</td>
+	<td>1 - Interrupt handler only checks run indicator (don't process APD&trade;, blink the
+		cursor, or scan for keys).</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>Shift2nd</tt></td>
+	<td>3</td>
+	<td class=SubHeading rowspan=5><tt>ShiftFlags</tt></td>
+	<td rowspan=5>18</td>
+	<td>1 - <tt>[2nd]</tt> key was pressed.</td>
+</tr>
+<tr valign=top>
+	<td class=SubHeading><tt>ShiftAlpha</tt></td>
+	<td>4</td>
+	<td>1 - <tt>[ALPHA]</tt> key was pressed.</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>ShiftLwrAlph</tt></td>
+	<td>5</td>
+	<td>1 - Lowercase mode set.</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>ShiftALock</tt></td>
+	<td>6</td>
+	<td>1 - Alpha lock is active</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>ShiftKeepAlph</tt></td>
+	<td>7</td>
+	<td>1 - Alpha lock cannot be canceled.</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>AutoFill</tt></td>
+	<td>4</td>
+	<td class=SubHeading rowspan=3><tt>TblFlags</tt></td>
+	<td rowspan=3>19</tt></td>
+	<td>1 - Ask for independent variable in table<br>0 - Fill table automatically.</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>AutoCalc</tt></td>
+	<td>5</td>
+	<td>1 - Ask to calculate dependent variable in table.<br>0 - Calculate 
+		automatically</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>ReTable</tt></td>
+	<td>6</td>
+	<td>1 - Table has to be recalculated.<br>0 - Table is okay.</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>GrfSplit</tt></td>
+	<td>0</td>
+	<td class=SubHeading rowspan=4><tt>SGrFlags</tt></td>
+	<td rowspan=4>20</td>
+	<td>1 - Horizontal split mode</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>VertSplit</tt></td>
+	<td>1</td>
+	<td>1 - Vertical split mode</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>GrfSplitOverride</tt></td>
+	<td>3</td>
+	<td>1 - Ignore graph split flag</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>TextWrite</tt></td>
+	<td>7</td>
+	<td>1 - Small font writes to <tt>PlotSScreen</tt><br>0 - Small font writes to
+		display.</tt></td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>LwrCaseActive</tt></td>
+	<td>3</td>
+	<td class=SubHeading><tt>AppLwrCaseFlag</tt></td>
+	<td>36</td>
+	<td>1 - Lowercase enabled. Press <tt>[ALPHA][ALPHA]</tt> to access lowercase 
+		characters.</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>FullScrnDraw</tt></td>
+	<td>2</td>
+	<td class=SubHeading><tt>ApiFlg4</tt></td>
+	<td>43</td>
+	<td>1 - Allows graphics commands to use row 0 and column 95</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>FracDrawLFont</tt></td>
+	<td>2</td>
+	<td class=SubHeading rowspan=2><tt>FontFlags</tt></td>
+	<td rowspan=2>50</td>
+	<td>1 - Routines that normally display small font now display large font.</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>CustomFont</tt></td>
+	<td>7</td>
+	<td>1 - Small font drawing routines use your own characters.</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>BufferOnly</tt></td>
+	<td>0</td>
+	<td class=SubHeading rowspan=2><tt>PlotFlag3</tt></td>
+	<td rowspan=2>60</td>
+	<td>1 - Drawing routines written to <tt>PlotSScreen</tt> instead of display.</td></tr>
+<tr valign=top>
+	<td class=SubHeading><tt>UseFastCirc</tt></td>
+	<td>4</td>
+	<td>1 - Circles drawn in sections simultaneously.<br>0 - Circles drawn in a circular
+		direction.</td></tr>
+<tr valign=top>
+	<td colspan=2> &nbsp; </td>
+	<td class=SubHeading><tt>Asm_Flag1<br>Asm_Flag2<br>Asm_Flag3</tt></td>
+	<td>33<br>34<br>35<br></td>
+	<td>Not used by the calculator. Use these for your own personal use.</td></tr>
+</table>
+<hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

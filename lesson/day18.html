@@ -1,0 +1,398 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 18 &mdash; Floating-Point Arithmetic</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day17.html">Previous</a>
+    &middot; <a href="day19.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 18. Floating-Point Arithmetic</h1>
+    <hr>
+    <b><font color=#CCCCCC>novice intermediate <font color=#FF6600>advanced</font> expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#ops">OP Registers</a>
+<li type="disc"><a href="#sto">Loading</a>
+<li type="disc"><a href="#fpm">Floating-Point Math</a>
+<li type="disc"><a href="#opm">Mainipulating OP Registers</a>
+<li type="disc"><a href="#fpd">Displaying</a>
+</ul>
+<hr>
+
+    We have already covered using fixed-point for fractional numbers, but there may be times when you absolutely require
+    true floating-point, so guess what we're gonna look at now.<p>
+
+<a name="ops"></a>
+<h2>OP Registers</h2>
+A bit of a misnomer, since the OP registers are really sections of RAM. There are six OP
+RAM registers: <span class=mem>OP1</span> to <span class=mem>OP6</span>. They are used mainly for two things:
+
+<ul>
+    <li>Storing floating-point numbers.
+    <li>Holding variable names.
+</ul>
+
+Each OP register is eleven bytes in length. This is because variable names and floating-point numbers are formatted to be 9 bytes in size. Bytes 10 and 11 are used for extra precision in floating-point numbers when doing math.<p>
+
+    <h2>Floating-Point Numbers</h2>
+    Well, we <i>are</i> dealing with a calculator after all :).<p>
+
+TI stores floating point numbers according to this structure:
+
+<pre>
+struct FP {
+    byte  sign;           // Whether the number is positive or negative
+    byte  exponent;       // Locates the decimal point
+    byte  significand[7]; // The number itself
+    byte  guard[2];       // Guard digits for mathematics
+};</pre>
+
+The magnitude of every real number except zero can be represented as <i>m</i> &times; 10<sup><i>exp</i></sup>, where <i>exp</i> is an integer designating the exponent and <i>m</i> is a real number designating the significand such that 1 <= <i>m</i> < 10.<p>
+
+    <h3>Sign</h3>
+This byte determines if the number evaluates as positive or negative, and also if it is real or complex. For the uninitiated, a complex number is one of the form a+b<i>i</i>, where <i>i</i> is the square root of -1.
+
+<ul>
+    <li>%00000000 &mdash; Positive and real.
+    <li>%10000000 &mdash; Negative and real.
+    <li>%00001100 &mdash; Positive and complex.
+    <li>%10001100 &mdash; Negative and complex.
+</ul>
+
+    <h3>Exponent</h3>
+The exponent field reports the power of ten that the mantissa is to be raised. The number format is not the usual two's complement, but rather biased to $80. A value of $80 trasnslates as 10<sup>0</sup>. $81 is 10<sup>1</sup>. $7F is 10<sup>-1</sup>.<p>
+
+    <h3>Significand</h3>
+These are the digits of the number. Each nibble specifies one decimal digit, so you can have a floating-point
+number with 14 digits. The first digit, and only the first digit, is the characteristic (the whole part) with the remainder being the mantissa (the decimal part).<p>
+
+    Examples:
+
+<pre>
+    $00, $9E, $23, $91, $80, $55, $75, $00, $00    2.391805575 &times; 10<sup>30</sup>
+    $80, $AC, $46, $19, $18, $45, $80, $00, $00    -4.61918458 &times; 10<sup>44</sup>
+    $80, $77, $75, $16, $99, $60, $94, $17, $87    -7.5169960941787 &times; 10<sup>-7</sup>
+    $00, $89, $19, $80, $61, $22, $02, $65, $10    1980612202.6510
+</pre><p>
+
+If the number is complex, then this number is the real part (<i>a</i>). The imaginary part (<i>b</i>) is held in the next consecutive OP register, which also has bits 2 and 3 of its sign byte set.<p>
+
+    Example:
+
+<pre>
+    $0C, $7E, $22, $09, $78, $47, $30, $00, $00       0.0220978473 - 0.0012565562<i>i</i>
+    $8C, $7D, $12, $56, $55, $62, $00, $00, $00
+</pre>
+
+<a name="sto"></a>
+    <h2>Loading Floating-Point Numbers</h2>
+
+To load floating-point (hereafter, 'FP') numbers into the OP registers, you use the <tt>Mov9ToOP<i>x</i></tt> system routine.
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_Mov9ToOP1<br>_Mov9ToOP2</tt></th>
+    <td colspan=2>Moves the nine bytes at <tt>HL</tt> to <tt>OP1</tt> or <tt>OP2</tt>.</td>
+</tr>
+<tr>
+    <th class=Heading>INPUT</th>
+    <td class=SubHeading width=12%><tt>HL</tt></td>
+    <td>Pointer to start of the nine bytes.</td>
+</tr>
+<tr>
+    <th class=Heading>DESTROYS</th>
+    <td colspan=2>All but <tt>A</tt></td>
+</tr>
+<tr>
+    <th class=Heading>Remarks</th>
+    <td colspan=2>For complex numbers, use <tt><b>_Mov9OP1OP2</b></tt>, which moves the 18
+    bytes at <tt>HL</tt> to <tt>OP1</tt> and <tt>OP2</tt>.</td>
+</tr>
+</table>
+
+    This is what you do:<br>
+    Example: Store <i>e</i> into <span class=mem>OP1</span>.
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>exp</span>
+    b_call(_Mov9ToOP1)
+    <span class=ins>RET</span>
+
+<span class=mem>exp:</span>       <span class=dir>.DB</span>    $00, $80, $27, $18, $28, $18, $28, $45, $94    <span class=cmt>;2.7182818284594</span>
+</pre>
+
+<a name="fpm"></a>
+    <h2>FP Math</h2>
+    What can I say...there are a <i>lot</i> of ROM calls for FP math. Here is just a sampling.<p>
+
+<table class=Info>
+<caption>All registers are destroyed. Result returned to <span class=mem>OP1</span>.</caption>
+<tr class=Heading>
+    <th>Routine</th>
+    <th>Effect</th>
+</tr>
+<tr>
+    <th class=SubHeading><tt>_FPAdd</tt></th>
+    <td>Adds <tt>OP2</tt> to <tt>OP1</tt>.</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>_FPDiv</tt></th>
+    <td>Divides <tt>OP1</tt> by <tt>OP2</tt>.</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>_FPMult</tt></th>
+    <td>Muliplies <tt>OP1</span> by <tt>OP2</tt>.</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>_FPRecip</tt></th>
+    <td>Reciprocal of <tt>OP1</tt>. <tt>OP2</tt> = input <tt>OP1</tt>.</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>_FPSub</tt></th>
+    <td>Subtracts <tt>OP2</tt> from <tt>OP1</tt>.</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>_SqRoot</tt></th>
+    <td>Square root of <tt>OP1</tt>.</td>
+</tr>
+<tr>
+    <th class=SubHeading><tt>_Random</tt></th>
+    <td>Gets a random number. 0.0 &gt; <tt>OP1</tt> &gt; 1.0</td>
+</tr>
+</table><p>
+
+<a name="opm"></a>
+    <h2>Manipulating OP Registers</h2>
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_OP<i>x</i>ToOP<i>y</i></tt></th>
+    <td>Stores 11 bytes at <tt>OP<i>x</i></tt> to <tt>OP<i>y</i></tt>.</td>
+</tr>
+<tr>
+    <th class=Heading>DESTROYS</th>
+    <td><tt>BC DE HL</tt></td>
+</tr>
+<tr>
+    <th class=Heading>Remarks</th>
+    <td>These combinations are available:<br>
+    <table class=Info>
+    <tr>
+        <td class=Transparent rowspan=2 colspan=2></td>
+        <th class=Heading colspan=7><tt><i>y</i></tt></th>
+    </tr>
+    <tr class=SubHeading>
+        <th>OP1</th>
+        <th>OP2</th>
+        <th>OP3</th>
+        <th>OP4</th>
+        <th>OP5</th>
+        <th>OP6</th>
+    </tr>
+    <tr bgcolor=#666666>
+        <th class=Heading rowspan=6 valign=center><tt><i>x</i></tt></th>
+        <th class=SubHeading>OP1</th>
+        <td class=Transparent></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr bgcolor=#666666>
+        <th class=SubHeading>OP2</th>
+        <td></td>
+        <td class=Transparent></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr bgcolor=#666666>
+        <th class=SubHeading>OP3</th>
+        <td></td>
+        <td></td>
+        <td class=Transparent></td>
+        <td></td>
+        <td></td>
+        <td class=Transparent></td>
+    </tr>
+    <tr bgcolor=#666666>
+        <th class=SubHeading>OP4</th>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td class=Transparent></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr bgcolor=#666666>
+        <th class=SubHeading>OP5</th>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td class=Transparent></td>
+        <td></td>
+    </tr>
+    <tr bgcolor=#666666>
+        <th class=SubHeading>OP6</th>
+        <td></td>
+        <td></td>
+        <td class=Transparent colspan=2></td>
+        <td></td>
+        <td class=Transparent></td>
+    </tr>
+    </table>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_OP<i>x</i>ExOP<i>y</i></tt></th>
+    <td>Swaps 11 bytes at <tt>OP<i>x</i></tt> with 11 bytes at <tt>OP<i>y</i></tt>.</td>
+</tr>
+<tr>
+    <th class=Heading>DESTROYS</th>
+    <td><tt>A BC DE HL</tt></td>
+</tr>
+<tr>
+    <th class=Heading>Remarks</th>
+    <td>These combinations are available:<br>
+    <table class=Normal>
+    <tr>
+        <td class=Transparent rowspan=2 colspan=2>
+        <th class=Heading colspan=5><tt><i>y</i></tt></td>
+    </tr>
+    <tr class=SubHeading>
+        <th>OP2</th>
+        <th>OP3</th>
+        <th>OP4</th>
+        <th>OP5</th>
+        <th>OP6</th>
+    </tr>
+    <tr bgcolor=#666666>
+        <th class=Heading rowspan=3 valign=center><tt><i>x</i></tt></td>
+        <th class=SubHeading>OP1</th>
+        <td class=Transparent></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr bgcolor=#666666>
+        <th class=SubHeading>OP2</th>
+        <td class=Transparent colspan=2></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr bgcolor=#666666>
+        <th class=SubHeading>OP5</th>
+        <td class=Transparent colspan=4></td>
+        <td></td>
+    </tr>
+    </table>
+</tr>
+</table><p>
+
+<a name="fpd"></a>
+    <h2>Displaying FP Numbers</h2>
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_DispOP1A</tt></th>
+    <td colspan=2>Displays the floating-point number in <tt>OP1</tt> using the
+    small font, formatted using the current FIX setting.</td>
+</tr>
+<tr>
+    <th class=Heading rowspan=2>INPUT</th>
+    <td class=SubHeading width=12%><tt>OP1</tt></td>
+    <td>Number</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>A</tt></td>
+    <td>Maximum number of characters (not digits) to display.</td>
+</tr>
+<tr>
+    <th class=Heading>DESTROYS</th>
+    <td colspan=2><tt>All</tt></td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_FormReal</tt></th>
+    <td colspan=2>Converts the number in <tt>OP1</tt> into a string.</td>
+</tr>
+<tr>
+    <th class=Heading rowspan=2>INPUT</td>
+    <td class=SubHeading width=12%><tt>OP1</tt></td>
+    <td>Number</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>A</tt></td>
+    <td>Maximum number of characters (not digits) to display, minimum of six.</td>
+</tr>
+<tr>
+    <th class=Heading rowspan=2>OUTPUT</th>
+    <td class=SubHeading><tt>BC</tt></td>
+    <td>Length of string</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>OP3</tt></td>
+    <td>Start of string, null-terminated.</td>
+</tr>
+<tr>
+    <th class=Heading>DESTROYS</th>
+    <td colspan=2><tt>All</tt></td>
+</tr>
+<tr>
+    <th class=Heading>Remarks</td>
+    <td colspan=2>SCI, ENG, and FIX settings affect the string conversion. To ignore all
+    format settings, use <tt>FormEReal</tt>.</td>
+</table>
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_ConvOP1</tt></th>
+    <td colspan=2>Converts the number in <tt>OP1</tt> into a two-byte integer.</td>
+</tr>
+<tr>
+    <th class=Heading valign=top>INPUT</th>
+    <td width=12% class=SubHeading><tt>OP1</tt></td>
+    <td>Number</td>
+</tr>
+<tr>
+    <th class=Heading>OUTPUT</th>
+    <td class=SubHeading><tt>DE</tt></td>
+    <td>Converted number.</td>
+</tr>
+<tr>
+    <th class=Heading>Remarks</th>
+    <td colspan=2>Generates an error if the exponent is greater than 3.</td>
+</tr>
+</table>
+
+    <hr>
+<div class=NavFooter>
+    <a href="day17.html">PREVIOUS - Day 17: Character Sets</a><p>
+    <a href="day19.html">NEXT - Day 19: User Variables</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

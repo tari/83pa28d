@@ -1,0 +1,431 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 8 &mdash; Bit-Level Instructions</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day07.html">Previous</a>
+    &middot; <a href="day09.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 8. Bit-Level Instructions</h1>
+    <hr>
+    <b><font color=#CCCCCC>novice <font color=#E0E000>intermediate</font> advanced expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#log">Bit Logic Instructions</a>
+<li type="square"><a href="#msk">Bit Masking</a>
+<li type="disc"><a href="#cnt">16-Bit Counters</a>
+<li type="disc"><a href="#rem">Remainders</a>
+<li type="disc"><a href="#mod">Modulo-N Counters</a>
+<li type="square"><a href="#sig">Signed Comparisons</a>
+<li type="disc"><a href="#bit">Single Bit Instructions</a>
+<li type="disc"><a href="#flg">System Flags</a>
+</ul>
+    <hr>
+
+The Z80's bit-level instructions enable you to manipulate the individual bits of registers and bytes in memory. You <i>must</i> be familiar with binary notation to continue. If you need some review, look back to <a href="day03.html">Day 3</a>.<p>
+
+<a name="log"></a>
+<h2>Bit Logic Instructions</h2>
+There are four main logical (a.k.a boolean) operations, called AND, OR, XOR, and NOT. All except NOT are dyadic (they want two operands). To figure out what the result of a dyadic logical operation is, the values of the two operands must be worked on in binary. The operator is applied to a bit in one value and the corresponding bit in the other value; this is done for each bit. The result of each operator can be found by consulting this table:
+
+<table class=Info>
+<tr class=Heading>
+    <th>bit 1</th>
+    <th>bit 2</th>
+    <th width=15%>AND</th>
+    <th width=15%>OR</th>
+    <th width=15%>XOR</th>
+    <th width=15%>NOT</th>
+</tr>
+<tr>
+    <td class=SubHeading><tt>0</tt></td>
+    <td class=SubHeading><tt>0</tt></td>
+    <td><tt>0</tt></td>
+    <td><tt>0</tt></td>
+    <td><tt>0</tt></td>
+    <td><tt>1</tt></td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>0</tt></td>
+    <td class=SubHeading><tt>1</tt></td>
+    <td><tt>0</tt></td>
+    <td><tt>1</tt></td>
+    <td><tt>1</tt></td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>1</tt></td>
+    <td class=SubHeading><tt>0</tt></td>
+    <td><tt>0</tt></td>
+    <td><tt>1</tt></td>
+    <td><tt>1</tt></td>
+    <td><tt>0</tt></td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>1</tt></td>
+    <td class=SubHeading><tt>1</tt></td>
+    <td><tt>1</tt></td>
+    <td><tt>1</tt></td>
+    <td><tt>0</tt></td>
+</tr>
+</table>
+
+    Examples:<p>
+<pre>
+    %11110000
+<u>AND %01010101</u>
+    %01010000
+
+   %11110000
+<u>OR %01010101</u>
+   %11110101
+
+    %11110000
+<u>XOR %01010101</u>
+    %10101010
+
+<u>NOT %11110000</u>
+    %00001111</pre><p>
+
+  
+Naturally, the logical operations are available as Z80 instructions.
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>AND</b> {reg<sub>8</sub> | imm<sub>8</sub> | (HL) }</tt></td>
+    <td>Bitwise AND on the accumulator.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects parity</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>reset</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>OR</b> {reg<sub>8</sub> | imm<sub>8</sub> | (HL) }</tt></td>
+    <td>Bitwise OR on the accumulator.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects parity</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>reset</b></td>
+    </tr>
+    </table></td>
+</table>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax><tt><b>XOR</b> {reg<sub>8</sub> | imm<sub>8</sub> | (HL) }</tt></td>
+    <td>Bitwise exclusive OR on the accumulator.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>detects parity</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>reset</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+<td class=CmdSyntax><tt><b>CPL</b></tt></td>
+<td>Bitwise complement (NOT) of the accumulator.</td>
+</tr>
+</table><p>
+
+<a name="msk"></a>
+    <h2>Bit Masking</h2>
+The boolean operations are mainly used in a technique called "bit masking", which allows you to set or reset
+specific bits.<p>
+
+    <h3>Setting Bits</h3>
+To set bits, use <span class=ins>OR</span>. For the mask, use 1 for each bit you want forced to be set, and 0 for the bits you want to preserve. Typically, you would use an OR bitmask to integrate some pattern into a byte without disturbing the other bits.<p>
+
+    E.g. Use <span class=ins>OR</span> to force bits 1, 4, 5, and 7 to be set.
+
+<pre>
+       %<b>0</b>0<b>00</b>00<b>0</b>0       %<b>0</b>1<b>10</b>01<b>0</b>1       %<b>1</b>0<b>00</b>11<b>1</b>1
+    <u>OR %<b>1</b>0<b>11</b>00<b>1</b>0</u>    <u>OR %<b>1</b>0<b>11</b>00<b>1</b>0</u>    <u>OR %<b>1</b>0<b>11</b>00<b>1</b>0</u>
+       %<b>1</b>0<b>11</b>00<b>1</b>0       %<b>1</b>1<b>11</b>01<b>1</b>1       %<b>1</b>0<b>11</b>11<b>1</b>1
+</pre><p>
+    
+    <h3>Resetting Bits</h3>
+To reset bits, use <span class=ins>AND</span>. For the mask, use 0 for each bit to reset, and 1 for each bit to ignore.
+Use this AND bitmask to remove bits that are considered "garbage" from a piece of data.<p>
+
+    E.g. Use <span class=ins>AND</span> to force bits 0, 1, 2, and 6 to be reset.
+
+<pre>
+        %1<b>1</b>111<b>111</b>        %0<b>0</b>111<b>001</b>        %0<b>1</b>101<b>101</b>
+    <u>AND %1<b>0</b>111<b>000</b></u>    <u>AND %1<b>0</b>111<b>000</b></u>    <u>AND %1<b>0</b>111<b>000</b></u>
+        %1<b>0</b>111<b>000</b>        %0<b>0</b>111<b>000</b>        %0<b>0</b>101<b>000</b>
+</pre><p>
+
+    <h3>Toggling Bits</h3>
+To flip the state of a bit, use <span class=ins>XOR</span>. For the mask, use 1 for each bit to flip, and 0 for each
+bit to ignore.<p>
+
+E.g. Use <span class=ins>XOR</span> to flip bits 7 to 4.
+
+<pre>
+        %<b>1010</b>1010        %<b>1100</b>1100        %<b>0101</b>1110
+    <u>XOR %<b>1111</b>0000</u>    <u>XOR %<b>1111</b>0000</u>    <u>XOR %<b>1111</b>0000</u>
+        %<b>0101</b>1010        %<b>0011</b>1100        %<b>1010</b>1110
+</pre><p>
+
+<a name="cnt"></a>
+    <h2>Uses For Bitmasking</h2>
+    <h3>16-Bit Counters</h3>
+    Because the only way to get a result of zero with an <span class=ins>OR</span> operation
+    is when both operands are zero, it can be used when you want a 16-bit counter.
+
+<pre>
+<span class=mem>Loop:</span>
+    <span class=ins>DEC</span>    <span class=reg>BC</span>         <span class=cmt>; Update the counter</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>B</span>        <span class=cmt>; Load one half of the counter</span>
+    <span class=ins>OR</span>     <span class=reg>C</span>          <span class=cmt>; Bitmask with the other half of the counter</span>
+    <span class=ins>JR     NZ</span>, <span class=mem>Loop</span>    <span class=cmt>; If Z is reset then neither B or C is zero, so repeat</span>
+</pre><p>
+
+<a name="rem"></a>
+    <h3>Calculating Remainders</h3>
+<span class=ins>AND</span> can be used to perform <a style="cursor: help" onClick='alert("MODULO &mdash; The remainder of a division. Think of it as meaning \"except for\":\r\r4 = 13 modulo 9 &mdash; \"4 is 13 except for the nines\"\r\rI feel fine modulo a slight headache &mdash; \"I feel fine except for a slight headache\" :-/"); return false'>modulo</a> with a power of two.
+
+<pre>
+    <span class=ins>AND</span>    %00011111     <span class=cmt>; A = A mod 32</span>
+    <span class=ins>AND</span>    %00000111     <span class=cmt>; A = A mod 8</span>
+</pre><p>
+
+<a name="mod"></a>
+    <h3>Modulo-<i>N</i> Counters</h3>
+This feature of <span class=ins>AND</span> can be used to implement a modulo-<i>n</i>
+counter. The premise is that a value is incremented until it hits 2<sup>n</sup>, 
+at which point it resets to zero. Think of it as a clock with 2<sup>n</sup> digits. The format for such a counter is:
+
+<pre><span class=mem>Loop:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(count)</span>
+    <span class=ins>INC</span>    <span class=reg>A</span>
+    <span class=ins>AND</span>    <i>2<sup>n</sup>-1</i>
+    <span class=ins>LD</span>     <span class=mem>(count)</span>, <span class=reg>A</span>
+    <span class=ins>JP     Z</span>, <span class=mem>Fishkill</span>
+    <span class=ins>JR</span>     <span class=mem>Loop</span></pre>
+
+    <h3>Optimizing</h3>
+    Some cheap optimization tricks with boolean operations.<p>
+
+<table class=Info>
+<tr class=Heading>
+    <th width=20%>Instruction</th>
+    <th>Bytes</th>
+    <th>Cycles</th>
+    <th width=20%>Replacement</th>
+    <th>Bytes</th>
+    <th>Cycles</th>
+    <th>Downside</th>
+</tr>
+<tr>
+    <td class=SubHeading><tt>CP 0</tt></td>
+    <td>2</td>
+    <td>7</td>
+     <td class=SubHeading><tt>OR A / AND A</tt></td>
+    <td>1</td>
+    <td>4</td>
+    <td><tt>P/V</tt> flag is affected differently</td>
+</tr>
+<tr>
+    <td class=SubHeading><tt>LD A, 0</tt></td>
+    <td>2</td>
+    <td>7</td>
+    <td class=SubHeading><tt>XOR A</tt></td>
+    <td>1</td>
+    <td>4</td>
+    <td>Flags are affected<br><tt>SUB A</tt> will have the same effect, btw</td>
+</tr>
+</table><p>
+
+<a name="sig"></a>
+<h3>Signed Comparisons</h3>
+If you remember, when subtracting one signed number from another, we can tell how the two numbers compare based on the sign and overflow flags:
+
+<table class=info>
+<tr>
+  <th class=Heading width=25%>Sign</th>
+  <th class=Heading width=25%>Overflow</th>
+  <th class=Heading width=50%>Meaning</th>
+</tr>
+<tr>
+  <td>SET</td>
+  <td>SET</td>
+  <td>op1 >= op2</td>
+</tr>
+<tr>
+  <td>SET</td>
+  <td>CLEAR</td>
+  <td>op1 < op2</td>
+</tr>
+<tr>
+  <td>CLEAR</td>
+  <td>SET</td>
+  <td>op1 < op2</td>
+</tr>
+<tr>
+  <td>CLEAR</td>
+  <td>CLEAR</td>
+  <td>op1 >= op2</td>
+</tr>
+</table><p>
+
+Interestingly, this looks just like the operation of XOR. So one could surmise that XORing the sign and overflow flags together after a comparison would yield their relationship.<p>
+
+Now, while it is impossible to do an operation on two flag bits, we can take advantage of the fact that the sign bit is a copy of the seventh bit of the result, then use an XOR bitmask if it's warranted. Although, this means that you have to use <span class=ins>SUB</span> instead of <span class=ins>CP</span> to do the comparison.<p>
+
+<pre>
+    <span class=ins>SUB</span>    -5
+    <span class=ins>JP    PO</span>, <span class=dir>$</span>+5    <span class=cmt>; P/V reset, and XORing with zero does nothing</span>
+    <span class=ins>XOR   $80</span>
+<span class=cmt>; Can now use M for <, or P for >=</span>
+</pre><p>
+
+Be aware that this method does not leave the <span class=ins>Z</span> flag in any meaningful state.<p>
+
+<a name="bit"></a>
+    <h2>Single-Bit Instructions</h2>
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>SET</b> <i>n</i>, {reg<sub>8</sub> | (HL) }</tt></td>
+    <td>Sets bit <i><tt>n</tt></i> (0-7) of the operand.</td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>RES</b> <i>n</i>, {reg<sub>8</sub> | (HL) }</tt></td>
+    <td>Resets bit <i><tt>n</tt></i> (0-7) of the operand.</td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt><b>BIT</b> <i>n</i>, {reg<sub>8</sub> | (HL) }</tt></td>
+    <td>Checks bit <i><tt>n</tt></i> (0-7) of the operand.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</td>
+        <td><b>not affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</td>
+        <td><b>affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</td>
+        <td><b>not affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</td>
+        <td><b>not affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+These instructions can be useful, because they allow you to do bitmasking without having to involve the accumulator.<p>
+
+<a name="flg"></a>
+There is a feature of the TI-OS called the system flags that you can take advantage of with these instructions. For starters, look at the Mode or Format menu. You'll see a bunch of options that affect graphing, trigonometry, numbers, etc. Each of these options is controlled by a system flag.<p>
+
+    <h2>Register IY</h2>
+<span class=reg>IX</span> has a sister register called <span class=reg>IY</span> that is entirely interchangeable with its d&ouml;ppelganger, but the OS has called dibs on it.<p>
+
+All the system flags are in an array with a base at $89F0, and the calculator has this address stored in <span class=reg>IY</span>. We can modify a system flag with the <span class=ins>SET</span>/<span class=ins>RES</span> instructions, and check them with the <span class=ins>BIT</span> instruction.<p>
+
+Example: This will check the trigonometric mode. If this bit is 1, then degree mode is set. If it's 0, radian mode is set.<p>
+
+<pre>    <span class=ins>BIT</span>    2, <span class=reg>(IY + 0)</span>    <span class=cmt>; Checks bit 2 of byte $89F0</span></pre>
+
+What relates 2 and 0 to with trigonometry? Not much, the fact that this bit and byte combination record the trig setting was a completely arbitrary decision on TI's part. That's why all the bytes and offsets of the system flags are equated in the INC file:
+
+<pre>    <span class=ins>BIT</span>    <span class=mem>TrigDeg</span>, <span class=reg>(IY + <span class=mem>TrigFlags</span>)</span></pre>
+
+<span class=mem>TrigDeg</span> is equal to 2, and <span class=mem>TrigFlags</span> is equal to 0. This will do the same thing as above, but it's a lot easier to understand.<p>
+
+    <div align=center>
+    <a href="../ref/sysflags.html" target="_blank">Table of system flags.</a>
+    </div><p>
+
+    <hr>
+<div class=NavFooter>
+    <a href="day07.html">PREVIOUS - Day 7: Control Structures</a><p>
+    <a href="day09.html">NEXT - Day 9: Bit Shifting</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

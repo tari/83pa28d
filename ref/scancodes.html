@@ -1,0 +1,224 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Scan Codes</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+	<h1>Scan Codes</h1>
+<hr>
+	These are the codes returned from the <tt>GetCSC</tt> routine.<p>
+	The [APPS] key is equated to <tt>skMatrix</tt> for portability to the TI-83. You
+	may want to re-equate it in your programs if it's confusing.<p>
+
+<table class=Info>
+<tr class=Heading>
+	<th>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+	<th width=>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+	<th width=>Key</th>
+	<th>Equate</th>
+	<th>Value</th>
+</tr>
+<tr>
+	<td class=SubHeading>[Y=]</td>
+	<td><tt>skYEqu</tt></td>
+	<td>$35</td>
+	<td class=SubHeading>[2nd]</td>
+	<td><tt>sk2nd</tt></td>
+	<td>$36</td>
+	<td class=SubHeading>[ALPHA]</td>
+	<td><tt>skAlpha</tt></td>
+	<td>$30</td>
+</tr>
+<tr>
+	<td class=SubHeading>[WINDOW]</td>
+	<td><tt>skWindow</tt></td>
+	<td>$34</td>
+	<td class=SubHeading>[MODE]</td>
+	<td><tt>skMode</tt></td>
+	<td>$37</td>
+	<td class=SubHeading>[X,T,&theta;,<i>n</i>]</td>
+	<td><tt>skGraphVar</tt></td>
+	<td>$28</td>
+</tr>
+<tr>
+	<td class=SubHeading>[ZOOM]</td>
+	<td><tt>skZoom</tt></td>
+	<td>$33</td>
+	<td class=SubHeading>[DEL]</td>
+	<td><tt>skDel</tt></td>
+	<td>$38</td>
+	<td class=SubHeading>[STAT]</td>
+	<td><tt>skStat</tt></td>
+	<td>$20</td>
+</tr>
+<tr>
+	<td class=SubHeading>[TRACE]</td>
+	<td><tt>skTrace</tt></td>
+	<td>$32</td>
+	<td class=SubHeading>&lt;</td>
+	<td><tt>skLeft</tt></td>
+	<td>$02</td>
+	<td class=SubHeading>V</td>
+	<td><tt>skDown</tt></td>
+	<td>$01</td>
+</tr>
+<tr>
+	<td class=SubHeading>[GRAPH]</td>
+	<td><tt>skGraph</tt></td>
+	<td>$31</td>
+	<td class=SubHeading>&Lambda;</td>
+	<td><tt>skUp</tt></td>
+	<td>$04</td>
+	<td class=SubHeading>&gt;</td>
+	<td><tt>skRight</tt></td>
+	<td>$03</td>
+</tr>
+<tr height=4>	<td class=Transparent colspan=9></td>	</tr>
+<tr>
+	<td class=SubHeading>[MATH]</td>
+	<td><tt>skMath</tt></td>
+	<td>$2F</td>
+	<td class=SubHeading>[x<sup>-1</sup>]</td>
+	<td><tt>skRecip</tt></td>
+	<td>$2E</td>
+	<td class=SubHeading>[x<sup>2</sup>]</td>
+	<td><tt>skSquare</tt></td>
+	<td>$2D</td>
+</tr>
+<tr>
+	<td class=SubHeading>[APPS]</td>
+	<td><tt>skMatrix</tt></td>
+	<td>$27</td>
+	<td class=SubHeading>[SIN]</td>
+	<td><tt>skSin</tt></td>
+	<td>$26</td>
+	<td class=SubHeading>[,]</td>
+	<td><tt>skComma</tt></td>
+	<td>$25</td>
+</tr>
+<tr>
+	<td class=SubHeading>[PRGM]</td>
+	<td><tt>skPrgm</tt></td>
+	<td>$1F</td>
+	<td class=SubHeading>[COS]</td>
+	<td><tt>skCos</tt></td>
+	<td>$1E</td>
+	<td class=SubHeading>[(]</td>
+	<td><tt>skLParen</tt></td>
+	<td>$1D</td>
+</tr>
+<tr>
+	<td class=SubHeading>[VARS]</td>
+	<td><tt>skVars</tt></td>
+	<td>$17</td>
+	<td class=SubHeading>[TAN]</td>
+	<td><tt>skTan</tt></td>
+	<td>$16</td>
+	<td class=SubHeading>[)]</td>
+	<td><tt>skRParen</tt></td>
+	<td>$15</td>
+</tr>
+<tr>
+	<td class=SubHeading>[CLEAR]</td>
+	<td><tt>skClear</tt></td>
+	<td>$0F</td>
+	<td class=SubHeading>[^]</td>
+	<td><tt>skPower</tt></td>
+	<td>$0E</td>
+	<td class=SubHeading>[&divide;]</td>
+	<td><tt>skDiv</tt></td>
+	<td>$0D</td>
+</tr>
+<tr height=4>	<td class=Transparent colspan=9></td>	</tr>
+<tr>
+	<td class=SubHeading>[LOG]</td>
+	<td><tt>skLog</tt></td>
+	<td>$2C</td>
+	<td class=SubHeading>[LN]</td>
+	<td><tt>skLn</tt></td>
+	<td>$2B</td>
+	<td class=SubHeading>[STO<b>=></b>]</td>
+	<td><tt>skStore</tt></td>
+	<td>$2A</td>
+</tr>
+<tr>
+	<td class=SubHeading>[7]</td>
+	<td><tt>sk7</tt></td>
+	<td>$24</td>
+	<td class=SubHeading>[4]</td>
+	<td><tt>sk4</tt></td>
+	<td>$23</td>
+	<td class=SubHeading>[1]</td>
+	<td><tt>sk1</tt></td>
+	<td>$22</td>
+</tr>
+<tr>
+	<td class=SubHeading>[8]</td>
+	<td><tt>sk8</tt></td>
+	<td>$1C</td>
+	<td class=SubHeading>[5]</td>
+	<td><tt>sk5</tt></td>
+	<td>$1B</td>
+	<td class=SubHeading>[2]</td>
+	<td><tt>sk2</tt></td>
+	<td>$1A</td>
+</tr>
+<tr>
+	<td class=SubHeading>[9]</td>
+	<td><tt>sk9</tt></td>
+	<td>$14</td>
+	<td class=SubHeading>[6]</td>
+	<td><tt>sk6</tt></td>
+	<td>$13</td>
+	<td class=SubHeading>[3]</td>
+	<td><tt>sk3</tt></td>
+	<td>$12</td>
+</tr>
+<tr>
+	<td class=SubHeading>[&times;]</td>
+	<td><tt>skMul</tt></td>
+	<td>$0C</td>
+	<td class=SubHeading>[-]</td>
+	<td><tt>skSub</tt></td>
+	<td>$0B</td>
+	<td class=SubHeading>[+]</td>
+	<td><tt>skAdd</tt></td>
+	<td>$0A</td>
+</tr>
+<tr height=4>	<td class=Transparent colspan=9></td>	</tr>
+<tr>
+	<td class=SubHeading>[0]</td>
+	<td><tt>sk0</tt></td>
+	<td>$21</td>
+	<td class=Transparent colspan=6 rowspan=4></td>
+</tr>
+<tr>
+	<td class=SubHeading>[.]</td>
+	<td><tt>skDecPnt</tt></td>
+	<td>$19</td>
+</tr>
+<tr>
+	<td class=SubHeading>[(-)]</td>
+	<td><tt>skChs</tt></td>
+	<td>$11</td>
+</tr>
+<tr>
+	<td class=SubHeading>[ENTER]</td>
+	<td><tt>skEnter</tt></td>
+	<td>$09</td>
+</tr>
+</table>
+<hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

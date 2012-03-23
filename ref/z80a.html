@@ -1,0 +1,1411 @@
+<html>
+<head>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<a name="top"></a>
+	<h1>Z80 Instruction Set &mdash; Arithmetic</h1>
+	<hr>
+<a href="#adc">ADC</a><br>
+<a href="#add">ADD</a><br>
+<a href="#cp">CP</a><br>
+<a href="#cpd">CPD</a><br>
+<a href="#cpdr">CPDR</a><br>
+<a href="#cpi">CPI</a><br>
+<a href="#cpir">CPIR</a><br>
+<a href="#cpl">CPL</a><br>
+<a href="#daa">DAA</a><br>
+<a href="#dec">DEC</a><br>
+<a href="#inc">INC</a><br>
+<a href="#neg">NEG</a><br>
+<a href="#sbc">SBC</a><br>
+<a href="#sub">SUB</a><br>
+	<hr>
+
+<a name="adc"></a>
+	<h2>ADC</h2><p>
+
+	<tt><b>ADC A,reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td><tt>reg<sub>8</sub></tt> and the carry flag are added to <tt>A</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>10001[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br>
+	<tt>N</tt> is reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4 or 7 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>ADC A,imm<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The immediate value and the carry flag are added to <tt>A</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11001110 : [imm<sub>8</sub>]</tt></td>
+</tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br>
+	<tt>N</tt> is reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>7</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>ADC A,(reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The value pointed to by index register <tt>reg<sub>index</sub></tt> plus
+	<tt>ofs<sub>8</sub></tt>, and the carry flag, are added to <tt>A</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 10001110 : [ofs<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br>
+	<tt>N</tt> is reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>19</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>ADC HL,reg<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The value of <tt>reg<sub>16</sub></tt> and the carry flag are added to
+	<tt>HL</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 01[reg<sub>16</sub>]1010</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>BC</tt></th>
+		<td><tt>00</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>DE</tt></th>
+		<td><tt>01</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>HL</tt></th>
+		<td><tt>10</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>SP</tt></th>
+		<td><tt>11</tt>
+	</tr>
+	</table></td>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br>
+	<tt>H</tt> is set if there is a carry out of bit 11<br><tt>N</tt> is reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>15</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="add"></a>
+	<h2>ADD</h2><p>
+
+	<tt><b>ADD A,reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Adds <tt>reg<sub>8</sub></tt> to <tt>A</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>10000[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br>
+	<tt>N</tt> is cleared</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4 or 7 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>ADD A,imm<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The immediate value is added to <tt>A</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11000110 : [imm<sub>8</sub>]</tt></td>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br>
+	<tt>N</tt> is cleared</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>7</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>ADD A,(reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Adds the value of the memory location pointed to by <tt>reg<sub>index</sub></tt> plus
+	<tt>ofs<sub>8</sub></tt> to <tt>A</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 10000110 : [ofs<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt></td>
+	</tr>
+	</table></td>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br>
+	<tt>N</tt> is cleared</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>19</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>ADD HL,reg<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The value of <tt>reg<sub>16</sub></tt> is added to <tt>HL</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00[reg<sub>16</sub>]1001</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>BC</tt></th>
+		<td><tt>00</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>DE</tt></th>
+		<td><tt>01</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>HL</tt></th>
+		<td><tt>10</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>SP</tt></th>
+		<td><tt>11</tt>
+	</tr>
+	</table></td>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z P/V</tt> are unaffected<br><tt>C</tt> is affected as defined<br><tt>H</tt> is set if there is a carry out of bit 11<br><tt>N</tt> is reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>11</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>ADD IX,reg<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The value of <tt>reg<sub>16</sub></tt> is added to <tt>IX</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11011101 : 00[reg<sub>16</sub>]1001</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>BC</tt></th>
+		<td><tt>00</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>DE</tt></th>
+		<td><tt>01</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>10</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>SP</tt></th>
+		<td><tt>11</tt>
+	</tr>
+	</table></td>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z P/V</tt> are unaffected<br><tt>C</tt> is affected as defined<br><tt>H</tt> is set if there is a carry out of bit 11<br><tt>N</tt> is reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>15</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>ADD IY,reg<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The value of <tt>reg<sub>16</sub></tt> is added to <tt>IY</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11111101 : 00[reg<sub>16</sub>]1001</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>BC</tt></th>
+		<td><tt>00</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>DE</tt></th>
+		<td><tt>01</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>10</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>SP</tt></th>
+		<td><tt>11</tt>
+	</tr>
+	</table></td>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z P/V</tt> are unaffected<br><tt>C</tt> is affected as defined<br><tt>H</tt> is set if there is a carry out of bit 11<br><tt>N</tt> is reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>15</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="cp"></a>
+	<h2>CP</h2><p>
+
+	<tt><b>CP reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Subtracts <tt>reg<sub>8</sub></tt> from <tt>A</tt> and affects flags according to the
+	result. <tt>A</tt> is not modified.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>10111[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br>
+	<tt>N</tt> is set</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4 or 7 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>CP imm<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Subtracts the immediate value from <tt>A</tt> and affects flags according to the
+	result. <tt>A</tt> is not modified.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11111110 : [imm<sub>8</sub>]</td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br>
+	<tt>N</tt> is set</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>7</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>CP (reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Subtracts the memory value pointed to by <tt>reg<sub>index</sub></tt> plus
+	<tt>ofs<sub>8</sub></tt> from <tt>A</tt> and affects the flags according to the result.
+	<tt>A</tt> is not modified.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 10111110 : [ofs<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br>
+	<tt>N</tt> is set</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>19</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="cpd"></a>
+	<h2>CPD</h2><p>
+
+	<tt><b>CPD</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Compares the value of the memory location pointed to by <tt>HL</tt> with <tt>A</tt>.
+	<tt>HL</tt> and <tt>BC</tt> are then decremented.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10101001</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H</tt> are affected as defined<br><tt>P/V</tt> is reset if <tt>BC</tt> becomes
+	zero<br><tt>N</tt> is set<br><tt>C</tt> is unaffected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="cpdr"></a>
+	<h2>CPDR</h2><p>
+
+	<tt><b>CPDR</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Compares the value of the memory location pointed to by <tt>HL</tt> with <tt>A</tt>.
+	<tt>HL</tt> and <tt>BC</tt> are then decremented. If <tt>BC</tt> is not zero and
+	<tt>Z</tt> is not set, this operation is repeated. Interrupts can trigger while this
+	instruction is processing.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10111001</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H</tt> are affected as defined<br><tt>P/V</tt> is reset if <tt>BC</tt>
+	becomes zero<br><tt>N</tt> is set<br><tt>C</tt> is unaffected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td>If <tt>BC != 0</tt> and <tt>Z</tt> is reset: <tt>21</tt><br>
+	If <tt>BC == 0</tt> or <tt>Z</tt> is set: <tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="cpi"></a>
+	<h2>CPI</h2><p>
+
+	<tt><b>CPI</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Compares the value of the memory location pointed to by <tt>HL</tt> with <tt>A</tt>.
+	<tt>HL</tt> is incremented and <tt>BC</tt> is decremented.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10100001</tt></td>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H</tt> are affected as defined<br><tt>P/V</tt> is reset if <tt>BC</tt> becomes
+	zero<br><tt>N</tt> is set<br><tt>C</tt> is unaffected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="cpir"></a>
+	<h2>CPIR</h2><p>
+
+	<tt><b>CPIR</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Compares the value of the memory location pointed to by <tt>HL</tt> with <tt>A</tt>.
+	<tt>HL</tt> is incremented and <tt>BC</tt> is decremented. If <tt>BC</tt> is not zero and
+	<tt>Z</tt> is not set, this operation is repeated. Interrupts can trigger while this
+	instruction is processing.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10110001</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H</tt> are affected as defined<br><tt>P/V</tt> is reset if <tt>BC</tt>
+	becomes zero<br><tt>N</tt> is set<br><tt>C</tt> is unaffected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td>If <tt>BC != 0</tt> and <tt>Z</tt> is reset: <tt>21</tt><br>
+	If <tt>BC == 0</tt> or <tt>Z</tt> is set: <tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="cpl"></a>
+	<h2>CPL</h2><p>
+
+	<tt><b>CPL</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of <tt>A</tt> are inverted (one's complement).</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00101111</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z P/V C</tt> are not affected<br><tt>H N</tt> are set</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="daa"></a>
+	<h2>DAA</h2></p>
+
+	<tt><b>DAA</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Adjusts <tt>A</tt> for BCD addition and subtraction operations.<br>
+	<table class=Normal width=100%>
+	<tr>
+		<th class=Heading>N Flag</th>
+		<th class=Heading>C Flag</th>
+		<th class=Heading>Bit 7-4</th>
+		<th class=Heading>H Flag</th>
+		<th class=Heading>Bit 3-0</th>
+		<th class=Heading>Number<br>Added</th>
+		<th class=Heading>Output<br>C Flag</th>
+	</tr>
+	<tr align=center>
+		<th class=SubHeading>0</th>
+		<td><tt>0<br>0<br>0<br>0<br>0<br>0<br>1<br>1<br>1</tt></td>
+		<td><tt>9-0<br>0-8<br>0-9<br>A-F<br>9-F<br>A-F<br>0-2<br>0-2<br>0-3</tt></td>
+		<td><tt>0<br>0<br>1<br>0<br>0<br>1<br>0<br>0<br>1</tt></td>
+		<td><tt>0-9<br>A-F<br>0-3<br>0-9<br>A-F<br>0-3<br>0-9<br>A-F<br>0-3</tt></td>
+		<td><tt>00<br>06<br>06<br>60<br>66<br>66<br>60<br>66<br>66</tt></td>
+		<td><tt>1<br>1<br>1<br>0<br>0<br>0<br>0<br>0<br>0</tt></td>
+	</tr>
+	<tr align=center>
+		<th class=SubHeading>1</th>
+		<td><tt>0<br>0<br>1<br>1</tt></td>
+		<td><tt>0-9<br>0-8<br>7-F<br>6-7</tt></td>
+		<td><tt>0<br>1<br>0<br>1</tt></td>
+		<td><tt>0-9<br>6-F<br>0-9<br>6-F</tt></td>
+		<td><tt>00<br>FA<br>A0<br>9A</tt></td>
+		<td><tt>0<br>0<br>1<br>1</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00100111</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>P/V</tt> is parity<br><tt>N</tt> is
+	unaffected<br>See instruction for <tt>H C</tt></td>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="dec"></a>
+	<h2>DEC</h2><p>
+
+	<tt><b>DEC reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Subtracts one from <tt>reg<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00[reg<sub>8</sub>]101</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H</tt> are affected as defined<br><tt>P/V</tt> is set if operand was
+	<tt>$80</tt> before operation<br><tt>N</tt> is set<br><tt>C</tt> is unaffected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4 or 11 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>DEC (reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Subtracts one from the memory location pointed to by <tt>reg<sub>index</sub></tt>
+	plus <tt>ofs<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 00110101 : [ofs<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H</tt> are affected as defined<br><tt>P/V</tt> is set is operand was
+	<tt>$80</tt> before operation<br><tt>N</tt> is set<br><tt>C</tt> is unaffected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>23</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>DEC reg<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Subtracts one from <tt>reg<sub>16</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00[reg<sub>16</sub>]1011</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>BC</tt></th>
+		<td><tt>00</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>DE</tt></th>
+		<td><tt>01</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>HL</tt></th>
+		<td><tt>10</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>SP</tt></th>
+		<td><tt>11</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>6</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>DEC reg<sub>index</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Subtracts one from <tt>reg<sub>index</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 00101011</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>10</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="inc"></a>
+	<h2>INC</h2><p>
+
+	<tt><b>INC reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Adds one to <tt>reg<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00[reg<sub>8</sub>]100</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H</tt> are affected as defined<br><tt>P/V</tt> is set is operand was
+	<tt>$7F</tt> before operation<br><tt>C</tt> is unaffected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4 or 11 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>INC (reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Adds one to the memory location pointed to by <tt>reg<sub>index</sub></tt>
+	plus <tt>ofs<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 00110100 : [ofs<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H</tt> are affected as defined<br><tt>P/V</tt> is set is operand was
+	<tt>$7F</tt> before operation<br><tt>C</tt> is unaffected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>23</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>INC reg<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Adds one to <tt>reg<sub>16</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00[reg<sub>16</sub>]0011</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>BC</tt></th>
+		<td><tt>00</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>DE</tt></th>
+		<td><tt>01</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>HL</tt></th>
+		<td><tt>10</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>SP</tt></th>
+		<td><tt>11</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>6</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>INC reg<sub>index</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Adds one to <tt>reg<sub>index</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 00100011</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>10</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="neg"></a>
+	<h2>NEG</h2><p>
+
+	<tt><b>NEG</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of <tt>A</tt> are negated (two's complement). Operation is the same as
+	subtracting <tt>A</tt> from zero.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 01000100</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H</tt> are affected as defined<br><tt>P/V</tt> is set if <tt>A</tt> was
+	<tt>$80</tt> before operation<br><tt>N</tt> is set<br><tt>C</tt> is set if <tt>A</tt> was
+	not <tt>$00</tt> before operation</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>8</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="sbc"></a>
+	<h2>SBC</h2><p>
+
+	<tt><b>SBC A,reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Subtracts <tt>reg<sub>8</sub></tt> and the carry flag from <tt>A</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>10011[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br><tt>N</tt> is
+	set</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4 or 7 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>SBC A,imm<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Subtracts the immediate value and the carry flag from <tt>A</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11011110 : [imm<sub>8</sub>]</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br><tt>N</tt> is 
+	set</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>7</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>SBC A,(reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Subtracts the value at the memory location pointed to by <tt>reg<sub>index</sub></tt>
+	plus <tt>ofs<sub>8</sub></tt>, and the carry flag from <tt>A</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>16</sub>] : 10011110 : [ofs<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></br></td>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br><tt>N</tt> is 
+	set</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>19</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>SBC HL,reg<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Subtracts <tt>reg<sub>16</sub></tt> and the carry flag from <tt>HL</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 01[reg<sub>16</sub>]0010</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>BC</tt></th>
+		<td><tt>00</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>DE</tt></th>
+		<td><tt>01</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>HL</tt></th>
+		<td><tt>10</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>SP</tt></th>
+		<td><tt>11</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z C</tt> are affected as defined<br><tt>H</tt> is set if a borrow
+	from bit 12<br><tt>P/V</tt> detects overflow<br><tt>N</tt> is set</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>15</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="sub"></a>
+	<h2>SUB</h2><p>
+
+	<tt><b>SUB A,reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Subtracts <tt>reg<sub>8</sub></tt> from <tt>A</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>10010[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br>
+	<tt>N</tt> is set</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4 or 7 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>SUB A,imm<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Subtracts the immediate value from <tt>A</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11010110 : [imm<sub>8</sub>]</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br>
+	<tt>N</tt> is set</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>7</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>SUB A,(reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Subtracts the value at the memory location pointed to by <tt>reg<sub>index</sub></tt>
+	plus <tt>ofs<sub>8</sub></tt> from <tt>A</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>16</sub>] : 10010110 : [ofs<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></br></td>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z H C</tt> are affected as defined<br><tt>P/V</tt> detects overflow<br>
+	<tt>N</tt> is set</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>19</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>

@@ -1,0 +1,929 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 16 &mdash; Character Strings</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day15.html">Previous</a>
+    &middot; <a href="day17.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 16. Character Strings</h1>
+    <hr>
+    <b><font color=#CCCCCC>novice intermediate <font color=#FF6600>advanced</font> expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#str">Strings</a>
+<li type="disc"><a href="#typ">String Types</a>
+<li type="disc"><a href="#cmd">String Instructions</a>
+<li type="square"><a href="#mov">Moving Strings</a>
+<li type="disc"><a href="#exc">Exchanging Strings</a>
+<li type="disc"><a href="#len">String Length</a>
+<li type="disc"><a href="#cnv">Converting Types</a>
+<li type="square"><a href="#cmp">Comparing Strings</a>
+<li type="circle"><a href="#fnc">Other String Functions</a>
+</ul>
+    <hr>
+
+<a name="str"></a>
+    <h2>Strings</h2>
+An amazingly common programming task is doing various operations on strings. This chapter looks at character strings, collections of ASCII characters stored in contiguous memory locations and taken as one entity. But the interesting thing is that you could consider all data structures stored contiguously, like arrays, pictures, multibyte integers, etc. as kinds of strings. And the techniques you will soon learn apply almost equally to each.<p>
+    
+<a name="typ"></a>
+    <h2>String Types</h2>
+I said "characters stored in contiguous memory locations" &mdash; almost sounds like the definition of an array of characters. That's quite true, but technically a character array is not a string because arrays have a fixed size. Real strings are able to change their length at runtime (up to a limit, of course).<br>
+Since these variable-length strings can contain any number of bytes, it's length must be recorded somehow. There are numerous ways to do this, but the two most popular are LBPS (length-byte prefixed strings) and NBTS (null-byte terminated strings). NBTS you have seen before, you follow the string by the value zero:
+
+<pre>    <span class=dir>.DB</span>    "Hello", 0</pre>
+
+LBPS precedes the string with the number of characters.
+
+<pre>    <span class=dir>.DB</span>    5, "Hello"</pre>
+
+While both methods have their advantages over the other, the length-prefixing method is much better than null-termination. One major point in its favor is that almost every string function needs the length of the string (actually it would be more truthful to say that they become easier to write). For LBPS this is nothing, you just fetch the first byte. With NTBS you have to scan the entire string looking for zero, keeping track of the number of characters processed. This takes considerably more time and processing power. Aside from this, NTBS can't contain the null-character (which admittedly is not all that big of a deal).<p>
+    
+To be fair, LBPS can't be more than 255 characters in size unless you use two bytes for the index. Although, you'll rarely have a need for strings larger than 255 bytes. Another good side of NTBS is that they're easy to declare, since all you have to do is add a zero. It can be tedious to count all the characters, and in a long string you could mis-count, and that's never fantastic.<p>
+
+<a name="cmd"></a>
+    <h2>String Instructions</h2>
+With so many string operations, it's a shame that the Z80 is almost bereft of string instructions. In fact, there are only two string primitive instructions, and four variations.
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax><tt>LDI</tt></td>
+    <td>Loads value stored at <tt>(HL)</tt> into <tt>(DE)</tt>. Then, <tt>HL</tt> and <tt>DE</tt> are incremented, and <tt>BC</tt> is decremented.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>not affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>not affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>reset if <tt>BC</tt> becomes zero, set otherwise</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>not affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+    
+<table class=Command>
+<tr>
+    <td class=CmdSyntax><tt>CPI</tt></td>
+    <td>Compares the accumulator with the value stored at <tt>(HL)</tt>. Then, 
+    <tt>HL</tt> is incremented, and <tt>BC</tt> is
+    decremented.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected by <tt>A</tt> - <tt>(HL)</tt></b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected by <tt>A</tt> - <tt>(HL)</tt></b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>reset if <tt>BC</tt> becomes zero, set otherwise</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>not affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+    These two instructions have a version that works in the opposite direction:<p>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax><tt>LDD</tt></td>
+    <td>Loads value stored at <tt>(HL)</tt> into <tt>(DE)</tt>. Then, <tt>HL</tt>, <tt>DE</tt>, and <tt>BC</tt> 
+    are decremented.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading >S</th>
+        <td><b>not affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>not affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>reset if <tt>BC</tt> becomes zero, set otherwise</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</td>
+        <td><b>not affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax><tt>CPD</tt></td>
+    <td>Compares the accumulator with the value stored at <tt>(HL)</tt>. Then, 
+    <tt>HL</tt> and <tt>BC</tt> are decremented.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected by <tt>A</tt> - <tt>(HL)</tt></b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected by <tt>A</tt> - <tt>(HL)</tt></b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>reset if <tt>BC</tt> becomes zero, set otherwise</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>not affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+    And <a style="cursor: help" onClick="alert('Actually, there are eight more &mdash; INI, INIR, IND, INDR, OUTI, OUTD, OTIR, and OTDR; they won\'t be considered here due to their limited usefulness on the calculator.'); return false">rouding out the family</a>, each of those four has a version that automatically repeats
+    itself.
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax><tt>LDIR</tt></td>
+    <td>Loads value stored at <tt>(HL)</tt> into <tt>(DE)</tt>. Then, <tt>HL</tt> and <tt>DE</tt> are incremented, and
+    <tt>BC</tt> is decremented. This process continues until <tt>BC</tt> = 0.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>not affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>not affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>reset</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>not affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax><tt>LDDR</tt></td>
+    <td>Loads value stored at <tt>(HL)</tt> into <tt>(DE)</tt>. Then, <tt>HL</tt>, <tt>DE</tt>, and <tt>BC</tt> are
+    decremented. This process continues until <tt>BC</tt> = 0.</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>not affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>not affected</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>reset</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>not affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax><tt>CPIR</tt></td>
+    <td>Compares the accumulator with the value stored at <tt>(HL)</tt>. Then, 
+    <tt>HL</tt> is incremented, and <tt>BC</tt> is decremented.
+    This process continues until <tt>BC</tt> = 0, or the zero flag is set (<tt>A</tt> = <tt>(HL)</tt>).</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected by final <tt>A</tt> - <tt>(HL)</tt></b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected by final <tt>A</tt> - <tt>(HL)</tt></b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>reset if <tt>BC</tt> becomes zero, set otherwise</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>not affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax><tt>CPDR</tt></td>
+    <td>Compares the accumulator with the value stored at <tt>(HL)</tt>. Then, 
+    <tt>HL</tt> and <tt>BC</tt> are decremented. This process continues until either <tt>BC</tt> = 0, or the zero
+    flag is set (<tt>A</tt> = <tt>(HL)</tt>).</td>
+</tr>
+<tr>
+    <td class=Transparent align=center colspan=2>
+    <table class=Flags>
+    <tr>
+        <th width=25% class=SubHeading>S</th>
+        <td><b>affected by final <tt>A</tt> - <tt>(HL)</tt></b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>Z</th>
+        <td><b>affected by final <tt>A</tt> - <tt>(HL)</tt></b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>P/V</th>
+        <td><b>reset if <tt>BC</tt> becomes zero, set otherwise</b></td>
+    </tr>
+    <tr>
+        <th class=SubHeading>C</th>
+        <td><b>not affected</b></td>
+    </tr>
+    </table></td>
+</tr>
+</table><p>
+
+    Now you know the only string operations directly supported by the instruction set. How
+    you use them, that's the topic of the rest of this chapter.<p>
+
+<a name="mov"></a>
+    <h2>Moving Strings</h2>
+    To move a string from one place to another, you need only <span class=ins>LDIR</span> or 
+    <span class=ins>LDDR</span>.<br>
+    Let's move 2000 bytes of data from address <tt>$8000</tt> to address <tt>$D000</tt>.
+
+<pre>
+                <span class=ins>LD</span>     <span class=reg>HL</span>, $8000                <span class=ins>LD</span>     <span class=reg>HL</span>, $8000+1999
+                <span class=ins>LD</span>     <span class=reg>DE</span>, $D000                <span class=ins>LD</span>     <span class=reg>DE</span>, $D000+1999
+                <span class=ins>LD</span>     <span class=reg>BC</span>, 2000                 <span class=ins>LD</span>     <span class=reg>BC</span>, 2000
+                <span class=ins>LDIR</span>                           <span class=ins>LDDR</span>
+</pre>
+
+The main reason there is an instruction for both directions is for when the source and destination blocks overlap.<br>
+If we tried to copy 1000 bytes from <tt>$1000</tt> to <tt>$1005</tt> with <span class=ins>LDIR</span>:
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, $1000
+    <span class=ins>LD</span>     <span class=reg>DE</span>, $1005
+    <span class=ins>LD</span>     <span class=reg>BC</span>, 1000
+    <span class=ins>LDIR</span>
+</pre>
+
+If we could look at memory as <span class=ins>LDIR</span> is processing, it would look like this:
+
+<table class=Info>
+<tr>
+    <td class=Transparent rowspan=2 colspan=2></td>
+    <th class=Heading colspan=9>Address</th>
+</tr>
+<tr class=SubHeading>
+    <th>$1000</th>
+    <th>$1001</th>
+    <th>$1002</th>
+    <th>$1003</th>
+    <th>$1004</th>
+    <th>$1005</th>
+    <th>$1006</th>
+    <th>$1007</th>
+    <th>$1008</th>
+</tr>
+<tr>
+    <th class=Heading rowspan=4>P<br>a<br>s<br>s</th>
+    <th class=SubHeading>Start</th>
+    <td>C7</td>
+    <td>A1</td>
+    <td>D1</td>
+    <td>37</td>
+    <td>66</td>
+    <td>2B</td>
+    <td>0C</td>
+    <td>30</td>
+    <td>1D</td>
+</tr>
+<tr>
+    <th class=SubHeading>1</th>
+    <td class=UndocCell>C7</th>
+    <td>A1</td>
+    <td>D1</td>
+    <td>37</td>
+    <td>66</td>
+    <td class=UndocCell><font color=#FF0000>C7</font></th>
+    <td>0C</td>
+    <td>30</td>
+    <td>1D</td>
+</tr>
+<tr>
+    <th class=SubHeading>2</th>
+    <td>C7</td>
+    <td class=UndocCell>A1</th>
+    <td>D1</td>
+    <td>37</td>
+    <td>66</td>
+    <td><font color=#FF0000>C7</font></th>
+    <td class=UndocCell><font color=#FF0000>A1</font></th>
+    <td>30</td>
+    <td>1D</td>
+</tr>
+<tr>
+    <th class=SubHeading>3</th>
+    <td>C7</td>
+    <td>A1</td>
+    <td class=UndocCell>D1</th>
+    <td>37</td>
+    <td>66</td>
+    <td><font color=#FF0000>C7</font></th>
+    <td><font color=#FF0000>A1</font></th>
+    <td class=UndocCell><font color=#FF0000>D1</font></th>
+    <td>1D</td>
+</tr>
+</table>
+
+You should be able to see that the data from $1005 onwards is being corrupted. The end result is the bytes $1000 to $13EC holding the pattern C7A1D13766 C7A1D13766..... In order to do this properly, we've got to use <span class=ins>LDDR</span> and do the copying at the other end:
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, $13E7
+    <span class=ins>LD</span>     <span class=reg>DE</span>, $13EC
+    <span class=ins>LD</span>     <span class=reg>BC</span>, 1000
+    <span class=ins>LDIR</span>
+</pre>
+
+<table class=Info>
+<tr>
+    <td class=Transparent rowspan=2 colspan=2></td>
+    <th class=Heading colspan=9>Address</th>
+</tr>
+<tr class=SubHeading>
+    <th>$13E4</th>
+    <th>$13E5</th>
+    <th>$13E6</th>
+    <th>$13E7</th>
+    <th>$13E8</th>
+    <th>$13E9</th>
+    <th>$13EA</th>
+    <th>$13EB</th>
+    <th>$13EC</th>
+</tr>
+<tr>
+    <th class=Heading rowspan=4>P<br>a<br>s<br>s<br></th>
+    <th class=SubHeading>Start</th>
+    <td>12</td>
+    <td>EF</td>
+    <td>3A</td>
+    <td>4C</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+</tr>
+<tr>
+    <th class=SubHeading>1</th>
+    <td>12</td>
+    <td>EF</td>
+    <td>3A</td>
+    <td class=UndocCell>4C</th>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td class=UndocCell><font color=#FF0000>4C</font></th>
+</tr>
+<tr>
+<th class=SubHeading>2</th>
+    <td>12</td>
+    <td>EF</td>
+    <td class=UndocCell>3A</th>
+    <td>4C</td>
+    <td>??</td>
+    <td>??</td>
+    <td>??</td>
+    <td class=UndocCell><font color=#FF0000>3A</font></th>
+    <td><font color=#FF0000>4C</font></th>
+</tr>
+<tr>
+    <th class=SubHeading>3</th>
+    <td>12</td>
+    <td class=UndocCell>EF</th>
+    <td>3A</td>
+    <td>4C</td>
+    <td>??</td>
+    <td>??</td>
+    <td class=UndocCell><font color=#FF0000>EF</font></th>
+    <td><font color=#FF0000>3A</font></th>
+    <td><font color=#FF0000>4C</font></th>
+</tr>
+</table>
+
+    Eventually, the original data will again get corrupted, but it doesn't matter 'cuz it's
+    already been copied over. Likewise, if the destination address is greater than the source 
+    address, you use <span class=ins>LDIR</span> as normal.<p>
+
+    On the other hand, the "wrong" method can be used to load a value to every byte in a
+    string. Here we're zeroing every byte of <span class=mem>AppBackupScreen</span>.
+
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>AppBackupScreen</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>AppBackupScreen</span>+1
+    <span class=ins>LD</span>     <span class=reg>BC</span>, 768        <span class=cmt>; 768 bytes in AppBackupScreen</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, 0        <span class=cmt>; Set first byte to zero</span>
+    <span class=ins>LDIR</span>
+    <span class=ins>RET</span>
+</pre>
+
+    This can be modified to create a string of any repeating pattern. Even though <span
+    class=reg>SP</span> can do that three times as fast, only <span class=ins>LDIR</span> can
+    be used for a string with an odd number of elements. <span class=ins>LDIR</span> is also
+    a little "cleaner".<p>
+
+<a name="exc"></a>
+    <h2>Exchanging Strings</h2>
+    If you want to exchange two strings of the same size, all you need is <span
+    class=ins>LDI</span> and a little thought:
+
+<pre>
+<span class=cmt>;Exchange length-prefixed string at $6000 with string at $8000</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, $6001        <span class=cmt>; Skip length byte</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, $8000
+    <span class=ins>LD</span>     <span class=reg>B</span>, 0
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>              <span class=cmt>; Skip length byte</span>
+<span class=mem>XchgLoop:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>          <span class=cmt>; Preserve (DE)</span>
+    <span class=ins>LDI</span>                    <span class=cmt>; (HL) -> (DE)</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>              <span class=cmt>; Move HL back</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=reg>A</span>          <span class=cmt>; Complete the exchange</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>              <span class=cmt>; Restore HL for next LDI</span>
+    <span class=ins>JP     PE</span>, <span class=mem>XchgLoop</span>     <span class=cmt>; If LDI set P/V, continue</span></pre>
+
+<a name="len"></a>
+    <h2>String Length</h2>
+    With a length-prefixed string, finding the length is trivial. For a null-terminated
+    string, the process is decidedly more involved. This is where <span class=ins>CPIR</span> 
+    comes in.
+
+<pre>
+<span class=cmt>; Get the length of the null-terminated string starting at $8000</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, $8000
+    <span class=ins>XOR</span>    <span class=reg>A</span>               <span class=cmt>; Zero is the value we are looking for.</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>A</span>             <span class=cmt>; Since we haven't the slightest clue as to the</span> 
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>A</span>             <span class=cmt>; actual size of the string, put 0 in BC to search</span>
+                           <span class=cmt>; 65, 536 bytes (the entire addressable memory space).</span>
+    <span class=ins>CPIR</span>                   <span class=cmt>; Begin search for a byte equalling zero.</span>
+
+<span class=cmt>; BC has been decremented so that it holds -length. Now need to synthesize a NEG BC.</span>
+    <span class=ins>LD</span>     <span class=reg>H</span>, <span class=reg>A</span>             <span class=cmt>; Zero HL (basically set it to 65, 536) to get the</span>
+    <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>A</span>             <span class=cmt>; number of bytes</span>
+    <span class=ins>SBC</span>    <span class=reg>HL</span>, <span class=reg>BC</span>           <span class=cmt>; Find the size. CPIR doesn't affect carry.</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>              <span class=cmt>; Compensate for null.</span></pre>
+
+<a name="cnv"></a>
+    <h2>Converting String Types</h2>
+    Sometimes, you might want to convert a null-terminated string to a length-prefixed
+    string, or vice versa. Here is how to convert NTBS to LBPS. The inverse operation is almost
+    identical.<p>
+
+<pre>
+<span class=cmt>; INPUT    HL = Address of null-terminated string
+; OUTPUT   HL = Address of place to put length-prefixed string</span>
+
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>              <span class=cmt>; Source is needed later.</span>
+    <span class=ins>XOR</span>    <span class=reg>A</span>               <span class=cmt>; Length-determining code from previous section.</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>A</span>
+    <span class=ins>CPIR</span>
+    <span class=ins>LD</span>     <span class=reg>H</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>A</span>
+    <span class=ins>SBC</span>    <span class=reg>HL</span>, <span class=reg>BC</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>L</span>             <span class=cmt>; We will assume that the string is no bigger than 255 bytes.</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>H</span>             <span class=cmt>; Put size in BC.</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>L</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>              <span class=cmt>; Restore HL.</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>BC</span>           <span class=cmt>; Point HL at the end of the string.</span>
+    <span class=ins>LD</span>     <span class=reg>D</span>, <span class=reg>H</span>             <span class=cmt>; Point DE at the end of the string.</span>
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>L</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>              <span class=cmt>; Move HL back one byte.</span>
+    <span class=ins>LDDR</span>                   <span class=cmt>; Move every character forward one byte.</span>
+    <span class=ins>LD</span>     <span class=reg>(DE)</span>, <span class=reg>A</span>          <span class=cmt>; Put length in.</span></pre>
+</div><p>
+
+<a name="cmp"></a>
+    <h2>Comparing Strings</h2>
+<pre>
+<span class=cmt>;IN    HL     Address of string1.
+;      DE     Address of string2.
+;OUT   zero   Set if string1 = string2, reset if string1 != string2.
+;      carry  Set if string1 > string2, reset if string1 <= string2.</span>
+
+<span class=mem>CmpStrings:</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    <span class=ins>PUSH</span>   <span class=reg>DE</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>          <span class=cmt>; Compare lengths to determine smaller string</span>
+    <span class=ins>CP</span>     <span class=reg>(HL)</span>            <span class=cmt>; (want to minimize work).</span>
+    <span class=ins>JR     C</span>, <span class=mem>Str1IsBigger</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(HL)</span>
+
+<span class=mem>Str1IsBigger:</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>A</span>             <span class=cmt>; Put length in BC</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 0
+    <span class=ins>INC</span>    <span class=reg>DE</span>              <span class=cmt>; Increment pointers to meat of string.</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+
+<span class=mem>CmpLoop:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>          <span class=cmt>; Compare bytes.</span>
+    <span class=ins>CPI</span>
+    <span class=ins>JR     NZ</span>, <span class=mem>NoMatch</span>      <span class=cmt>; If (HL) != (DE), abort.</span>
+    <span class=ins>INC</span>    <span class=reg>DE</span>              <span class=cmt>; Update pointer.</span>
+    <span class=ins>JP     PE</span>, <span class=mem>CmpLoop</span>
+
+    <span class=ins>POP</span>    <span class=reg>DE</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>          <span class=cmt>; Check string lengths to see if really equal.</span>
+    <span class=ins>CP</span>     <span class=reg>(HL)</span>
+    <span class=ins>RET</span>
+
+<span class=mem>NoMatch:</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>
+    <span class=ins>CP</span>     <span class=reg>(HL)</span>            <span class=cmt>; Compare again to affect carry.</span>
+    <span class=ins>POP</span>    <span class=reg>DE</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+    <span class=ins>RET</span></pre><p>
+
+<a name="fnc"></a>
+    <h2>Other String Functions</h2>
+    Okay, so here is how to implement the most common string functions in assembly:
+<dl>
+    <dt><a href="#substring">Substring</a>
+        <dd>Copies part of one string into another.
+    <dt><a href="#index">Index</a>
+        <dd>Finds the offset of the first occurence of one string in another.
+    <dt><a href="#insert">Insert</a>
+        <dd>Inserts one string into another.
+    <dt><a href="#delete">Delete</a>
+        <dd>Removes characters from a string.
+    <dt><a href="#concat">Concatenate</a>
+        <dd>Joins two strings.
+</dl>
+
+    Other functions, like reversing, converting to upper or lowercase, and creating a string
+    composed of entirely the same character are too simple to go into detail here. You should
+    be able to write them with both hands tied behind your back (provided you're proficient
+    in nose-typing :-).<p>
+
+    If you want to have a crack at making any of these routines yourself, you should skip
+    the remainder of this day, because that's all there is left. If you don't think you can
+    cut it, or you want to check what you came up with, then follow along.<p>
+
+<a name=#substring></a>
+    <h3>Substring</h3>
+<pre>
+<span class=cmt>;IN   HL   Address of source string, length-prefixed.
+;     DE   Address of destination string, length-prefixed.
+;     B    Start index. 1 = first character.
+;     C    Length of substring to return.
+;
+;OUT  carry    Set if an error condition happened:
+;                If B is zero, then uses index of 1.
+;                If index > source length, an empty string is returned.
+;                If index + return length > source length, returns all
+;                characters from index to end-of-string.</span>
+    
+    <span class=ins>PUSH</span>   <span class=reg>DE</span>        <span class=cmt>; It would be convenient to keep DE pointing to</span>
+                     <span class=cmt>; the start of the destination string</span>
+    <span class=ins>OR</span>     <span class=reg>A</span>         <span class=cmt>; Boolean OR resets carry</span>
+    <span class=ins>PUSH</span>   <span class=reg>AF</span>        <span class=cmt>; Save carry</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>B</span>       <span class=cmt>; Is index beyond source length?</span>
+    <span class=ins>CP</span>     <span class=reg>(HL)</span>
+    <span class=ins>DEC</span>    <span class=reg>A</span>         <span class=cmt>; Decrement A so NC can be used</span>
+    <span class=ins>JR     NC</span>, <span class=mem>ReturnEmpty</span>
+
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>C</span>       <span class=cmt>; If index+len is > 255, error</span>
+    <span class=ins>JR     C</span>, <span class=mem>TooLong</span>
+    <span class=ins>INC</span>    <span class=reg>A</span>         <span class=cmt>; Increment A so C can be used</span>
+    <span class=ins>CP</span>     <span class=reg>(HL)</span>      <span class=cmt>; If index+len is beyond source length, then error</span>
+    <span class=ins>JR     C</span>, <span class=mem>OkaySoFar</span>
+
+<span class=mem>TooLong:</span>
+    <span class=ins>POP</span>    <span class=reg>AF</span>        <span class=cmt>; Set carry flag</span>
+    <span class=ins>SCF</span>
+    <span class=ins>PUSH</span>   <span class=reg>AF</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(HL)</span>    <span class=cmt>; Get source length</span>
+    <span class=ins>SUB</span>    <span class=reg>B</span>         <span class=cmt>; Subtract start index</span>
+    <span class=ins>INC</span>    <span class=reg>A</span>         <span class=cmt>; Compensate</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>A</span>       <span class=cmt>; New size of string</span>
+
+<span class=mem>OkaySoFar:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>C</span>       <span class=cmt>; Size of sting to get</span>
+    <span class=ins>LD</span>     <span class=reg>(DE)</span>, <span class=reg>A</span>    <span class=cmt>; Save length index</span>
+    <span class=ins>INC</span>    <span class=reg>DE</span>        <span class=cmt>; To body of string</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>B</span>       <span class=cmt>; Get index</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 0       <span class=cmt>; Zero-extend BC for LDIR</span>
+
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>L</span>       <span class=cmt>; This is a sneaky way to add A to HL</span>
+    <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>A</span>       <span class=cmt>; without using up another 16-bit register</span>
+    <span class=ins>ADC</span>    <span class=reg>A</span>, <span class=reg>H</span>       <span class=cmt>;</span>
+    <span class=ins>SUB</span>    <span class=reg>L</span>         <span class=cmt>;</span>
+    <span class=ins>LD</span>     <span class=reg>H</span>, <span class=reg>A</span>       <span class=cmt>;</span>
+
+    <span class=ins>LDIR</span>             <span class=cmt>; Copy substring over</span>
+    <span class=ins>POP</span>    <span class=reg>AF</span>        <span class=cmt>; Restore flags</span>
+    <span class=ins>POP</span>    <span class=reg>DE</span>        <span class=cmt>; Restore destination</span>
+    <span class=ins>RET</span>
+
+<span class=mem>ReturnEmpty:</span>
+    <span class=ins>XOR</span>    <span class=reg>A</span>         <span class=cmt>; Set a length index of zero</span>
+    <span class=ins>LD</span>     <span class=reg>(DE)</span>, <span class=reg>A</span>
+    <span class=ins>POP</span>    <span class=reg>AF</span>        <span class=cmt>; Clean off stack and set carry</span>
+    <span class=ins>POP</span>    <span class=reg>DE</span>
+    <span class=ins>SCF</span>
+    <span class=ins>RET</span></pre>
+
+<a name="index"></a>
+    <h3>Index</h3>
+<pre>
+<span class=cmt>;IN  HL       Address of string to look in, length prefixed.
+;    DE       Address of string to find, length prefixed.
+;
+;OUT
+; If found:
+;    A        Offset into look-up string where the target string was found.
+;             The first byte (ignoring length prefix) is offset 1.
+;    carry    Reset.
+;
+; If not found:
+;    A    = 0
+;    carry    Set.</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>    <span class=cmt>; Abort if string to find is too big</span>
+    <span class=ins>CP</span>     <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>A</span>
+    <span class=ins>JR     NC</span>, <span class=mem>Abort</span>
+
+    <span class=ins>DEC</span>    <span class=reg>A</span>         <span class=cmt>; Save length of string to find</span>
+    <span class=ins>LD</span>     <span class=reg>IXL</span>, <span class=reg>A</span>
+
+    <span class=ins>LD</span>     <span class=reg>B</span>, 0       <span class=cmt>; Put length of string to search in BC</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>(HL)</span>
+
+    <span class=ins>INC</span>    <span class=reg>HL</span>        <span class=cmt>; Advance pointers</span>
+    <span class=ins>INC</span>    <span class=reg>DE</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>        <span class=cmt>; Save start of search string</span>
+
+<span class=mem>Restart:</span>
+    <span class=ins>PUSH</span>   <span class=reg>DE</span>        <span class=cmt>; Save start of key string</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>IXL</span>     <span class=cmt>; Initialize matched characters counter</span>
+    <span class=ins>LD</span>     <span class=reg>IXH</span>, <span class=reg>A</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>    <span class=cmt>; Get a character to match</span>
+    <span class=ins>CPIR</span>             <span class=cmt>; Look for it</span>
+    <span class=ins>JR     NZ</span>, <span class=mem>NotFound</span>    <span class=cmt>; Abort if not found</span>
+
+<span class=mem>Loop:</span>
+    <span class=ins>DEC</span>    <span class=reg>IXH</span>       <span class=cmt>; Update counter and see if done</span>
+    <span class=ins>JR     Z</span>, <span class=mem>Found</span>
+
+    <span class=ins>INC</span>    <span class=reg>DE</span>        <span class=cmt>; Get next character in key string</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span> 
+    <span class=ins>CPI</span>              <span class=cmt>; See if it matches next char in master</span>
+    <span class=ins>JR     Z</span>, <span class=mem>Loop</span>
+    <span class=ins>JP     PO</span>, <span class=mem>NotFound</span>    <span class=cmt>; Abort if we ran out of characters</span>
+
+    <span class=ins>POP</span>    <span class=reg>DE</span>        <span class=cmt>; If a mismatch, restart from the beginning</span>
+    <span class=ins>JR</span>     <span class=mem>Restart</span>
+
+<span class=mem>NotFound:</span>
+    <span class=ins>POP</span>    <span class=reg>DE</span>        <span class=cmt>; Clean stack</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+
+<span class=mem>Abort:</span>
+    <span class=ins>XOR</span>    <span class=reg>A</span>         <span class=cmt>; Report failure</span>
+    <span class=ins>SCF</span>
+    <span class=ins>RET</span>
+
+<span class=mem>Found:</span>
+    <span class=ins>POP</span>    <span class=reg>DE</span>
+    <span class=ins>POP</span>    <span class=reg>BC</span>        <span class=cmt>; BC = address of master</span>
+
+    <span class=ins>XOR</span>    <span class=reg>A</span>         <span class=cmt>; Put size of key string in DE</span>
+    <span class=ins>LD</span>     <span class=reg>D</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>IXL</span>
+
+    <span class=ins>SBC</span>    <span class=reg>HL</span>, <span class=reg>DE</span>     <span class=cmt>; Find index</span>
+    <span class=ins>SBC</span>    <span class=reg>HL</span>, <span class=reg>BC</span>    
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>L</span>
+    <span class=ins>INC</span>    <span class=reg>A</span>
+    <span class=ins>RET</span></pre><p>
+
+<a name="insert"></a>
+    <h3>Insert</h3>
+<pre>
+<span class=cmt>; IN   HL      Address of string to be inserted
+;      DE      Address of string to receive insertion
+;      C       Index. Start of string is 0
+; OUT
+;  If successful:
+;      carry   Reset
+;      HL      Input DE
+;  If unsuccessful:
+;      carry   Set. If new string length is > 255.
+;
+; Notes        If index > string length, string is appended.
+;              Data after the string is destroyed.</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>    
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>A</span>
+
+    <span class=ins>INC</span>    <span class=reg>A</span>
+    <span class=ins>CP</span>     <span class=reg>C</span>
+    <span class=ins>JR     NC</span>, <span class=mem>IndexIsOkay</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>B</span>
+
+<span class=mem>IndexIsOkay:</span>
+    <span class=ins>DEC</span>    <span class=reg>A</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>RET    C</span>
+    <span class=ins>LD</span>     <span class=reg>(DE)</span>, <span class=reg>A</span>    <span class=cmt>; Update length</span>
+
+    <span class=ins>PUSH</span>   <span class=reg>DE</span>        <span class=cmt>; Make room</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>C</span>
+
+    <span class=ins>LD</span>     <span class=reg>H</span>, 0
+    <span class=ins>LD</span>     <span class=reg>L</span>, <span class=reg>C</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+
+    <span class=ins>LD</span>     <span class=reg>D</span>, <span class=reg>H</span>
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>L</span>
+    <span class=ins>PUSH</span>   <span class=reg>AF</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>E</span>
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>A</span>
+    <span class=ins>ADC</span>    <span class=reg>A</span>, <span class=reg>D</span>
+    <span class=ins>SUB</span>    <span class=reg>E</span>
+    <span class=ins>LD</span>     <span class=reg>D</span>, <span class=reg>A</span>
+    <span class=ins>POP</span>    <span class=reg>AF</span>
+
+    <span class=ins>LD</span>     <span class=reg>B</span>, 0
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>A</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    <span class=ins>LDIR</span>
+
+    <span class=ins>POP</span>    <span class=reg>DE</span>        <span class=cmt>; Copy string over</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>LDIR</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+    <span class=ins>RET</span></pre>
+
+<a name="delete"></a>
+    <h3>Delete</h3>
+<pre>
+<span class=cmt>; IN  HL       Address of string.
+;     B        Index of first character to delete. First character is 0.
+;     C        Number of characters to kill.
+; OUT
+;  If successful:
+;     carry    Reset
+;  If unsuccessful:
+;     carry    Set
+;
+; Notes        If B > string length, then error.
+;              If B + C > string length, deletion
+;              stops at end of string.</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>B</span>       <span class=cmt>; See if index is too big</span>
+    <span class=ins>CP</span>     <span class=reg>(HL)</span>
+    <span class=ins>CCF</span>              <span class=cmt>; Flip for error</span>
+    <span class=ins>RET    C</span>
+
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>C</span>       <span class=cmt>; See if too many chars on chopping block</span>
+    <span class=ins>CP</span>     <span class=reg>(HL)</span>
+    <span class=ins>JR     C</span>, <span class=mem>IndexIsOkay</span>
+
+    <span class=ins>INC</span>    <span class=reg>B</span>         <span class=cmt>; Set index as length</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=reg>B</span>
+    <span class=ins>RET</span>
+
+<span class=mem>IndexIsOkay:</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>SUB</span>    <span class=reg>C</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=reg>A</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+ 
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>C</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>B</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 0
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>BC</span>
+
+    <span class=ins>SUB</span>    <span class=reg>C</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>E</span>
+    <span class=ins>LD</span>     <span class=reg>D</span>, <span class=reg>H</span>
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>L</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>BC</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>A</span>
+    <span class=ins>LDIR</span>
+
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+    <span class=ins>RET</span></pre>
+
+<a name="concat"></a>
+    <h3>Concatenate</h3>
+<pre>
+<span class=cmt>; IN    HL       Address of first string.
+;       DE       Address of second string.
+; OUT
+;  If successful:
+;       carry    Reset
+;  If unsuccessful:
+;       carry    Set
+;
+; Notes        If new string lenght is > 255, error.
+;        HL is saved.</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>     <span class=cmt>; Combine lengths</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>RET    C</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>(HL)</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=reg>A</span>
+
+    <span class=ins>LD</span>     <span class=reg>B</span>, 0
+    <span class=ins>INC</span>    <span class=reg>C</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>BC</span>
+    <span class=ins>EX</span>     <span class=reg>DE</span>, <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>LDIR</span>
+
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+    <span class=ins>RET</span></pre>
+
+    <hr>
+<div class=NavFooter>
+    <a href="day15.html">PREVIOUS - Day 15: Advanced Math</a><p>
+    <a href="day17.html">NEXT - Day 17: Character Sets</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

@@ -1,0 +1,1134 @@
+<html>
+<head>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<a name="top"></a>
+	<h1>Z80 Instruction Set &mdash; Data Movement</h1>
+	<hr>
+<a href="#ex">EX</a><br>
+<a href="#exx">EXX</a><br>
+<a href="#ld">LD</a><br>
+<a href="#ldd">LDD</a><br>
+<a href="#lddr">LDDR</a><br>
+<a href="#ldi">LDI</a><br>
+<a href="#ldir">LDIR</a><br>
+<a href="#pop">POP</a><br>
+<a href="#push">PUSH</a><br>
+	<hr>
+
+<a name="ex"></a>
+	<h2>EX</h2><p>
+
+	<tt><b>EX DE,HL</b></tt><br>
+<table class=Normal>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Exchanges the 16-bit contents of <tt>DE</tt> and <tt>HL</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101011</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>EX AF,AF'</b></tt><br>
+<table class=Normal>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Exchanges the 16-bit contents of <tt>AF</tt> and <tt>AF'</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00001000</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>EX (SP),HL</b></tt><br>
+<table class=Normal>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Exchanges <tt>(SP)</tt> with <tt>L</tt>, and <tt>(SP+1)</tt> with <tt>H</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11100011</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>19</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>EX (SP),reg<sub>index</sub></b></tt><br>
+<table class=Normal>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Exchanges <tt>(SP)</tt> with the LSB of <tt>reg<sub>index</sub></tt>, and
+	<tt>(SP+1)</tt> with the MSB of <tt>reg<sub>index</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11100011</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>23</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="exx"></a>
+	<h2>EXX</h2><p>
+	<tt><b>EXX</b></tt><br>
+<table class=Normal>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Exchanges the 16-bit contents of <tt>BC</tt>, <tt>DE</tt>, and <tt>HL</tt> with
+	<tt>BC'</tt>, <tt>DE'</tt>, and <tt>HL'</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11011001</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="ld"></a>
+	<h2>LD</h2><p>
+	
+	<tt><b>LD reg<sub>8</sub>D,reg<sub>8</sub>S</b></tt><br>
+<table class=Normal>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of register <tt>reg<sub>8</sub>S</tt> are stored into
+	<tt>reg<sub>8</sub>D</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>01[reg<sub>8</sub>D][reg<sub>8</sub>S]</tt><p>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4 or 7 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD reg<sub>8</sub>,imm<sub>8</sub></b></tt><br>
+<table class=Normal>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Stores the immediate value into <tt>reg<sub>8</sub><tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00[reg<sub>8</sub>]110 : [imm<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>7 or 10 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD reg<sub>8</sub>,(reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Stores the value pointed to by <tt>reg<sub>index</sub></tt> plus
+	<tt>ofs<sub>8</sub></tt> into <tt>reg<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 01[reg<sub>8</sub>]110 : [ofs<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></br>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>19</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD (reg<sub>index</sub> + ofs<sub>8</sub>),reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Stores <tt>reg<sub>8</sub></tt> into the memory location pointed to by
+	<tt>reg<sub>index</sub></tt> plus <tt>ofs<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>reg<sub>index</sub> : 01110[reg<sub>8</sub>] : [ofs<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table><br>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>19</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD (reg<sub>index</sub> + ofs<sub>8</sub>), imm<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Stores the immediate data into the memory location pointed to by
+	<tt>reg<sub>index</sub></tt> plus <tt>ofs<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 00110110 : [ofs<sub>8</sub>] :
+	[imm<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>19</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD A,(reg<sub>16</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Stores the value pointed to by <tt>reg<sub>16</sub></tt> into <tt>A</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>000[reg<sub>16</sub>]1010</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>BC</tt></th>
+		<td><tt>0</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>DE</tt></th>
+		<td><tt>1</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>7</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD A,(imm<sub>16</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Stores the value pointed to by <tt>imm<sub>16</sub></tt> into <tt>A</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00111010 : [imm<sub>LSB</sub>] : [imm<sub>MSB</sub>]</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>13</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD (reg<sub>16</sub>),A</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Stores <tt>A</tt> into the memory location pointed to by
+	<tt>reg<sub>16</sub></tt>.
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>BC</tt></th>
+		<td><tt>0</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>DE</tt></th>
+		<td><tt>1</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>000[reg<sub>16</sub>]0010</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>7</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD (imm<sub>16</sub>),A</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Stores <tt>A</tt> into the memory location pointed to by
+	<tt>imm<sub>16</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00110010 : [imm<sub>LSB</sub>] : [imm<sub>MSB</sub>]</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>13</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD A,{ I | R }</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Stores the value of register <tt>I</tt> or <tt>R</tt> into <tt>A</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 0101[reg]111</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>I</tt></th>
+		<td><tt>0</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>R</tt></th>
+		<td><tt>1</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined.<br><tt>H N</tt> are
+	reset.<br><tt>P/V</tt> holds IFF2.<br><tt>C</tt> is unaffected.</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>9</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD { I | R },A</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Stores the value of <tt>A</tt> into register <tt>I</tt> or <tt>R</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 0100[reg]111</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>I</tt></th>
+		<td><tt>0</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>R</tt></th>
+		<td><tt>1</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>9</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD reg<sub>16</sub>,imm<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Stores the immediate data into register <tt>reg<sub>16</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00[reg<sub>16</sub>]0001 : [imm<sub>LSB</sub>] : [imm<sub>MSB</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>BC</tt></th>
+		<td><tt>00</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>DE</tt></th>
+		<td><tt>01</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>HL</tt></th>
+		<td><tt>10</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>SP</tt></th>
+		<td><tt>11</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>10</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD reg<sub>index</sub>,imm<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Loads the immediate data into index register <tt>reg<sub>index</sub></tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 00100001 : [imm<sub>LSB</sub>] :
+	[imm<sub>MSB</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>14</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD HL,(imm<sub>16</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Loads the value pointed to by <tt>imm<sub>16</sub></tt> into <tt>HL</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00101010 : [imm<sub>LSB</sub>] : [imm<sub>MSB</sub>]</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>16</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD reg<sub>16</sub>,(imm<sub>16</sub>)</b></tt><br>
+<table class=Normal>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Loads the value pointed to by <tt>imm<sub>16</sub></tt> into register
+	<tt>reg<sub>16</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 01[reg<sub>16</sub>]1011 : [imm<sub>LSB</sub>] :
+	[imm<sub>MSB</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>BC</tt></td>
+		<td><tt>00</tt></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>DE</tt></td>
+		<td><tt>01</tt></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>HL</tt> (see Undocumented)</td>
+		<td><tt>10</tt></td>
+	<tr>
+		<td class=SubHeading><tt>SP</tt></th>
+		<td><tt>11</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>20</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD reg<sub>index</sub>,(imm<sub>16</sub>)</b></tt><br>
+<table class=Normal>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Loads the value pointed to by <tt>imm<sub>16</sub></tt> into index register
+	<tt>reg<sub>index</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 00101010 : [imm<sub>LSB</sub>] :
+	[imm<sub>MSB</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>20</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD (imm<sub>16</sub>),HL</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Stores the value of <tt>HL</tt> into the memory location pointed to by
+	<tt>imm<sub>16</sub>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00100010 : [imm<sub>LSB</sub>] : [imm<sub>MSB</sub>]</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>16</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD (imm<sub>16</sub>),reg<sub>16</sub></b></tt><br>
+<table class=Normal>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Stores the value of register <tt>reg<sub>16</sub></tt> into the memory location
+	pointed to by <tt>imm<sub>16</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 01[reg<sub>16</sub>]0011 : [imm<sub>LSB</sub>] :
+	[imm<sub>MSB</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>BC</tt></td>
+		<td><tt>00</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>DE</tt></td>
+		<td><tt>01</tt></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>HL</tt> (see Undocumented)</td>
+		<td><tt>10</tt></td>
+	<tr>
+		<td class=SubHeading><tt>SP</tt></td>
+		<td><tt>11</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>20</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD (imm<sub>16</sub>),reg<sub>index</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Stores the value of index register <tt>reg<sub>index</sub></tt> into the memory
+	location pointed to by <tt>imm<sub>16</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 00100010 : [imm<sub>LSB</sub>] :
+	[imm<sub>MSB</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>20</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD SP,HL</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Loads the value of <tt>HL</tt> into <tt>SP</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11111001</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>6</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>LD SP,reg<sub>index</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Loads the value of index register <tt>reg<sub>index</sub></tt> into <tt>SP</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11111001</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>10</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="ldd"></a>
+	<h2>LDD</h2><p>
+
+	<tt><b>LDD</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Transfers a byte of data from the memory location pointed to by <tt>HL</tt> to the
+	memory location pointed to by <tt>DE</tt>. Then <tt>HL</tt>, <tt>DE</tt>, and <tt>BC</tt>
+	are decremented.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10101000</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z C</tt> are not affected<br><tt>H N</tt> are reset<br><tt>P/V</tt> is reset if
+	<tt>BC</tt> becomes zero. Reset otherwise.</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="lddr"></a>
+	<h2>LDDR</h2><p>
+
+	<tt><b>LDDR</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Transfers a byte of data from the memory location pointed to by <tt>HL</tt> to the
+	memory location pointed to by <tt>DE</tt>. Then <tt>HL</tt>, <tt>DE</tt>, and <tt>BC</tt>
+	are decremented. If <tt>BC</tt> is not zero, this operation is repeated. Interrupts can
+	trigger while this instruction is processing.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10111000</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z C</tt> are not affected<br><tt>H N P/V</tt> are reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td>If <tt>BC != 0</tt>: <tt>21</tt><br>If <tt>BC == 0</tt>: <tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="ldi"></a>
+	<h2>LDI</h2><p>
+
+	<tt><b>LDI</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Transfers a byte of data from the memory location pointed to by <tt>HL</tt> to the
+	memory location pointed to by <tt>DE</tt>. Then <tt>HL</tt> and <tt>DE</tt> are
+	incremented and <tt>BC</tt> is decremented.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10100000</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z C</tt> are not affected<br><tt>H N</tt> are reset<br><tt>P/V</tt> is reset if
+	<tt>BC</tt> becomes zero. Reset otherwise.</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>16</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="ldir"></a>
+	<h2>LDIR</h2><p>
+
+	<tt><b>LDIR</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Transfers a byte of data from the memory location pointed to by <tt>HL</tt> to the
+	memory location pointed to by <tt>DE</tt>. Then <tt>HL</tt> and <tt>DE</tt> are
+	incremented and <tt>BC</tt> is decremented. If <tt>BC</tt> is not zero, this operation is 
+	repeated. Interrupts can trigger while this instruction is processing.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 10110000</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z C</tt> are not affected<br><tt>H N P/V</tt> are reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td>If <tt>BC != 0</tt>: <tt>21</tt><br>If <tt>BC == 0</tt>: <tt>16</tt></td>
+</tr></table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="pop"></a>
+	<h2>POP</h2><p>
+
+	<tt><b>POP reg<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The memory location pointed to by <tt>SP</tt> is stored into
+	<tt>reg<sub>LSB</sub></tt> and <tt>SP</tt> is incremented. The memory location pointed to 
+	by <tt>SP</tt> is stored into <tt>reg<sub>MSB</sub></tt> and <tt>SP</tt> is incremented
+	again</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11[reg<sub>16</sub>]0001</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>BC</tt></th>
+		<td><tt>00</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>DE</tt></th>
+		<td><tt>01</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>HL</tt></th>
+		<td><tt>10</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>AF</tt></th>
+		<td><tt>11</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>10</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>POP reg<sub>index</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The memory location pointed to by <tt>SP</tt> is stored into
+	<tt>reg<sub>LSB</sub></tt> and <tt>SP</tt> is incremented. The memory location pointed to 
+	by <tt>SP</tt> is stored into <tt>reg<sub>MSB</sub></tt> and <tt>SP</tt> is incremented
+	again</td></tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11100001</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>14</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="push"></a>
+	<h2>PUSH</h2><p>
+
+	<tt><b>PUSH reg<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td><tt>SP</tt> is decremented and <tt>reg<sub>MSB</sub></tt> is stored into the memory
+	location pointed to by <tt>SP</tt>. <tt>SP</tt> is decremented again and
+	<tt>reg<sub>LSB</sub></tt> is stored into the memory location pointed to by
+	<tt>SP</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11[reg<sub>16</sub>]0101</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>BC</tt></th>
+		<td><tt>00</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>DE</tt></th>
+		<td><tt>01</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>HL</tt></th>
+		<td><tt>10</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>AF</tt></th>
+		<td><tt>11</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>11</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>PUSH reg<sub>index</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td><tt>SP</tt> is decremented and <tt>reg<sub>MSB</sub></tt> is stored into the memory
+	location pointed to by <tt>SP</tt>. <tt>SP</tt> is decremented again and
+	<tt>reg<sub>LSB</sub></tt> is stored into the memory location pointed to by
+	<tt>SP</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11100101</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>15</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

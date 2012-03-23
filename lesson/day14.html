@@ -1,0 +1,603 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 14 &mdash; Procedures</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day13.html">Previous</a>
+    &middot; <a href="day15.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 14. Procedures</h1>
+    <hr>
+       <b><font color=#CCCCCC>novice <font color=#E0E000>intermediate</font> advanced expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#pst">Procedures and the Stack</a>
+<li type="disc"><a href="#fra">Stack Frames</a>
+<li type="disc"><a href="#sav">Saving the State of the Machine</a>
+<li type="disc"><a href="#eff">Side Effects</a>
+<li type="square"><a href="#par">Parameters</a>
+<li type="square"><a href="#pas">Ways of Passing Parameters</a>
+<li type="square"><a href="#pla">Places for Passing Parameters</a>
+<li type="square"><a href="#res">Procedure Results</a>
+<li type="square"><a href="#loc">Local Variables</a>
+<li type="circle"><a href="#rec">Recursion</a>
+</ul>
+    <hr>
+
+A procedure is a set of instructions designed to achieve some result, such a calculating a function or displaying an image. A procedure is invoked using the <span class=ins>CALL</span> instruction, and the procedure ends with the <span class=ins>RET</span> instruction. This isn't exactly news to you, and you have seen dozens of procedures already, but those were relatively simple examples. Today you will learn how to create procedures that can do all the little tricks that HLL procedures can.<p>
+
+<a name="pst"></a>
+    <h2>Procedures and the Stack</h2>
+The call/return mechanism, to work effectively, needs to know from where the <span class=ins>CALL</span> instruction was executed so that it can return properly. It does this by pushing the <span class=reg>PC</span> register (actually it adds three so that the address of the next instruction is pushed &mdash; the return address) onto the stack. The <span class=ins>RET</span> instruction pops the top of the stack into <span class=reg>PC</span>.  The LIFO nature of the stack means a procedure can call a procedure which can call another procedure, and so on <i>ad inifinitum</i> and they will all return in the proper order.<p>
+
+Since the stack is used to store the return address, you must exercise caution when pushing and popping from within a procedure. Check out this defective procedure:
+
+<pre>
+<span class=mem>Bollixed:</span>
+    <span class=ins>PUSH</span>    <span class=reg>DE</span>
+    <span class=ins>RET</span>
+</pre><br>
+
+The <span class=ins>RET</span> instruction isn't aware that the top of the stack isn't an address, it's not as if there's a banner tagged on that says "hey <span class=ins>RET</span> I'm not what you're looking for so you better not screw with me!". No, it simply pops the top stack value blindly. Since it is very unlikely <span class=reg>DE</span> contains a matching value (the odds are 1 in 65, 536), the program will "return" into oblivion. Popping data before <span class=ins>RET</span> creates the same problem. So just remember to take proper care of the stack in a procedure.<p>
+
+<a name="fra"></a>
+    <h2>Stack Frames</h2>
+Whenever you call a procedure, a certain amount of stack space is allocated to hold information relating to that procedure, such as a return address and saved registers. Such a block is called a stack frame.<p>
+
+Stack frames are what give procedures the ability to call other procedures (even themselves!) without the CPU getting confused. Before returning, a procedure must clean up the stack frame until just the return address exists.<p>
+
+<a name="sav"></a>
+    <h2>Saving the State of the Machine</h2>
+This code attempts to print five lines of six X's. But don't try to run it! It contains a bug that causes it to print six X's a line in an infinite loop. The problem here is that both the calling code and the procedure use the <span class=reg>B</span> register, but neither saves its value. The result: <span class=mem>PrintSpc</span> returns with <span class=reg>B</span> equalling 0, causing the <span class=ins>DJNZ</span> in the main program to loop forever.<p>
+
+    <h3>Program 14-1</h3>
+<div class=Program>
+<pre>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 5
+<span class=mem>Loop:</span>
+    <span class=ins>CALL</span>   <span class=mem>PrintSpc</span>
+    b_call(_NewLine)
+    <span class=ins>DJNZ</span>   <span class=mem>Loop</span>
+    <span class=ins>RET</span>
+
+<span class=mem>PrintSpc:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 'X'
+    <span class=ins>LD</span>     <span class=reg>B</span>, 6
+<span class=mem>PrintLoop:</span>
+    b_call(_PutC)
+    <span class=ins>DJNZ</span>   <span class=mem>PrintLoop</span>
+    <span class=ins>RET</span>
+</pre>
+</div>
+<p>
+
+If a procedure will modify some registers, they should be saved with <span class=ins>PUSH</span>/<span class=ins>POP</span>. Either the caller or the callee can take responsibility:<p>
+
+<h3>Program 14-2</h3>
+    Procedure preserves registers.
+<div class=Program>
+<pre>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 5
+<span class=mem>Loop:</span>
+    <span class=ins>CALL</span>   <span class=mem>PrintSpc</span>
+    b_call(_NewLine)
+    <span class=ins>DJNZ</span>   <span class=mem>Loop</span>
+    <span class=ins>RET</span>
+
+<span class=mem>PrintSpc:</span>
+    <span class=ins>PUSH</span>   <span class=reg>BC</span>
+    <span class=ins>PUSH</span>   <span class=reg>AF</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, 'X'
+    <span class=ins>LD</span>     <span class=reg>B</span>, 6
+<span class=mem>PrintLoop:</span>
+    b_call(_PutC)
+    <span class=ins>DJNZ</span>   <span class=mem>PrintLoop</span>
+
+    <span class=ins>POP</span>    <span class=reg>AF</span>
+    <span class=ins>POP</span>    <span class=reg>BC</span>
+    <span class=ins>RET</span>
+</pre></div><p>
+
+    <h3>Program 14-3</h3>
+    Calling code preserves registers.
+<div class=Program>
+<pre>
+    <span class=ins>LD</span>     <span class=reg>B</span>, 5
+<span class=mem>Loop:</span>
+    <span class=ins>PUSH</span>   <span class=reg>BC</span>
+    <span class=ins>CALL</span>   <span class=mem>PrintSpc</span>
+    <span class=ins>POP</span>    <span class=reg>BC</span>
+    b_call(_NewLine)
+    <span class=ins>DJNZ</span>   <span class=mem>Loop</span>
+    <span class=ins>RET</span>
+
+<span class=mem>PrintSpc:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 'X'
+    <span class=ins>LD</span>     <span class=reg>B</span>, 6
+<span class=mem>PrintLoop:</span>
+    b_call(_PutC)
+    <span class=ins>DJNZ</span>   <span class=mem>PrintLoop</span>
+    <span class=ins>RET</span>
+</pre></div><p>
+
+What is the practical difference between the two methods? When the procedure saves the registers, then there is only one copy of the pushes and pops. When the caller saves the registers, there must be a set of pushes and pops around each <span class=ins>CALL</span>. Not only does this increase program size, it can be difficult to always remember which registers need to be saved.<p>
+
+On the other hand, if the calling code saves the registers, then time doesn't need to be wasted preserving registers that don't need to be preserved. In 14-2, the procedure saves both <span class=reg>BC</span> and <span class=reg>AF</span>, when there is no real point in saving <span class=reg>AF</span>. In 13-3, the caller only saves <span class=reg>BC</span> since that is the only register it cares about.<p>
+
+<a name="eff"></a>
+    <h2>Side Effects</h2>
+    A side effect is a computation done by a procedure that is purely incidental. A procedure
+    is ideally supposed to perform only one task then exit. Sometimes, however, the steps
+    necessary to execute that task sometimes result in some data areas holding certain
+    results. A programmer that uses such results is doing side effect programming. Example, 
+    the <tt>ClrLCDFull</tt> routine leaves <span class=reg>BC</span> equalling zero. You
+    could then use <span class=reg>BC</span> to set up text coordinates, which sounds pretty
+    good. Hey, save three bytes. But suppose that Texas Instruments introduces a new
+    operating system, wherein <tt>ClrLCDFull</tt> <i>preserves</i> <span
+    class=reg>BC</span>. So what happens? If you said "CRAAAASH!", then give yourself a
+    dollar. Thus you can see the big problem with SEP: side effects change. Even better, you
+    have no idea that the side effect has changed, so you can't fix the bug, get frustrated, 
+    cry for your momma, and flood bulletin boards, forums, and my e-mail with inane ramblings
+    no one wants.<p>
+
+&lt;rant&gt;
+<div class=Invisible><br>
+    Here is a related case against SEP. Doubtless you have seen files on your computed that
+    end in <tt>.DLL</tt>? The files are like procedure dumps programs can use instead of
+    having them inside the program. Some DLLs come with an application when it is installed, 
+    others are native to Windows (system DLLs). Oftentimes a software company will use these
+    system DLLs to cut down on size. Even craftier ones will look for side effects to use.
+    Now we get into a slight problem. Microsoft is constantly improving, and the latest
+    version of their proprietary software may contain updates for their DLL files. Quiz: can
+    anyone guess what happens when a program tries to use the changed side effects? Did
+    someone say, "Blue Screen o' Death"? Maybe you noticed that when you first installed
+    Windows, it was a pretty solid OS. Then as you added more third-party software, it got a
+    little unstable. And once you got the latest versions of Office&trade; and Internet
+    Explorer&trade; it seemed to crash every other day?<p></div>
+    
+<a name="par"></a>
+    <h2>Parameters</h2>
+While quite a few procedures that are entirely self-contained, the majority requre some kind of input to do their job, and many pass results back to the calling code. Such inputs and outputs are called <i>parameters</i>. When you are thinking about passing parameters to a procedure, you'll ask yourself three questions.
+<ul>
+<li>How much data are you passing?
+<li>Where will the data come from?
+<li>How will the data be passed?
+</ul><p>
+
+<a name="pas"></a>
+    <h2>Ways of Passing Parameters</h2>
+These are the two main ways to pass parameters. While there are other well-known methods, the architecture of the Z80's memory makes them pointless.<p>
+
+    <a href="#value">Passing Parameters By Value</a><br>
+    <a href="#reference">Passing Parameters By Reference</a><p>
+
+<a name="value"></a>
+    <h3>By Value</h3>
+By Value means to send just a value to the procedure. A copy of the input parameter is created and it is this copy that is used throughout the subroutine. The point of by value is for the preservation of the input data over the procedure.<p>
+
+<pre>
+<span class=cmt>; Pass the variable val to a procedure by value</span>
+
+<span class=cmt>; Make a copy of the variable</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>(val)</span>
+    <span class=ins>CALL</span>   <span class=mem>ByVal</span>
+    <span class=ins>RET</span>
+
+<span class=mem>ByVal:</span>
+<span class=cmt>; A holds the input parameter, since we have no access to the original variable
+; (not entirely true, but just play along), it can't be modified</span>
+    <span class=ins>AND</span>   $0F
+    <span class=ins>XOR</span>   $07
+    b_call(_PutC)
+    <span class=ins>RET</span>
+
+<span class=mem>val:</span>    <span class=dir>.DB</span>    99
+</pre><p>
+
+The size of the data is a deciding factor in choosing to use By Value. Since a full copy must be made, By Value is only good for small data objects and absolutely abyssmal for larger structures.<p>
+
+Parameters passed by value are input-only. You can pass them to a procedure, but the procedure can't use them for return data.<p>
+
+<a name="reference"></a>
+    <h3>By Reference</h3>
+To pass a parameter by reference you pass its address, in other words, a pointer to it. The routine dereferences the pointer and indirectly accesses the parameter, and as a consequence has the ability to alter it. It is an excellent mechanism for large amounts of data, or whenever you want to enable modification of the parameters.<p>
+
+<pre>
+<span class=cmt>; Pass the variables val1 and val2 to a procedure by reference</span>
+
+<span class=cmt>; Create pointers in DE and HL to the variables</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>val1</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>val2</span>
+    <span class=ins>CALL</span>   <span class=mem>ByRef</span>
+    <span class=ins>RET</span>
+
+<span class=mem>val1:</span>   <span class=dir>.DB</span>    200
+<span class=mem>val2:</span>   <span class=dir>.DB</span>    46
+
+<span class=mem>ByRef:</span>
+<span class=cmt>; HL and DE hold the address of the parameters and so must be dereferenced.</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(DE)</span>
+    <span class=ins>ADD</span>    <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>LD</span>     <span class=reg>(DE)</span>, <span class=reg>A</span>
+    <span class=ins>RET</span>
+</pre><p>
+
+For small amounts of data, pass by reference is usually less efficient than passing by value because the parameters have to be dereferenced each time they are accessed, and dereferencing is slower than using a value.<p>
+
+Parameters passed by reference can be used for input or output.<p>
+
+<a name="pla"></a>
+<h2>Places for Passing Parameters</h2>
+Now that you know how to pass parameters, you probably have the nerve to ask where you can pass them. The place you put a parameter depends a great deal on the size and number of parameters.<p>
+
+    <a href="#register">Passing Parameters Via Registers</a><br>
+    <a href="#global">Passing Parameters Via Global Variables</a><br>
+    <a href="#stream">Passing Parameters Via The Code Stream</a><br>
+    <a href="#stack">Passing Parameters Via The Stack</a><br>
+    <a href="#block">Passing Parameters Via A Parameter Block</a><p>
+
+<a name="register"></a>
+    <h3>Via Registers</h3>
+If the amount of data being passed is only a small number of bytes, then by all means use the registers to pass them. This method has been used throughout this guide and also by the system routines. There are only a finite and very small number of registers, though. When you run out of them, you need to look into using RAM.<p>
+
+<a name="global"></a>
+    <h3>Via Global Variables</h3>
+Using global variables, reserved bits of RAM in the program or scram memory, is the easiest way to pass a parameter. Many TIOS routines to this also. The problem is that it smacks of inelegance, and even worse it's hard to maintain what RAM is safe and what is used by a procedure.<p>
+
+<a name="stream"></a>
+    <h3>Via the Code Stream</h3>
+Immediately after the <span class=ins>CALL</span> to the procedure, place the parameters inline with one or several <span class=dir>.DB</span> or <span class=dir>.DW</span> statements. Okay, this looks real cool, but the way to access these parameters may elude you until you realize that the return address, the top stack value, is the address of the first parameter. So you pop <span class=reg>HL</span>, and if off to the races (this is one of those rare exceptions to the rule of not popping without pushing something first).<p>
+
+Now one problem, if you put back the return address, you will return right after the <span class=ins>CALL</span> and the data block will be executed as code. This is solved by modifying the return address so that it points to just after the parameters. Not too difficult to do that because you will usually be at the end of the parameter list when you want to return anyway.<p>
+
+<h3>Program 14-4</h3>
+<div class=Program>
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, 0</span>
+    <span class=ins>LD</span>     <span class=mem>(CurRow)</span>, <span class=reg>HL</span>
+    <span class=ins>CALL</span>   <span class=mem>Print_Out</span>
+    <span class=dir>.DB</span>    "I ain't not a dorkus", 0
+    <span class=ins>RET</span>
+
+<span class=mem>Print_Out:</span>
+<span class=cmt>; Get the return address/address of parameter</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+<span class=mem>_Loop:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(HL)</span>
+    <span class=ins>INC</span>    <span class=reg>HL</span>
+    <span class=ins>OR</span>     <span class=reg>A</span>
+    <span class=ins>JR     Z</span>, <span class=mem>_Done</span>
+    b_call(_PutC)
+    <span class=ins>JR</span>     <span class=mem>_Loop</span>
+<span class=mem>_Done:</span>
+<span class=cmt>; Much better than POP HL \ RET</span>
+    <span class=ins>JP</span>     <span class=reg>(HL)</span>
+</pre></div><p>
+
+You have no excuse for not understanding the code stream mechanism &mdash; you've been using it all this time! <tt>b_call(xxxx)</tt> is macro (you should know at least that much by now) that expands to
+<pre>    <span class=ins>RST    28h</span>
+    <span class=dir>.DW</span>    xxxx
+</pre>
+<span class=ins>RST</span> is the same as <span class=ins>CALL</span>, but you can clearly see that the code stream is in use here.<p>
+
+The code stream really is one of the more convenient ways to pass input, and code-stream parameters implement variable-length parameters quite effectively. The string parameter to <span class=mem>Print_Out</span> can be any length and the routine will always come off without a hitch. <p>
+
+For all its convenience, the code stream mechanism is not without its disadvantages. First, if you fail to pass exactly the right number of parameters in exactly the right format, the code stream becomes the crash stream. Try leaving off the zero byte, <span class=mem>Print_Out</span> prints garbage and returns to god-knows-where. Or you might accidently add in a second zero. Then <span class=mem>Print_Out</span> returns in the midst of the string and tries to execute ASCII codes as instruction opcodes. Again, this usually results in a crash (actually most characters will be 8-bit loads that may or may not be harmless).<p>
+ 
+<a name="stack"></a>
+    <h3>Via The Stack</h3>
+Most HLLs use the stack to pass parameters because of its decent efficiency. While certainly slower than using registers, the stack lets you pass a large amount of parameter data (within reason) without difficulty. To pass parameters on the stack, right before you call the procedure, push all the parameters to be used. Now, how to access those parameters. Consider this:
+
+<pre><span class=cmt>;    $</span>
+    A48E:    <span class=ins>LD</span>     <span class=reg>HL</span>, $1C2A
+    A491:    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    A492:    <span class=ins>LD</span>     <span class=reg>HL</span>, $5FC0
+    A495:    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    A496:    <span class=ins>LD</span>     <span class=reg>HL</span>, $44DF
+    A499:    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    A49A:    <span class=ins>CALL</span>   <span class=mem>Foo</span>
+    A49D:    <span class=ins>INC</span>    <span class=reg>A</span>
+</pre>
+
+Upon entry to <span class=mem>Foo</span>, its stack frame will look like:<p>
+
+<table class=Info>
+<tr>
+ <td class=Transparent colspan=4>
+ <th>SP<br>|<br>V</th>
+ <td class=Transparent colspan=7>
+</tr>
+<tr class=Heading>
+ <th>$FFE5</th>
+ <th>$FFE6</th>
+ <th>$FFE7</th>
+ <th>$FFE8</th>
+ <th>$FFE9</th>
+ <th>$FFEA</th>
+ <th>$FFEB</th>
+ <th>$FFEC</th>
+ <th>$FFED</th>
+ <th>$FFEE</th>
+ <th>$FFEF</th>
+ <th>$FFF0</th>
+</tr>
+<tr>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+ <td>&nbsp;</td>
+ <td class=UndocCell>9D</td>
+ <td class=UndocCell>A4</td>
+ <td class=SubHeading>DF</td>
+ <td class=SubHeading>44</td>
+ <td class=Heading>C0</td>
+ <td class=Heading>5F</td>
+ <td class=SubHeading>2A</td>
+ <td class=SubHeading>1C</td>
+</tr>
+<tr>
+ <td class=Transparent colspan=4></td>
+ <td class=Transparent colspan=2>Return Address</td>
+ <td class=Transparent colspan=2>Parameter 3</td>
+ <td class=Transparent colspan=2>Paremeter 2</td>
+ <td class=Transparent colspan=2>Paremeter 1</td>
+</tr>
+</table>
+
+    With this as a guide, we can devise two mechanisms of accessing these parameters.<p>
+
+    <h3>1. Using the EX Instruction</h3>
+This method was available on the Intel 8080 and is still viable. It involves using a form of <span class=ins>EX</span>.
+
+<table class=Command>
+<tr>
+    <td class=CmdSyntax>
+    <tt>EX (SP), HL</tt></td>
+    <td>Swaps the value of <tt>(SP)</tt> with the value of <tt>L</tt> and the value of <tt>(SP+1)</tt> with the value of
+    <tt>H</tt>.</td>
+</tr>
+</table><p>
+
+What can now be done is issue a <span class=ins>POP</span> <span class=reg>HL</span> as the first instruction of <span class=mem>Foo</span>. This will deliver the return address in <span class=reg>HL</span> and cause <span class=reg>SP</span> to point to the third parameter. By a series of pops and exchanges, the arguments can be cleaned off and the return address put back on top.<p>
+
+<pre>
+<span class=mem>Foo:</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>         <span class=cmt>; HL = return</span>
+    <span class=ins>EX</span>     <span class=reg>DE</span>, <span class=reg>HL</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>         <span class=cmt>; HL = parameter 3</span>
+    <span class=ins>LD</span>     <span class=mem>(Par3)</span>, <span class=reg>HL</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>         <span class=cmt>; HL = parameter 2</span>
+    <span class=ins>LD</span>     <span class=mem>(Par2)</span>, <span class=reg>HL</span>
+    <span class=ins>EX</span>     <span class=reg>DE</span>, <span class=reg>HL</span>
+    <span class=ins>EX</span>     <span class=reg>(SP)</span>, <span class=reg>HL</span>    <span class=cmt>; HL = parameter 1</span>
+</pre>
+
+If the arguments are to be used more than once they will have to be stored to RAM. This requires space and bogs the system down.<p>
+
+    <h3>2. Using an Index Register</h3>
+The second method involves reading the parameters directly in the stack. The best way this can be accomplished is by putting the value of <span class=reg>SP</span> into an index register and then looking up the parameters by offsetting. While there is no way to directly load the stack pointer into an index register, this will do just as well:
+
+<pre>
+<span class=cmt>; If you save the machine state, put the number of bytes pushed
+; instead of zero in IX</span>
+    <span class=ins>LD</span>     <span class=reg>IX</span>, 0
+    <span class=ins>ADD</span>    <span class=reg>IX</span>, <span class=reg>SP</span>
+</pre>
+
+    The parameters to <span class=mem>Foo</span> would be as follows:<p>
+<span class=mem>(IX + 0)</span> LSB of return address<br>
+<span class=mem>(IX + 1)</span> MSB of return address<br>
+<span class=mem>(IX + 2)</span> LSB of parameter 3<br>
+<span class=mem>(IX + 3)</span> MSB of parameter 3<br>
+<span class=mem>(IX + 4)</span> LSB of parameter 2<br>
+<span class=mem>(IX + 5)</span> MSB of parameter 2<br>
+<span class=mem>(IX + 6)</span> LSB of parameter 1<br>
+<span class=mem>(IX + 7)</span> MSB of parameter 1<p>
+
+The use of indexing offers some glaring disadvantages:
+<ol>
+    <li>Instructions with index registers are very slow and large.
+    <li>The parameters are not removed from the stack. Their removal must come after control
+    is returned to the caller, or at the end with <tt><span class=ins>EX</span> <span
+    class=reg>(SP)</span>, <span class=reg>HL</span></tt>.
+</ol>
+
+Although, you could do the same thing with <span class=reg>HL</span>, which would result in faster, but less convenient and readable code.<p>
+
+<a name="block"></a>
+    <h3>Via a Parameter Block</h3>
+A parameter block is a structure containing the parameters. To access them you would pass a pointer to the structure, so parameter blocks are supposed to be passed by reference. Parameter blocks are especially useful when you have to make several calls to a procedure, and each invocation you pass constant data (or the data is modified in the procedure). If the parameters change you will have to explicitly modify the parameter block, and this is less efficient (you are basically using a global variable).<p>
+
+<pre>
+</pre><p>
+
+<a name="res"></a>
+    <h2>Procedure Results</h2>
+    At times, a procedure's point in life will be to calculate some value. You store the return value in an input reference parameter, or you can use a new method called Pass By Result. To pass by result you just store a copy of the output value somewhere. Like passing by value turned on its head.<p>
+    
+    Procedure results can be stored in most of the ways input paramters can be (except the code stream). To use the stack, special considerations have to be made.<p>
+
+    <h3>Using that Friggin' EX (SP), HL</h3>
+    So the top of the stack is the return address, and <span class=reg>HL</span> holds the
+    return value?<p>
+
+<pre>
+    <span class=ins>EX</span>     <span class=reg>(SP)</span>, <span class=reg>HL</span>
+    <span class=ins>JP</span>     <span class=reg>(HL)</span>
+    . . .
+<span class=cmt>; Back in the main module</span>
+    <span class=ins>POP</span>    <span class=reg>BC</span>    <span class=cmt>; Result in BC</span></pre>
+
+    This can be extended for multiple values.<p>
+
+<pre>
+    <span class=ins>CALL</span>   <span class=mem>Fetch</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+    <span class=ins>POP</span>    <span class=reg>BC</span>
+    <span class=ins>POP</span>    <span class=reg>DE</span>
+    <span class=ins>RET</span>
+
+<span class=mem>Fetch:</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(Data1)</span>
+    <span class=ins>EX</span>     <span class=reg>(SP)</span>, <span class=reg>HL</span>
+    <span class=ins>EX</span>     <span class=reg>DE</span>, <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(Data2)</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(Data3)</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    <span class=ins>PUSH</span>   <span class=reg>DE</span>
+    <span class=ins>RET</span>
+</pre>
+
+    <h3>Using that Friggin' Index Register</h3>
+Pretty simple, you just use your index register to overwrite the input parameters. If you need more space, push garbage values onto the stack beforehand as placeholders.<p>
+
+<pre>
+    <span class=ins>CALL</span>   <span class=mem>Fetch</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+    <span class=ins>POP</span>    <span class=reg>BC</span>
+    <span class=ins>POP</span>    <span class=reg>DE</span>
+    <span class=ins>RET</span>
+
+<span class=mem>Fetch:</span>
+    <span class=ins>EX</span>     <span class=reg>(SP)</span>, <span class=reg>HL</span>
+    <span class=ins>PUSH</span>   <span class=reg>AF</span>    <span class=cmt>; Placeholders</span>
+    <span class=ins>PUSH</span>   <span class=reg>AF</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>(Data1)</span>
+    <span class=ins>LD</span>     <span class=reg>(IX + 7)</span>, <span class=reg>D</span>
+    <span class=ins>LD</span>     <span class=reg>(IX + 6)</span>, <span class=reg>E</span>
+
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>(Data2)</span>
+    <span class=ins>LD</span>     <span class=reg>(IX + 5)</span>, <span class=reg>D</span>
+    <span class=ins>LD</span>     <span class=reg>(IX + 4)</span>, <span class=reg>E</span>
+
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>(Data3)</span>
+    <span class=ins>LD</span>     <span class=reg>(IX + 3)</span>, <span class=reg>D</span>
+    <span class=ins>LD</span>     <span class=reg>(IX + 2)</span>, <span class=reg>E</span>
+
+    <span class=ins>RET</span>
+</pre><p>
+
+<a name="loc"></a>
+    <h2>Local Variables</h2>
+At times, a procedure may need some temporary storage as it runs. To allocate for local variables, subtract <span class=reg>SP</span>. At termination, deallocate by adding. These local variables are best accessed using indexing.<p>
+
+    <h3>Program 14-5</h3>
+Okay, I absolutely agree that this is this is a mind-numbingly stupid and <i>horrendously</i> inefficent routine, but it does demonstrate local variables.<p>
+
+<div class=Program>
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, $0000
+    <span class=ins>LD</span>     <span class=reg>DE</span>, $FFFF
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    <span class=ins>PUSH</span>   <span class=reg>DE</span>
+    <span class=ins>CALL</span>   <span class=mem>Swap</span>
+    <span class=ins>POP</span>    <span class=reg>DE</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+    <span class=ins>RET</span>
+
+<span class=mem>Swap:</span>
+<span class=dir>#define</span>    <span class=mem>p1_lo</span>    <span class=reg>(IX + 2)</span>
+<span class=dir>#define</span>    <span class=mem>p1_hi</span>    <span class=reg>(IX + 3)</span>
+<span class=dir>#define</span>    <span class=mem>p2_lo</span>    <span class=reg>(IX + 4)</span>
+<span class=dir>#define</span>    <span class=mem>p2_hi</span>    <span class=reg>(IX + 5)</span>
+<span class=dir>#define</span>    <span class=mem>temp</span>    <span class=reg>(IX - 1)</span>
+
+    <span class=ins>LD</span>     <span class=reg>IX</span>, $0000
+    <span class=ins>ADD</span>    <span class=reg>IX</span>, <span class=reg>SP</span>
+    <span class=ins>DEC</span>    <span class=reg>SP</span>    <span class=cmt>; Allocate one byte of local vars</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>p1_lo</span>
+    <span class=ins>LD</span>     <span class=mem>temp</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>p2_lo</span>
+    <span class=ins>LD</span>     <span class=mem>p1_lo</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>temp</span>
+    <span class=ins>LD</span>     <span class=mem>p2_lo</span>, <span class=reg>A</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>p1_hi</span>
+    <span class=ins>LD</span>     <span class=mem>temp</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>p2_hi</span>
+    <span class=ins>LD</span>     <span class=mem>p1_hi</span>, <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=mem>temp</span>
+    <span class=ins>LD</span>     <span class=mem>p2_hi</span>, <span class=reg>A</span>
+
+    <span class=ins>INC</span>    <span class=reg>SP</span>    <span class=cmt>; Deallocate one byte of local vars</span>
+    <span class=ins>RET</span>
+</pre>
+</div>
+
+When is it a good idea to use local variables? Never. Local variables are invariably useless the way the Z80 implements them. But on the bright side if it ever comes up at a party you can say how to allocate local variables in a procedure :-).<p>
+
+<a name="rec"></a>
+    <h2>Recursion</h2>
+Recursion occurs when a procedure calls itself repeatedly, not unlike an iterative loop. Like any other loop, a recursive procedure requires a termination condition (called the base case) to stop an infinite loop. To qualify for recursion, a procedure must be re-entrant. This means that the procedure can restart and terminate without disturbing any previous recursions. For this reason, extensive use of the stack is necessary. Inputs in RAM have to be placed on the stack, and inputs in registers must be preserved in the procedure. Recursion can gobble up a lot of stack space in a very short time.<p>
+
+    <h3>Program 14-6</h3>
+I'm sure that C.A.R. Hoare's QuickSort is the most famous and impressive example of a recursive procedure, so here is how to do a 16-bit factorial.<p>
+
+<div class=Program>
+<pre>
+    b_call(_ClrLCDFull)
+    b_call(_HomeUp)
+    <span class=ins>LD</span>     <span class=reg>HL</span>, 8          <span class=cmt>; Do not try passing inputs greater than 8, 
+                         ; it will make the routine unhappy</span>
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    <span class=ins>CALL</span>   <span class=mem>Factorial</span>
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+    b_call(_DispHL)
+    b_call(_NewLine)
+    <span class=ins>RET</span>
+
+<span class=mem>Factorial:</span>
+    <span class=ins>PUSH</span>   <span class=reg>IX</span>            <span class=cmt>; Save previous value of IX for re-entrancy</span>
+    <span class=ins>LD</span>     <span class=reg>IX</span>, 0          <span class=cmt>; Set IX as stack frame pointer</span>
+    <span class=ins>ADD</span>    <span class=reg>IX</span>, <span class=reg>SP</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(IX + 4)</span>    <span class=cmt>; Get the LSB of the factor</span>
+    <span class=ins>OR</span>     <span class=reg>A</span>             <span class=cmt>; The base case is "factor == 0"</span>
+    <span class=ins>JR     Z</span>, <span class=mem>BaseCase</span>
+    <span class=ins>DEC</span>    <span class=reg>A</span>             <span class=cmt>; Subtract one to get next factor</span>
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>A</span>           <span class=cmt>; Push factor onto stack as parameter for next</span>
+    <span class=ins>PUSH</span>   <span class=reg>DE</span>            <span class=cmt>; recursion. The value of D is irrelevant</span>
+    <span class=ins>CALL</span>   <span class=mem>Factorial</span>     <span class=cmt>; Recurse</span>
+
+    <span class=ins>POP</span>    <span class=reg>HL</span>            <span class=cmt>; Retrieve the result from the previous recursion</span>
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>(IX + 4)</span>    <span class=cmt>; Get the factor from the previous recursion</span>
+    <span class=ins>CALL</span>   <span class=mem>HL_Times_E</span>    <span class=cmt>; Multiply 'em</span>
+    <span class=ins>LD</span>     <span class=reg>(IX + 4)</span>, <span class=reg>L</span>    <span class=cmt>; Overwrite the previous factor with running product</span>
+    <span class=ins>LD</span>     <span class=reg>(IX + 5)</span>, <span class=reg>H</span>
+    <span class=ins>POP</span>    <span class=reg>IX</span>            <span class=cmt>; Restore stack frame pointer from previous recursion</span>
+    <span class=ins>RET</span>                  <span class=cmt>; End of this recursion</span>
+
+<span class=mem>BaseCase:</span>
+    <span class=ins>LD</span>     <span class=reg>(IX + 4)</span>, 1    <span class=cmt>; Set the $0000 factor to $0001</span>
+    <span class=ins>LD</span>     <span class=reg>(IX + 5)</span>, 0
+    <span class=ins>POP</span>    <span class=reg>IX</span>            <span class=cmt>; Restore stack frame pointer</span>
+    <span class=ins>RET</span>                  <span class=cmt>; End of this recursion</span></pre>
+</div>
+
+    <hr>
+<div class=NavFooter>
+<a href="day13.html">PREVIOUS - Day 13: More Program Control</a><p>
+<a href="day15.html">NEXT - Day 15: Advanced Math</a><p>
+<a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

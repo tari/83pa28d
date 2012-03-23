@@ -1,0 +1,361 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 11 &mdash; Displaying Text</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+    
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day10.html">Previous</a>
+    &middot; <a href="day12.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 11. Displaying Text</h1>
+    <hr>
+    <b><font color=#CCCCCC>novice <font color=#E0E000>intermediate</font> advanced expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#pos">Text Position</a>
+<li type="disc"><a href="#lfc">Large Font Characters</a>
+<li type="disc"><a href="#lfs">Large Font Strings</a>
+<li type="disc"><a href="#sfc">Small Font Characters</a>
+<li type="disc"><a href="#sfs">Small Font Strings</a>
+<li type="disc"><a href="#num">Numbers</a>
+<li type="square"><a href="#shd">Text Shadow</a>
+</ul>
+    <hr>
+
+When dealing with text output, you have your choice of two different fonts: the large font you see when you hit keys
+in the home screen and all the menus, and the small text you get with the <tt>Text(</tt> draw command.<p>
+
+<a name="pos"></a>
+    <h2>Text Position</h2>
+The large and small text fonts use two different systems for locating where the text should be drawn. The large font uses
+cursor coordinates, the small font uses pen coordinates.<p>
+
+The cursor coordinates are referenced by row and column, which may be thought of as y and x. There are two variables
+that hold the current coordinates at <span class=mem>CurRow</span> and <span class=mem>CurCol</span>. Valid ranges are
+0 to 7 for <span class=mem>(CurRow)</span>, 0 to 15 for <span class=mem>(CurCol)</span>. The top-left part of the screen
+is (0, 0).<br>
+Pen coordinates are also referenced by row and column at the bytes <span class=mem>(PenCol)</span> and
+<span class=mem>(PenRow)</span>. The row may range from 0 to 63 and the column may range from 0 to 95.<p>
+
+<a name="lfc"></a>
+    <h2>Large (6x8) Text</h2>
+    To begin with, we'll look at displaying single characters, then strings.<p>
+    
+    <h3>Displaying Characters</h3>
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_PutMap</tt></th>
+    <td colspan=2>Displays a character at the current cursor position.</td>
+</tr>
+<tr>
+    <th class=Heading>INPUT</th>
+    <td class=SubHeading width=12%><tt>A</tt></td>
+    <td><a href="../ref/lfont.html" target="_blank">ASCII code</a> of character to display.</td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_PutC</th>
+    <td colspan=2>Displays a character at the current cursor position, and advances the 
+        cursor.</td>
+</tr>
+<tr>
+    <th class=Heading>INPUT</th>
+    <td class=SubHeading width=12%><tt>A</tt></td>
+    <td><a href="../ref/lfont.html" target="_blank">ASCII code</a> of character to display.</td>
+</tr>
+</table>
+
+    <h3>Program 11-1</h3>
+    Display 'I' at location (3, 4).
+
+<div class=Program>
+<pre>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 3
+    <span class=ins>LD</span>     <span class=mem>(CurRow)</span>, <span class=reg>A</span>    <span class=cmt>; Set row 3</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 4
+    <span class=ins>LD</span>     <span class=mem>(CurCol)</span>, <span class=reg>A</span>    <span class=cmt>; Set column 4</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 'I'         <span class=cmt>; Use a character constant instead of</span>
+    b_call(_PutC)       <span class=cmt> ; giving a cryptic ASCII code.</span>
+    <span class=ins>RET</span></pre>
+</div>
+
+At the end of this program, the cursor is at (3, 5) because <tt>PutC</tt> will increases the cursor column.
+
+In memory, <span class=mem>CurCol</span> is the byte immediately after <span class=mem>CurRow</span>, so you can save
+time and space by loading the coordinates with <span class=reg>HL</span> (just keep in mind how <span class=reg>HL</span>
+is <a href="day05.html#ram">loaded into RAM</a>).<p>
+
+    <h3>Program 11-2</h3>
+    Display 'I' at location (3, 4) with different coordinate setup.
+
+<div class=Program>
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, 4*256+3    <span class=cmt>; Could also be $0403</span>
+    <span class=ins>LD</span>     <span class=mem>(CurRow)</span>, <span class=reg>HL</span>   <span class=cmt>; Set coordinates</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 'I'
+    b_call(_PutC)
+    <span class=ins>RET</span></pre>
+</div>
+
+    Other ways to affect the cursor position:
+<table class=Command>
+<tr>
+ <th class=Heading width=25%><tt>_NewLine</tt></th>
+ <td colspan=2>Moves cursor to start of next line. <span class=mem>(CurCol)</span> = 0, <span class=mem>(CurRow)</span> is
+ incremented (provided the display didn't scroll).</td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+ <th class=Heading width=25%><tt>_HomeUp</tt></th>
+ <td colspan=2><span class=mem>(CurCol)</span> = 0, <span class=mem>(CurRow)</span> = 0.</td>
+</tr>
+</table>
+
+    That wasn't so bad was it? Now for strings; a little more complex.<p>
+
+<a name="lfs"></a>
+    <h3>Displaying Strings</h3>
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt><b>_PutS</b></tt></th>
+    <td colspan=2>Display a null-terminated string starting at the current cursor 
+        position.</td>
+</tr>
+<tr>
+    <th class=Heading>INPUT</th>
+    <td class=SubHeading width=12%><tt>HL</tt></td>
+    <td>Pointer to start of string.</td>
+</tr>
+<tr>
+    <th class=Heading>OUTPUT</i></th>
+    <td class=SubHeading><tt>HL</tt></td>
+    <td>Address of byte after the null.</td>
+</tr>
+<tr>
+    <th class=Heading>Remarks</th>
+    <td colspan=2>If the string is longer than the current row, will wrap to next row. Will 
+    scroll display if necessary. Cursor postion set to postion after the last character in 
+    the string.</td>
+</tr>
+</table>
+
+A <i>pointer</i> is a variable or register that holds the address of another variable. When <tt>PutS</tt> says it needs
+a pointer to the start of the string, it means that we just need to find the memory address of whichever byte holds the
+first character of the string, and put it into <span class=reg>HL</span>. Of course, we can't load a static value in, since
+it would be too damn difficult to figure out, and making any alteration to the program would render it invalid.<p>
+
+    <h3>The Procedure</h3>
+    This is the general procedure to follow when displaying text.
+
+<pre>
+    <span class=cmt>; Set up the cursor coordinates here</span>
+    <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>text</span>    <span class=cmt>;This loads our pointer to the string.</span>
+    b_call(_PutS)
+    .
+    .
+    .
+    <span class=ins>RET</span>
+<span class=mem>text:</span>
+    <span class=dir>.DB</span>    "A message to display", 0</pre>
+
+So you see that to get a pointer to the string you use a label. Remember that a label is assigned the value of the
+location counter, therefore it is the address of where the next byte of data will be put. In this case, 
+<span class=mem>text</span> is equal to whatever byte the character 'A' will wind up in.<br>
+The zero at the end of the string is how <tt>PutS</tt> knows when to stop displaying characters. This is what is meant by
+a "null-terminated string" ("null" is just a fancy <a style="cursor: help" onClick="alert('The way this sentence is \
+written implies Germans are barbaric. I can tell you that that honestly was not my intended purpose.\n\n\n\n...or WAS \
+it ^_^'); return false">(or German)</a> way to say "zero"). If you don't supply a zero, <tt>PutS</tt> will keep on
+displaying characters until it comes across a byte containing zero (try it and see for yourself, it won't
+<a href="../ref/lawyer.html">cause a crash</a> if you're wondering).<p>
+
+<a name="sfc"></a>
+    <h2>Small Variable-Width Text</h2>
+    Again, single characters first, then strings.<p>
+
+    <h3>Displaying Characters</h3>
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_VPutMap</th>
+    <td colspan=2>Displays a character at the current pen location.</td>
+</tr>
+<tr>
+    <th class=Heading>INPUT</th>
+    <td class=SubHeading width=12%><tt>A</tt></td>
+    <td><a href="../ref/sfont.html" target="_blank">ASCII code</a> of character to display.</td>
+</tr>
+<tr>
+    <th class=Heading>DESTROYS</th>
+    <td colspan=2>All but <tt>BC</tt> and <tt>HL</tt></td>
+</tr>
+</table>
+
+    <h3>Program 11-3</h3>
+    Display the character 'q' in small font at (26, 31):
+
+<div class=Program>
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, $1F1A
+    <span class=ins>LD</span>     <span class=mem>(PenCol)</span>, <span class=reg>HL</span>      <span class=cmt>; PenCol comes before PenRow</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, 'q'
+    b_call(_VPutMap)
+    <span class=ins>RET</span></pre>
+</div>
+
+<a name="sfs"></a>
+    <h3>Displaying Strings</h3>
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_VPutS</tt></td>
+    <td colspan=2>Displays a null-terminated string starting at the current pen 
+    location.</td>
+</tr>
+<tr>
+    <th class=Heading>INPUT</th>
+    <td class=SubHeading width=12%><tt>HL</tt></td>
+    <td>Pointer to start of string.</td>
+</tr>
+<tr>
+    <th class=Heading>OUTPUT</th>
+    <td class=SubHeading><tt>HL</tt></td>
+    <td>Address of byte after the null.</td>
+</tr>
+</table>
+    
+    <h3>The Procedure</h3>
+    Notice how the code is almost identical to that for large-font strings.
+
+<pre>
+    ; Set up the pen coordinates here
+    <span class=ins>LD</span>    <span class=reg>HL</span>, <span class=mem>text</span>    <span class=cmt>; This loads our pointer to the string.</span>
+    b_call(_VPutS)
+    .
+    .
+    .
+    <span class=ins>RET</span>
+<span class=mem>text:</span>
+    <span class=dir>.DB</span>    "A message to display.", 0
+</pre>
+
+<a name="num"></a>
+    <h2>Displaying Numbers</h2>
+    Simple, just display the value of <span class=reg>HL</span> in the large font.
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_DispHL</tt></th>
+    <td colspan=2>Displays the contents of the <span class=reg>HL</span> register
+    right-justified in a field of five characters. For example, if <span class=reg>HL</span>
+    <tt> = 125</tt>, output will be &lt;space&gt; &lt;space&gt; '<tt>1</tt>' '<tt>2</tt>'
+    '<tt>5</tt>'.</td>
+</tr>
+<tr>
+    <th class=Heading>INPUT</th>
+    <td class=SubHeading width=12%><tt>HL</tt></tt>
+    <td>Number to display.</td>
+</tr>
+<tr>
+    <th class=Heading>DESTROYS</th>
+    <td colspan=2><tt>AF DE HL</tt>
+</tr>
+<tr>
+    <th class=Heading>Remarks</th>
+    <td colspan=2>String is cut-off at the screen's edge.</td>
+</tr>
+</table>
+
+<a name="shd"></a>
+    <h2>Text Shadow</h2>
+<span class=mem>TextShadow</span> is a 128-byte block of RAM that stores a copy of every character written in the large
+font. The primary purpose of Text Shadow is so that the home screen is preserved when you enter any of the TI-OS's
+manifold menus or get your graph on. You can see what a potential annoyance this can be by pressing [2nd][MODE] after
+running this:<p>
+
+    <h3>Program 11-4</h3>
+<div class=Program>
+<pre>
+    b_call(_HomeUp)
+    b_call(_ClrLCDFull)
+    <span class=ins>LD</span>     <span class=reg>A</span>, 'K'
+    b_call(_PutC)
+    <span class=ins>RET</span>
+</pre>
+</div>
+
+You should see the homescreen from before running has returned. To prevent this, you need to wipe out Text Shadow.
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_ClrScrnFull</tt></th>
+    <td colspan=2>Clears the screen and sets text shadow to all spaces.</td>
+</tr>
+<tr>
+    <th class=Heading>DESTROYS</th>
+    <td><tt>All</tt></td>
+</tr>
+</table>
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_ClrTxtShad</tt></th>
+    <td colspan=2>Sets text shadow to all spaces.</td>
+</tr>
+<tr>
+    <th class=Heading>DESTROYS</th>
+    <td><tt>BC DE HL</tt></td>
+</tr>
+</table>
+
+You'll probably want to stop <tt>PutS</tt> and <tt>PutC</tt> from writing to text shadow. This is done by resetting the
+system flag <span class=mem>AppTextSave</span> at <span class=reg>(IY</span> + <span class=mem>AppFlags</span><span class=reg>)</span>
+
+This will, as an added bonus, free up text shadow for variable storage. You will then have to clear it when you exit, or
+you'll see junk on the screen. Anyone who's ever played ZTetris knows what I'm talking about.<p>
+
+    <h2>Formatting Text</h2>
+    There are three flags in particular that are useful for modifying text display.<p>
+
+    <h3>Inverted Text &mdash; The Pinnacle of Monochrome Graphics</h3>
+    This is probably the most widely used flag. If <span class=mem>TextInverse</span>, <span
+    class=reg>(IY + <span class=mem>TextFlags</span>)</span> is set, text will appear in
+    reverse video (white on black). This gives the effect of a highlight, and can also give a 
+    psychedelic, seizure-inducing flash effect.<p>
+
+    <h3>Large Text &mdash; Where You Want It, When You Want It</h3>
+    When <span class=mem>FracDrawLFont</span>, <span class=reg>(IY + <span
+    class=mem>FontFlags</span>)</span> is set, then any routine that normally uses the small
+    font will instead use the large. The point here is to display large text that isn't
+    confined to a 16&times;8 grid.<p>
+
+    <h3>Scrolling &mdash; I Can't Think of a Clever Subtitle</h3>
+    If you reset <span class=mem>AppAutoScroll</span>, <span class=reg>(IY + <span class=mem>
+    AppFlags</span>)</span>, the display will not scroll when <span class=mem>(CurRow)</span>
+    is greater than 7. The problem is that you have to make sure to set
+    <span class=mem>(CurRow)</span> to under 8 when you want to display text again, 
+    or it'll suck to be you.<p>
+
+    <hr>
+<div class=NavFooter>
+    <a href="day10.html">PREVIOUS - Day 10: The Other Registers</a><p>
+    <a href="day12.html">NEXT - Day 12: Key Input</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 21 &mdash; The VAT</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day20.html">Previous</a>
+    &middot; <a href="day22.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 21. The VAT</h1>
+    <hr>
+    <b><font color=#CCCCCC>novice intermediate <font color=#FF6600>advanced</font> expert</font></b><hr>
+
+<ul class=TopicList>
+<li type="disc"><a href="#vat">About The VAT</a>
+<li type="disc"><a href="#ent">VAT Entry Structure</a>
+<li type="square"><a href="#src">Searching The VAT</a>
+</ul>
+    <hr>
+
+<a name="vat"></a>
+    <h2>About The VAT</h2>
+VAT is an acronym for Variable Allocation Table. What it actually is is a large chunk of RAM holding the
+attributes of every variable on the calculator. The VAT's size is constantly in flux: when you create a
+variable, the VAT's size is instantly increased to accomodate the new entry. When variables are deleted, the
+VAT shrinks as the entries for those variables are removed.<p>
+
+The VAT starts immediately before the end of the hardware stack and is divided
+into two parts. The first part holds the names of real, complex, matrix, picture, GDB, 
+and equation type variables. This region starts immediately after the Hardware Stack at
+the fixed address <span class=mem>SymTable</span>.<br>
+The second part holds programs, lists, groups, and AppVars. The beginning is stored in
+the variable <span class=mem>(ProgPtr)</span> and ends at <span class=mem>(PTemp)</span><tt>+1</tt>.<p>
+
+<a name="ent"></a>
+    <h2>Structure Of VAT Entries</h2>
+    Each VAT entry is a structure of several elements, but there is a twist: the entries are written backwards!
+
+    <h3>Program, AppVar, and Group</h3>
+<table class=Info>
+<tr class=Heading>
+    <th width=6%>-14</th>
+    <th width=6%>-13</th>
+    <th width=6%>-12</th>
+    <th width=6%>-11</th>
+    <th width=6%>-10</th>
+    <th width=6%>-9</th>
+    <th width=6%>-8</th>
+    <th width=6%>-7</th>
+    <th width=6%>-6</th>
+    <th width=6%>-5</th>
+    <th width=6%>-4</th>
+    <th width=6%>-3</th>
+    <th width=6%>-2</th>
+    <th width=6%>-1</th>
+    <th width=6%>0</th>
+</tr>
+<tr class=SubHeading>
+    <td colspan=8>Variable name &mdash; Eight tokens maximum</td>
+    <th>NL</th>
+    <th>Page</th>
+    <th>DAH</th>
+    <th>DAL</th>
+    <th>Ver</th>
+    <th>T2</th>
+    <th>T</th>
+</tr>
+</table>
+
+    <h3>List</h3>
+<table class=Info>
+<tr class=Heading>
+    <th width=7%>-13</th>
+    <th width=7%>-12</th>
+    <th width=7%>-11</th>
+    <th width=7%>-10</th>
+    <th width=7%>-9</th>
+    <th width=7%>-8</th>
+    <th>-7</th>
+    <th width=7%>-6</th>
+    <th width=7%>-5</th>
+    <th width=7%>-4</th>
+    <th width=7%>-3</th>
+    <th width=7%>-2</th>
+    <th width=7%>-1</th>
+    <th width=7%>0</th>
+</tr>
+<tr class=SubHeading>
+    <th>F#</th>
+    <td colspan=5>List name &mdash; 5 tokens max</td>
+    <th>tVarLst</th>
+    <th>NL</th>
+    <th>Page</th>
+    <th>DAH</th>
+    <th>DAL</th>
+    <th>Ver</th>
+    <th>T2</th>
+    <th>T</th>
+</tr>
+</table>
+
+    <h3>Real, Complex, Matrix, Equation, GDB, and Picture</h3>
+<table class=Info>
+<tr class=Heading>
+    <th width=10%>-8</th>
+    <th>-7</th>
+    <th>-6</th>
+    <th width=10%>-5</th>
+    <th width=10%>-4</th>
+    <th width=10%>-3</th>
+    <th width=10%>-2</th>
+    <th width=10%>-1</th>
+    <th width=10%>0</th>
+</tr>
+<tr class=SubHeading>
+    <td>$00</td>
+    <td>Second name<br>token</td>
+    <td>First name<br>token</td>
+    <th>Page</th>
+    <th>DAH</th>
+    <th>DAL</th>
+    <th>Ver</th>
+    <th>T2</th>
+    <th>T</th>
+</tr>
+</table>
+
+    Key:
+<table class=Info>
+<tr>
+    <th class=Heading width=15%>T</th>
+    <td>The object type and system effects:
+    <table class=Flags>
+    <tr>
+        <th class=Heading>Bit</th>
+        <th class=Heading>Meaning</th>
+    </tr>
+    <tr>
+        <td class=SubHeading>0-4</td>
+        <td>Object type</td>
+    </tr>
+    <tr>
+        <td class=SubHeading>5</td>
+        <td>If a graph equation, then it's active if set.</td>
+    </tr>
+    <tr>
+        <td class=SubHeading>6</td>
+        <td>Variable is used during graphing if set.</td>
+    </tr>
+    <tr>
+        <td class=SubHeading>7</td>
+        <td>Variable is designated for link transfer if set.</td>
+    </tr>
+    </table>
+</tr>
+<tr>
+    <th class=Heading>T2</th>
+    <td>Reserved for future use</td>
+</tr>
+<tr>
+    <th class=Heading>Ver</th>
+    <td>Version number. If a future TI-83 Plus version introduces a new variable format, 
+    this is used to prevent sending that variable to an older version.</td>
+</tr>
+<tr>
+    <th class=Heading>DAL<br>DAH</th>
+    <td>Pointer to the data. <b>DAL</b> is the least-significant byte, and <b>DAH</b> is the most-significant.</td>
+</tr>
+<tr>
+    <th class=Heading>Page</th>
+    <td>The ROM page the variable is archived on. If the variable is in RAM, then 0.</td>
+</tr>
+<tr>
+    <th class=Heading>NL</th>
+    <td>The length of the name. For lists, <tt>tVarLst</tt> is included in this value.</td>
+</tr>
+<tr>
+    <th class=Heading>F#</th>
+    <td>Number of a formula attached to a list, or 0 if no formula</td>
+</tr>
+</table><p>
+
+    The structure of a list formula is
+
+<table class=Info>
+<tr class=Heading>
+    <th width=11%>-8</th>
+    <th width=11%>-7</th>
+    <th width=11%>-6</th>
+    <th width=11%>-5</th>
+    <th width=11%>-4</th>
+    <th width=11%>-3</th>
+    <th width=11%>-2</th>
+    <th width=11%>-1</th>
+    <th width=11%>0</th>
+</tr>
+<tr class=SubHeading>
+    <td>$00</td>
+    <th>F#</th>
+    <th>$3F</th>
+    <th>Page</th>
+    <th>DAH</th>
+    <th>DAL</th>
+    <th>Ver</th>
+    <th>T2</th>
+    <td>EquObj</td>
+</tr>
+</table><p>
+
+<a name="src"></a>
+    <h2>Searching The VAT</h2>
+To scan the VAT, step through each entry from <span class=mem>SymTable</span> to
+<span class=mem>(PTemp)</span><tt>+1</tt> with <span class=reg>HL</span> or <span class=reg>IX</span> linearly.<p>
+
+    <h3>Program 20-1</h3>
+    Search for and display all programs. Try modifying it to account for archived programs.
+<div class=Program>
+<pre>
+    <span class=ins>RES</span>    <span class=mem>AppTextSave</span>, <span class=reg>(IY + <span class=mem>AppFlags</span>)</span>
+    b_call(_ClrLCDFull)
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>(ProgPtr)</span>    <span class=cmt>; Start of Symbol Table for programs</span>
+
+<span class=mem>MainLoop:</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, 0
+    <span class=ins>LD</span>     <span class=mem>(CurRow)</span>, <span class=reg>DE</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, 7             <span class=cmt>; Counter. We can display 7 variables per screen</span>
+<span class=mem>FindLoop:</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>(PTemp)</span>      <span class=cmt>; Check to see if we're at the end of the symbol table</span>
+    <span class=ins>OR</span>     <span class=reg>A</span>
+    <span class=ins>SBC</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>JR     Z</span>, <span class=mem>Done</span>
+    <span class=ins>JR     C</span>, <span class=mem>Done</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>           <span class=cmt>; Restore HL</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(HL)</span>          <span class=cmt>; Check the [T] of entry, take appropriate action</span>
+    <span class=ins>AND</span>    $1F             <span class=cmt>; Bitmask off bits 7-5 to get type only.</span>
+    <span class=ins>CP</span>     <span class=mem>ProgObj</span>
+    <span class=ins>JR     Z</span>, <span class=mem>IsNormalProg</span>
+    <span class=ins>CP</span>     <span class=mem>ProtProgObj</span>
+    <span class=ins>JR     NZ</span>, <span class=mem>Skip</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, '#'           <span class=cmt>; We'll use a hash to signify a protected program...</span>
+    <span class=ins>JR</span>     <span class=mem>DispStatus</span>
+
+<span class=mem>IsNormalProg:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, ' '           <span class=cmt>; ...or space padding for a normal program</span>
+
+<span class=mem>DispStatus:</span>
+    b_call(_PutC)          <span class=cmt>; Display protection status</span>
+
+    <span class=cmt>; At this point, HL -> [T], so we'll move back six bytes to [NL]</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, -6
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>(HL)</span>          <span class=cmt>; Store number of characters in name for DJNZ</span>
+
+<span class=mem>DispNameLoop:</span>
+    <span class=ins>DEC</span>    <span class=reg>HL</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>(HL)</span>
+    b_call(_PutC)
+    <span class=ins>DJNZ</span>   <span class=mem>DispNameLoop</span>
+
+    <span class=ins>DEC</span>    <span class=reg>HL</span>              <span class=cmt>; Move back one byte so HL -> [T] of next entry</span>
+
+    b_call(_NewLine)
+
+    <span class=ins>DEC</span>    <span class=reg>C</span>               <span class=cmt>; Subtract counter</span>
+    <span class=ins>JR     NZ</span>, <span class=mem>FindLoop</span>
+
+    <span class=ins>PUSH</span>   <span class=reg>HL</span>
+    b_call(_GetKey)        <span class=cmt>; Press any key...</span>
+    b_call(_ClrLCDFull)
+    <span class=ins>POP</span>    <span class=reg>HL</span>
+
+    <span class=ins>JR</span>     <span class=mem>MainLoop</span>
+
+<span class=mem>Skip:</span>
+    <span class=cmt>; Skip an entry</span>
+    <span class=ins>OR</span>     <span class=reg>A</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, 6
+    <span class=ins>SBC</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>(HL)</span>         <span class=cmt>; Put name length in E to skip</span>
+    <span class=ins>INC</span>    <span class=reg>E</span>              <span class=cmt>; Add 1 to go to [T] of next entry</span>
+    <span class=ins>SBC</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>JR</span>     <span class=mem>FindLoop</span>
+
+<span class=mem>Done:</span>
+    b_call(_GetKey)
+    <span class=ins>SET</span>    <span class=mem>AppTextSave</span>, <span class=reg>(IY + <span class=mem>AppFlags</span>)</span>
+    <span class=ins>RET</span>                   <span class=cmt>; That's all folks!</span></pre>
+</div>
+
+    <hr>
+<div class=NavFooter>
+    <a href="day20.html">PREVIOUS - Day 20: Program and System Variables</a><p>
+    <a href="day22.html">NEXT - Day 22: Low-Level Key Input</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

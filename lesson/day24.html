@@ -1,0 +1,434 @@
+<html>
+<head>
+<title>Learn TI-83 Plus Assembly In 28 Days &mdash; Day 24 &mdash; Monochrome Graphics</title>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<div class=NavHeader>
+    &middot; <a href="toc.html">Table Of Contents</a>
+    &middot; <a href="day23.html">Previous</a>
+    &middot; <a href="day25.html">Next</a>
+    &middot;
+</div>
+
+    <hr>
+    <h1>DAY 24. Monochrome Graphics</h1>
+    <hr>
+    <b><font color=#CCCCCC>novice intermediate advanced <font color=#CC0000>expert</font></font></b><hr>
+
+<ul class=TopicList>
+<li type="square"><a href="#fun">Fundamentals</a>
+<li type="disc"><a href="#buf">Graph Buffer</a>
+<li type="disc"><a href="#pix">Plotting Pixels</a>
+<li type="square"><a href="#lin">Lines</a>
+</ul>
+    <hr>
+
+<a name="fun"></a>
+<h2>Fundamentals</h2>
+When we talk about graphics, we refer to something called the screen or the display. The screen is composed of thousands
+of tiny dots called pixels, which can assume various visual states and so create some kind of image. There
+are three aspects to a pixel that have a major impact on what the display is capable of showing. One is the screen size.
+The screen size is usually given as the number of pixels that make up a full row and column of the screen and relates the
+number of pixels that comprise the screen &mdash; the more pixels the better because we get a larger and more versatile
+area to work with. There is also resolution, which is the size of each individual pixel. A very poor resolution yields
+images that are blocky and highly rasterized, while a higher resolution gives displays that are finer, even though the
+screen may have the same dimensions.<p>
+
+<table width=100%>
+<tr>
+ <td class=Transparent width=50% align=center><i>High resolution</i><br><img src="../img/hi-res.png"></td>
+ <td class=Transparent width=50% align=center><i>Low resolution</i><br><img src="../img/lo-res.png"></td>
+</tr>
+</table>
+
+The final aspect is the number of colors that a pixel can display. This is almost as important as resolution for
+picture quality because more colors may capture detail and give the illusion of a higher resolution. TV sets have worked with this philosophy for decades. Monochrome graphics have the very unenviable capability of two colors; technically, a color
+and nothingness.<p>
+
+<table width=100%>
+<tr>
+ <td class=Transparent width=50% align=center><i>16 colors</i><br><br><img src="../img/hi-res.png"></td>
+ <td class=Transparent width=50% align=center><i>Monochrome<br>(detail has been lost)</i><br><img src="../img/mono.png"></td>
+</tr>
+</table>
+
+The TI-83 Plus has an LCD screen with pretty bleak dimensions of 96&times;64 pixels, and a blocky resolution (about 45
+pixels to the inch).<p>
+
+<a name="buf"></a>
+    <h2>The Graph Buffer</h2>
+The graph buffer is intimately connected to the display, because the graph buffer's contents is a representation of the
+LCD screen. The start of the buffer is equated to <span class=mem>PlotSScreen</span> and is 768 bytes in size. You might
+wonder where this magic number came from. Well, we have a screen that is 96 pixels wide and 64 pixels tall. That's 6144
+pixels total. Now because the screen is monochrome, each pixel can assume only two possible states: "light" (0) and "dark"
+(1). We can then maintain one pixel with just one bit, packing eight bits/pixels into one byte. As a result, the total
+memory space required is 6144&divide;8 = 768 bytes. The graph buffer is best thought of as a byte array of dimensions
+12&times;64 (12 columns, because eight pixel columns can be packed into one bytes).<p>
+
+You can load data to and from the graph buffer as it's normal memory, but the peculiar hardware of the calculator will
+not automatically update the display if you do so. There is an OS routine to do this.
+
+<table class=Command>
+<tr>
+    <th class=Heading width=25%><tt>_GrBufCpy</tt></th>
+    <td colspan=2>Copies <span class=mem>PlotSScreen</span> to the display.</td>
+</tr>
+<tr>
+    <th class=Heading>DESTROYS</th>
+    <td colspan=2><tt>All</tt></td>
+</tr>
+</table><p>
+
+N.B. The <tt>ClrLCDFull</tt> command does not clear out the graph buffer. To have a true erasure, you have to zero out
+the buffer yourself.<p>
+
+    <h3>Program 24-1</h3>
+    I'm such a sycophant...
+
+<div class=Program>
+<pre>
+    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>picdata</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>PlotSScreen</span>+(19*12)    <span class=cmt>;Start at nineteenth row of display</span>
+    <span class=ins>LD</span>     <span class=reg>BC</span>, 25*12                  <span class=cmt>;25 rows of data</span>
+    <span class=ins>LDIR</span>                      
+    b_call(_GrBufCpy)
+    <span class=ins>RET</span>
+
+<span class=mem>picdata:</span>
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $FE, $00, $00, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $FE, $00, $00, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $FE, $30, $00, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $FE, $78, $00, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $FF, $30, $00, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $FF, $07, $E0, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $FF, $77, $E0, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $FF, $77, $E0, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $F8, $61, $E0, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $1F, $F8, $E3, $E0, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $7F, $F8, $E3, $F0, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $7F, $FE, $EF, $F0, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $3F, $FE, $CF, $F0, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $1F, $FD, $DF, $F0, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $0F, $FD, $DF, $F0, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $07, $FC, $1F, $F0, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $07, $9C, $0F, $C0, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $03, $0E, $0F, $00, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $0F, $FE, $00, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $07, $F8, $00, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $07, $F8, $00, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $03, $F0, $00, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $03, $F0, $00, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $01, $F0, $00, $00, $00, $00, $00
+    <span class=dir>.DB</span>    $00, $00, $00, $00, $00, $00, $F8, $00, $00, $00, $00, $00
+</pre>
+</div>
+  
+<a name="pix"></a>
+<h2>Plotting Pixels</h2>
+The pixel is the most primitive graphic you can draw. The packed structure makes manipulating individual pixels
+cumbersome, but just think of it as an opportunity for more coding experience ^_^.<p>
+
+The following is the <tt>GetPixel</tt> routine that forms the basis for pixel plotting, and in fact all drawing in
+monochrome. Given the x-location in <span class=reg>A</span> and the y-position in <span class=reg>L</span>, it
+outputs in <span class=reg>HL</span> the address of the byte the pixel resides in, and a bitmask in
+<span class=reg>A</span> of some kind. What is the need for a bitmask? Well, knowing the byte of the buffer the pixel
+is in is only half the story. We have to identify the exact bit, hence the bitmask.
+
+<pre>
+<span class=mem>GetPixel:</span>
+    <span class=ins>LD</span>     <span class=reg>H</span>, 0
+    <span class=ins>LD</span>     <span class=reg>D</span>, <span class=reg>H</span>
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>L</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>HL</span>
+
+    <span class=ins>LD</span>     <span class=reg>E</span>, <span class=reg>A</span>
+    <span class=ins>SRL</span>    <span class=reg>E</span>
+    <span class=ins>SRL</span>    <span class=reg>E</span>
+    <span class=ins>SRL</span>    <span class=reg>E</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+
+    <span class=ins>LD</span>     <span class=reg>DE</span>, <span class=mem>PlotSScreen</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+</pre>
+Since the graph buffer is a 12&times;64 array, multiply the y index by 12. Now we must add the x index to find the byte, 
+but because there are eight pixels to a byte, the x-position must be divided by 8. Then the base address of the buffer is
+added. I really shouldn't have explained this, since it's a standard array indexing, but the division by 8 might have
+thrown you.
+<pre>
+    <span class=ins>AND</span>    7
+</pre>
+We already have the byte, now we want the bit. Turns out we can get it by moduloing the x-position with 8.
+<pre>
+    <span class=ins>LD</span>     <span class=reg>A</span>, $80
+    <span class=ins>RET    Z</span>
+    <span class=ins>LD</span>     <span class=reg>B</span>, <span class=reg>A</span>
+<span class=mem>Loop:</span>
+    <span class=ins>RRCA</span>
+    <span class=ins>DJNZ</span>   <span class=mem>Loop</span>
+    <span class=ins>RET</span>
+</pre>
+The result of the <span class=ins>AND</span> <tt>7</tt> gave us the position of the pixel in a byte as:
+<div align=center>
+<table>
+<tr class=Heading>
+ <th width=25>0</th>
+ <th width=25>1</th>
+ <th width=25>2</th>
+ <th width=25>3</th>
+ <th width=25>4</th>
+ <th width=25>5</th>
+ <th width=25>6</th>
+ <th width=25>7</th>
+</tr>
+<tr>
+ <td colspan=8 align=center>One byte</td>
+</tr>
+</table>
+</div>
+Therefore we can create a bitmask by rotating $80 right by the bit number.<p>
+
+<h3>Using GetPixel</h3>
+If you know anything about bitmasking, you should already see what you can do with <tt>GetPixel</tt>. You can
+darken a pixel, toggle it, or lighten it using the appropriate boolean instruction.
+
+<pre>
+<span class=cmt>; Darken a pixel</span>
+<span class=ins>CALL</span>   <span class=mem>GetPixel</span>
+<span class=ins>OR</span>     <span class=reg>(HL)</span>
+<span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=reg>A</span>
+
+
+<span class=cmt>; Flip a pixel</span>
+<span class=ins>CALL</span>   <span class=mem>GetPixel</span>
+<span class=ins>XOR</span>    <span class=reg>(HL)</span>
+<span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=reg>A</span>
+</pre>
+
+But you cannot be so cavalier with <span class=ins>AND</span>. The bitmask must first be inverted, otherwise the other
+seven pixels will be cleared.
+
+<pre>
+<span class=cmt>; Lighten a pixel</span>
+<span class=ins>CALL</span>   <span class=mem>GetPixel</span>
+<span class=ins>CPL</span>
+<span class=ins>AND</span>    <span class=reg>(HL)</span>
+<span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=reg>A</span>
+</pre>
+
+This is not to say you couldn't use <span class=ins>AND</span> alone. In such a case, if the pixel in the buffer is on, 
+<span class=ins>Z</span> will be cleared; you can test the status of pixels.<p>
+
+If you get all that, pat yourself on the back, because you now know enough to make a game of Nibbles!!<p>
+
+<a name="lin"></a>
+<h2>Lines</h2>
+A line-drawing routine that connects any two points is way to difficult to explain, but special cases of lines with
+horizontal and vertical slopes aren't too bad, so...<p>
+
+<h3>Horizontal Lines</h3>
+A horizontal line <i>could</i> be drawn by a loop of <tt>GetPixel</tt>s, but that is <i>way</i> too slow. A better method
+is to look at how a line looks as bits in the graph buffer.
+<div align=center>
+<table>
+<tr class=Heading>
+ <td width=15 height=15>&nbsp;</td>
+ <td width=15>&nbsp;</td>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+
+ <td class=Transparent width=5>&nbsp;</td>
+
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+
+ <td class=Transparent width=5>&nbsp;</td>
+
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+
+ <td class=Transparent width=5>&nbsp;</td>
+
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <td width=15>&nbsp;</td>
+ <td width=15>&nbsp;</td>
+ <td width=15>&nbsp;</td>
+ <td width=15>&nbsp;</td>
+ <td width=15>&nbsp;</td>
+</tr>
+</table>
+</div>
+
+A horizontal line can be divided into three sections. The left part contains zeros in the H.O. bits and ones in the low
+order. The middle part contains all ones. The right part contains ones in the H.O. bits and ones in the low order. The
+challenge, then, is to figure out what should go into the left and right parts, how many middle sections there are, and
+watching out for special cases:
+<table width=100%>
+<tr>
+<td class=Transparent width=40%>
+ <table>
+ <tr class=Heading>
+ <td width=15 height=15>&nbsp;</td>
+ <td width=15>&nbsp;</td>
+ <td width=15>&nbsp;</td>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <td class=Transparent width=5>&nbsp;</td>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ </tr>
+ </table>
+</td>
+<td class=Transparent>Right part absent</td>
+</tr>
+<tr>
+<td class=Transparent>
+ <table>
+ <tr class=Heading>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <td class=Transparent width=5>&nbsp;</td>
+ <th width=15>&nbsp;</th>
+ <td width=15>&nbsp;</th>
+ <td width=15>&nbsp;</th>
+ <td width=15>&nbsp;</th>
+ <td width=15>&nbsp;</th>
+ <td width=15>&nbsp;</th>
+ <td width=15>&nbsp;</th>
+ <td width=15>&nbsp;</th>
+ </tr>
+ </table>
+</td>
+<td class=Transparent>Left part absent</td>
+</tr>
+<tr>
+<td class=Transparent>
+ <table>
+ <tr class=Heading>
+ <td width=15>&nbsp;</th>
+ <td width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <td class=Transparent width=5>&nbsp;</td>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <th width=15>&nbsp;</th>
+ <td width=15>&nbsp;</th>
+ <td width=15>&nbsp;</th>
+ </tr>
+ </table>
+</td>
+<td class=Transparent>Middle part absent</td>
+</tr>
+<tr>
+<td class=Transparent>
+ <table>
+ <tr class=Heading>
+ <td width=15>&nbsp;</td>
+ <td width=15>&nbsp;</td>
+ <th width=15>&nbsp;</td>
+ <th width=15>&nbsp;</td>
+ <th width=15>&nbsp;</td>
+ <th width=15>&nbsp;</td>
+ <td width=15>&nbsp;</td>
+ <td width=15>&nbsp;</td>
+ </tr>
+ </table>
+</td>
+<td class=Transparent>Left and Right parts combined</td>
+</tr>
+</table>
+
+I get the feeling I haven't really challenged you very much for the past 3 weeks, so now I leave the coding of
+a horizontal line drawer up to you (*evil*). Just remember, shift instructions and bitmasks are a monochrome graphics
+programmer's best friends.<p>
+
+<h3>Vertical Lines</h3>
+Vertical lines are much easier to draw than horizontal lines, mainly because we're forced to plot them pixel by pixel.
+Since we have to do the same bitmasking operation on each byte in a column, we actually only need to run <tt>GetPixel</tt>
+once, then apply the mask as many times as necessary.
+
+<pre>
+<span class=cmt>; Draws a vertical line from (D, L)-(D, E)</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>E</span>
+    <span class=ins>SUB</span>    <span class=reg>L</span>
+    <span class=ins>RET    Z</span>
+    <span class=ins>PUSH</span>   <span class=reg>AF</span>        <span class=cmt>; Find and store vertical length of line</span>
+
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>D</span>
+    <span class=ins>CALL</span>   <span class=mem>GetPixel</span>
+
+    <span class=ins>POP</span>    <span class=reg>BC</span>        <span class=cmt>; Now B = number of pixels to draw</span>
+    <span class=ins>LD</span>     <span class=reg>DE</span>, 12     <span class=cmt>; There are 12 bytes between rows</span>
+    <span class=ins>LD</span>     <span class=reg>C</span>, <span class=reg>A</span>       <span class=cmt>; Save the bitmask because it will get obliterated</span>
+
+<span class=mem>PlotLoop:</span>
+    <span class=ins>LD</span>     <span class=reg>A</span>, <span class=reg>C</span>
+    <span class=ins>OR</span>     <span class=reg>(HL)</span>
+    <span class=ins>LD</span>     <span class=reg>(HL)</span>, <span class=reg>A</span>
+    <span class=ins>ADD</span>    <span class=reg>HL</span>, <span class=reg>DE</span>
+    <span class=ins>DJNZ</span>   <span class=mem>PlotLoop</span>
+    <span class=ins>RET</span>
+</pre>
+
+    <hr>
+<div class=NavFooter>
+    <a href="day23.html">PREVIOUS - Day 23: Interrupts</a><p>
+    <a href="day25.html">NEXT - Day 25: Sprites</a><p>
+    <a href="toc.html">Table Of Contents</a>
+</div>
+    <hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
+</body>
+</html>

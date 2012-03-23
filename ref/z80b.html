@@ -1,0 +1,710 @@
+<html>
+<head>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<a name="top"></a>
+	<h1>Z80 Instruction Set &mdash; Bit</h1>
+	<hr>
+<a href="#and">AND</a><br>
+<a href="#bit">BIT</a><br>
+<a href="#ccf">CCF</a><br>
+<a href="#or">OR</a><br>
+<a href="#res">RES</a><br>
+<a href="#scf">SCF</a><br>
+<a href="#set">SET</a><br>
+<a href="#xor">XOR</a><br>
+	<hr>
+
+<a name="and"></a>
+	<h2>AND</h2><p>
+
+	<tt><b>AND reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Bitwise AND on <tt>A</tt> with <tt>reg<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>10100[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H</tt> is set<br><tt>P/V</tt> is
+	parity<br><tt>N C</tt> are reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4 or 7 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>AND imm<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Bitwise AND on <tt>A</tt> with <tt>imm<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11100110 : [imm<sub>8</sub>]</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H</tt> is set<br><tt>P/V</tt> is
+	parity<br><tt>N C</tt> are reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>7</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>AND (reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Bitwise AND on <tt>A</tt> with the data at the memory location pointed to by 
+	<tt>reg<sub>index</sub></tt> plus <tt>ofs<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 10100110 [ofs<sub>8</sub>]</tt>
+<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H</tt> is set<br><tt>P/V</tt> is
+	parity<br><tt>N C</tt> are reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>19</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="bit"></a>
+	<h2>BIT</h2><p>
+
+	<tt><b>BIT imm<sub>3</sub>,reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Tests bit <tt>imm<sub>3</sub></tt> of <tt>reg<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11001011 : 01[imm<sub>3</sub>][reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S P/V</tt> are scrambled<br><tt>Z</tt> is affected as defined<br><tt>H</tt> is
+	set<br><tt>N</tt> is cleared<br><tt>C</tt> is unaffected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>8 or 12 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>BIT imm<sub>3</sub>,(reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Tests bit <tt>imm<sub>3</sub></tt> of the data at the memory location pointed to by
+	<tt>reg<sub>index</sub></tt> plus <tt>ofs<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11001011 : [ofs<sub>8</sub>] :
+	01[imm<sub>3</sub>110</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S P/V</tt> are scrambled<br><tt>Z</tt> is affected as defined<br><tt>H</tt> is
+	set<br><tt>N</tt> is cleared<br><tt>C</tt> is unaffected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>23</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="ccf"></a>
+	<h2>CCF</h2><p>
+
+	<tt><b>CCF</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Inverts the value of the carry flag.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00111111</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z P/V</tt> are unaffected<br><tt>H</tt> is the carry before operation<br>
+	<tt>N</tt> is reset<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="or"></a>
+
+	<h2>OR</h2><p>
+	<tt><b>OR reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Bitwise OR on <tt>A</tt> with <tt>reg<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>10110[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>P/V</tt> is parity<br><tt>H N C</tt> are
+	reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4 or 7 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>OR imm<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Bitwise OR on <tt>A</tt> with <tt>imm<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11110110 : [imm<sub>8</sub>]</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>P/V</tt> is parity<br><tt>H N C</tt> are
+	reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>7</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>OR (reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Bitwise OR on <tt>A</tt> with the data at the memory location pointed to by 
+	<tt>reg<sub>index</sub></tt> plus <tt>ofs<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 10110110 [ofs<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>P/V</tt> is parity<br><tt>H N C</tt> are
+	reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>19</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="res"></a>
+	<h2>RES</h2><p>
+
+	<tt><b>RES imm<sub>3</sub>,reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Resets bit <tt>imm<sub>3</sub></tt> of <tt>reg<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11001011 : 10[imm<sub>3</sub>][reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>8 or 15 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>RES imm<sub>3</sub>,(reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Resets bit <tt>imm<sub>3</sub></tt> of the value at the memory location pointed to
+	by <tt>reg<sub>index</sub></tt> plus <tt>ofs<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11001011 : [ofs<sub>8</sub>] :
+	10[imm<sub>3</sub>]110</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td>Not affected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>23</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="scf"></a>
+	<h2>SCF</h2><p>
+
+	<tt><b>SCF</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Sets the carry flag.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00110111</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z P/V</tt> are unaffected<br><tt>H N</tt> are reset<br><tt>C</tt> is set</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="set"></a>
+	<h2>SET</h2><p>
+
+	<tt><b>SET imm<sub>3</sub>,reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Sets bit <tt>imm<sub>3</sub></tt> of <tt>reg<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11001011 : 11[imm<sub>3</sub>][reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>8 or 15 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>SET imm<sub>3</sub>,(reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Sets bit <tt>imm<sub>3</sub></tt> of the value at the memory location pointed to
+	by <tt>reg<sub>index</sub></tt> plus <tt>ofs<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11001011 : [ofs<sub>8</sub>] :
+	11[imm<sub>3</sub>]110</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td>Not affected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>23</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="xor"></a>
+	<h2>XOR</h2><p>
+
+	<tt><b>XOR reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Bitwise XOR on <tt>A</tt> with <tt>reg<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>10101[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H</tt> is set<br><tt>P/V</tt> is
+	parity<br><tt>N C</tt> are reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4 or 7 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>XOR imm<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Bitwise XOR on <tt>A</tt> with <tt>imm<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101110 : [imm<sub>8</sub>]</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H</tt> is set<br><tt>P/V</tt> is
+	parity<br><tt>N C</tt> are reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>7</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>XOR (reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Bitwise XOR on <tt>A</tt> with the data at the memory location pointed to by 
+	<tt>reg<sub>index</sub></tt> plus <tt>ofs<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 10101110 [ofs<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H</tt> is set<br><tt>P/V</tt> is
+	parity<br><tt>N C</tt> are reset</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>19</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>

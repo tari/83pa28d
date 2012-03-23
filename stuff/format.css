@@ -1,0 +1,187 @@
+div.NavFooter {		font-family:    Arial, Helvetica, sans-serif;
+			font-size:	15px;
+			font-weight:	bold;
+			text-align:	left;
+			margin:		1ex 1em; }
+
+div.NavHeader {		font-family:	Arial;
+			font-size:	11px;
+			font-weight:	bold;
+			text-align:	right;
+			margin:		0;
+			text-indent:	0; }
+
+div.Program {		background-color:	#F0F0F0; }
+
+div.Invisible {		color:			#FFFFFF; }
+
+.Heading {		background-color:	#A0A0A0;
+			text-align:		center;
+			vertical-align:		center; }
+
+.SubHeading {		background-color:	#C0C0C0;
+			text-align:		center;
+			vertical-align:		center; }
+
+.UndocHeading {		background-color:	#50C050;
+			text-align:		center;
+			vertical-align:		center; }
+
+.UndocSubHeading {	background-color:	#80C080;
+			text-align:		center;
+			vertical-align:		center; }
+
+td {			font-family: 		Verdana, Arial, Helvetica, sans-serif;
+			background-color:	#E0E0E0;
+			font-size: 		13px;
+			border:			none;
+			vertical-align:		center; }
+
+th {			font-family:		Verdana, Arial, Helvetica, sans-serif;
+			font-size:		13px;
+			font-weight: 		bold;
+			border:			none;
+			vertical-align:		center;
+                        text-align: center; }
+
+td.Transparent {	background-color:	#FFFFFF; }
+
+td.CmdSyntax {		background-color:	#A0A0A0;
+			vertical-align:		top;
+			width:			35%; }
+
+td.UndocCell {		background-color:	#C0E0C0; }
+
+
+table {                 border:			none;
+			border-collapse:	separate; }
+
+table.Normal {		width:			100%;
+			background-color:	#FFFFFF;
+			margin:			12px 0px; }
+
+table.Info {		
+			width:			100%;
+			background-color:	#FFFFFF;
+			margin:			12px 0px;
+                        text-align: 		center; }
+
+table.Command {		width:			100%;
+			background-color:	#FFFFFF;
+			margin:			12px 0px; }
+
+table.Flags	{	width:			80%;
+			background-color:	#FFFFFF;
+			text-align:		center;
+			vertical-align:		center; }
+
+body {		font-family:		Verdana, Helvetica, Arial, sans-serif;
+		font-size:		13px;
+		text-decoration:	none;
+		text-align:		justify;
+		text-indent:		0;
+		border-style:		none;
+		margin:			1em;
+		color:			#000;
+		background-color:	#FFF; }
+
+a {		text-decoration:	none;
+		color:			#4040FF; }
+a:visited {	color:			#4040FF; }
+a:hover   {	color:			#A00000; }
+a:active  {	color:			#A00000; }
+
+h1 {		font-family:		Arial, Helvetica, sans-serif;
+		font-size:		22px;
+		color:			#000088;
+		margin:			0;
+		text-align:		left;
+		text-indent:		0;
+		text-decoration:	none;
+		border:			0; }
+
+h2 {		font-family:		Arial, Helvetica, sans-serif;
+		font-size:		16px;
+		color:			#E00005;
+		margin:			0;
+		text-align:		left;
+		text-indent:		0;
+		text-decoration:	none;
+		border:			0; }
+
+h3 {		font-family:		Arial, Helvetica, sans-serif;
+		font-size:		15px;
+		color:			#000000;
+		margin:			0 3ex;
+		text-align:		left;
+		text-decoration:	none;
+		border:			0; }
+
+h4 {		font-family:		Arial, Helvetica, sans-serif;
+		font-size:		20px;
+      		font-style:		italic;
+		font-weight:		900;
+		color:			#E00005;
+		margin:			0;
+		text-align:		left;
+		text-indent:		0;
+		border:			0; }
+
+pre {		font-family:		"Courier New", Courier, monospace;
+		text-align:		left;
+		font-size: 		13px;
+		font-weight:		bold;
+		margin:			1.5% 0% 1.5% 0%; }
+
+tt {		font-family:		"Courier New", Courier, monospace;
+		font-size:		13px;
+		font-weight:		bold; }
+
+sup {		font-family:		Arial, Helvetica, sans-serif;
+		font-size:		12px; }
+
+sub {		font-family:		Arial, Helvetica, sans-serif;
+		font-size:		12px; }
+
+ol {		margin:			2% 0% 2% 10%; }
+
+ul {		margin:			2% 0% 2% 10%;
+		list-style-type:	disc; }
+
+ul.TopicList {	margin:			0% 0% 0% 5%; }
+
+img {		border:			0;
+		margin:			10px 0px 10px 0px; }
+
+li {		font-family:		Verdana, Helvetica, Arial, sans-serif;
+		font-size:		13px;
+		text-indent:		0; }
+
+caption {	font-family:		Verdana, Helvetica, Arial, sans-serif;
+		font-size:		12px;
+		text-indent:		0; }
+
+.dir {	color:		#600000;        /* Marroon */
+	font-family:	"Courier New", Courier, monospace;
+	font-size:	13px;
+	font-weight:	bold; }
+.cmt {	color:		#C00000;        /* Green */
+	font-family:	"Courier New", Courier, monospace;
+	font-size:	13px;
+	font-weight:	bold; }
+.ins {	color:		#500050;	/* Purple */
+	font-family:	"Courier New", Courier, monospace;
+	font-size:	13px;
+	font-weight:	bold; }
+.mem {	color:		#005000;	/* Red */
+	font-family:	"Courier New", Courier, monospace;
+	font-size:	13px;
+	font-weight:	bold; }
+.reg {	color:		#000090;	/* Navy */
+	font-family:	"Courier New", Courier, monospace;
+	font-size:	13px;
+	font-weight:	bold; }
+
+/* This is is part of Learn TI-83 Plus Assembly In 28 Days
+   Copyright (c) 2002, 2003, 2004 Sean McLaughlin
+   See the file gfdl.html for copying conditions */

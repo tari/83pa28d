@@ -1,0 +1,930 @@
+<html>
+<head>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<a name="top"></a>
+	<h1>Z80 Instruction Set &mdash; Shift/Rotate</h1>
+	<hr>
+<a href="#rl">RL</a><br>
+<a href="#rla">RLA</a><br>
+<a href="#rlc">RLC</a><br>
+<a href="#rlca">RLCA</a><br>
+<a href="#rld">RLD</a><br>
+<a href="#rr">RR</a><br>
+<a href="#rra">RRA</a><br>
+<a href="#rrc">RRC</a><br>
+<a href="#rrca">RRCA</a><br>
+<a href="#rrd">RRD</a><br>
+<a href="#sla">SLA</a><br>
+<a href="#sra">SRA</a><br>
+<a href="#srl">SRL</a><br>
+
+<a name="rl"></a>
+	<hr>
+	<h2>RL</h2>
+
+	<tt><b>RL reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of <tt>reg<sub>8</sub></tt> are rotated left one bit position. The
+	contents of bit 7 are copied to the carry flag and the previous contents of the carry
+	flag are copied to bit 0.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11001011 : 00010[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>8 or 15 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>RL (reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of the memory location pointed to by <tt>reg<sub>index</sub></tt> plus
+	<tt>ofs<sub>8</sub></tt> are rotated left one bit position. The contents of bit 7 are
+	copied to the carry flag and the previous contents of the carry flag are copied to bit
+	0.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11001011 : [ofs<sub>8</sub>] : 00010110</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>23</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="rla"></a>
+	<h2>RLA</h2><p>
+
+	<tt><b>RLA</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of <tt>A</tt> are rotated left one bit position. The contents of bit 7
+	are copied to the carry flag and the previous contents of the carry flag are copied to
+	bit 0.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00010111</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z P/V</tt> are not affected<br><tt>H N</tt> are reset<br>See instruction for
+	<tt>C</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="rlc"></a>
+	<h2>RLC</h2><p>
+
+	<tt><b>RLC reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of <tt>reg<sub>8</sub></tt> are rotated left one bit position. The
+	contents of bit 7 are copied to the carry flag and bit 0.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11001011 : 00000[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>8 or 15 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>RLC (reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of the memory location pointed to by <tt>reg<sub>index</sub></tt> plus
+	<tt>ofs<sub>8</sub></tt> are rotated left one bit position. The contents of bit 7 are
+	copied to the carry flag and bit 0.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11001011 : [ofs<sub>8</sub>] : 00000110</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>23</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="rlca"></a>
+	<h2>RLCA</h2><p>
+
+	<tt><b>RLCA</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of <tt>A</tt> are rotated left one bit position. The contents of bit 7
+	are copied to the carry flag and bit 0.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00000111</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z P/V</tt> are not affected<br><tt>H N</tt> are reset<br>See instruction for
+	<tt>C</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="rld"></a>
+	<h2>RLD</h2><p>
+
+	<tt><b>RLD</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of the low-order nibble of <tt>(HL)</tt> are copied to the high-order
+	nibble of <tt>(HL)</tt>. The previous contents are copied to the low-order nibble of
+	<tt>A</tt>. The previous contents are copied to the low-order nibble of
+	<tt>(HL)</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 01101111</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td>Flags refer to state of <tt>A</tt><br><tt>S Z</tt> are affected as defined<br>
+	<tt>H N</tt> is reset<br><tt>P/V</tt> is parity<br><tt>C</tt> is not affected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>18</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="rr"></a>
+	<h2>RR</h2><p>
+
+	<tt><b>RR reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of <tt>reg<sub>8</sub></tt> are rotated right one bit position. The
+	contents of bit 0 are copied to the carry flag and the previous contents of the carry
+	flag are copied to bit 7.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11001011 : 00011[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>8 or 15 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>RR (reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of the memory location pointed to by <tt>reg<sub>index</sub></tt> plus
+	<tt>ofs<sub>8</sub></tt> are rotated right one bit position. The contents of bit 0 are
+	copied to the carry flag and the previous contents of the carry flag are copied to bit
+	7.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11001011 : [ofs<sub>8</sub>] : 00011110</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>23</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="rra"></a>
+	<h2>RRA</h2><p>
+
+	<tt><b>RRA</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of <tt>A</tt> are rotated right one bit position. The contents of bit 0
+	are copied to the carry flag and the previous contents of the carry flag are copied to
+	bit 7.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00011111</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z P/V</tt> are not affected<br><tt>H N</tt> are reset<br>See instruction for
+	<tt>C</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="rrc"></a>
+	<h2>RRC</h2><p>
+
+	<tt><b>RRC reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of <tt>reg<sub>8</sub></tt> are rotated left one bit position. The
+	contents of bit 0 are copied to the carry flag and bit 7.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11001011 : 00001[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>8 or 15 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>RRC (reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of the memory location pointed to by <tt>reg<sub>index</sub></tt> plus
+	<tt>ofs<sub>8</sub></tt> are rotated right one bit position. The contents of bit 0 are
+	copied to the carry flag and bit 7.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11001011 : [ofs<sub>8</sub>] : 00001110</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>23</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="rrca"></a>
+	<h2>RRCA</h2><p>
+
+	<tt><b>RRCA</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of <tt>A</tt> are rotated right one bit position. The contents of bit 0
+	are copied to the carry flag and bit 7.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00001111</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z P/V</tt> are not affected<br><tt>H N</tt> are reset<br>See instruction for
+	<tt>C</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="rrd"></a>
+	<h2>RRD</h2><p>
+
+	<tt><b>RRD</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of the low-order nibble of <tt>(HL)</tt> are copied to the low-order
+	nibble of <tt>A</tt>. The previous contents are copied to the high-order nibble of
+	<tt>(HL)</tt>. The previous contents are copied to the low-order nibble of
+	<tt>(HL)</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 01100111</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td>Flags refer to state of <tt>A</tt><br><tt>S Z</tt> are affected as defined<br>
+	<tt>H N</tt> is reset<br><tt>P/V</tt> is parity<br><tt>C</tt> is not affected</td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>18</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="sla"></a>
+	<h2>SLA</h2><p>
+
+	<tt><b>SLA reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of <tt>reg<sub>8</sub></tt> are shifted left one bit position. The
+	contents of bit 7 are copied to the carry flag and a zero is put into bit 0.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11001011 : 00100[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>8 or 15 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>SLA (reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of the memory location pointed to by <tt>reg<sub>index</sub></tt> plus
+	<tt>ofs<sub>8</sub></tt> are shifted left one bit position. The contents of bit 7 are
+	copied to the carry flag and a zero is put into bit 0.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11001011 : [ofs<sub>8</sub>] : 00100110</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>23</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="sra"></a>
+	<h2>SRA</h2><p>
+
+	<tt><b>SRA reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of <tt>reg<sub>8</sub></tt> are shifted right one bit position. The
+	contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are
+	unchanged.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11001011 : 00101[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>8 or 15 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>SRA (reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of the memory location pointed to by <tt>reg<sub>index</sub></tt> plus
+	<tt>ofs<sub>8</sub></tt> are shifted left one bit position. The contents of bit 7 are
+	copied to the carry flag and a zero is put into bit 0.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11001011 : [ofs<sub>8</sub>] : 00101110</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>23</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="srl"></a>
+	<h2>SRL</h2><p>
+
+	<tt><b>SRL reg<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of <tt>reg<sub>8</sub></tt> are shifted right one bit position. The
+	contents of bit 0 are copied to the carry flag and a zero is put into bit 7.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11001011 : 00111[reg<sub>8</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>A</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>B</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>D</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>E</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>H</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>L</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>(HL)</tt></th>
+		<td><tt>110</tt></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>8 or 15 (HL)</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>SRL (reg<sub>index</sub> + ofs<sub>8</sub>)</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The contents of the memory location pointed to by <tt>reg<sub>index</sub></tt> plus
+	<tt>ofs<sub>8</sub></tt> are shifted right one bit position. The contents of bit 0 are
+	copied to the carry flag and a zero is put into bit 7.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>[reg<sub>index</sub>] : 11001011 : [ofs<sub>8</sub>] : 00111110</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Register</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IX</tt></th>
+		<td><tt>11011101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>IY</tt></th>
+		<td><tt>11111101</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>Flags</th>
+	<td><tt>S Z</tt> are affected as defined<br><tt>H N</tt> are reset<br><tt>P/V</tt> is
+	parity<br>See instruction for <tt>C</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>23</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>

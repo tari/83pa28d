@@ -1,0 +1,5 @@
+charset is a silly little console C program (compiled with GCC, of course ;) that I threw together in about twenty minutes. Feed it text, it spews out a character set. The output is formatted in TASM ".db" directives.
+
+The source code for charset is included and is in the public domain (there is no warranty), so (a) you can do whatever you want with it (y'know, bugfixes and such), and (b) I can't be held responsible for any damage using it may cause.
+
+Type "charset" on the command line to get detailed information.

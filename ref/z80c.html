@@ -1,0 +1,477 @@
+<html>
+<head>
+<link rel="Stylesheet" href="../stuff/format.css">
+</head>
+
+<body>
+
+<a name="top"></a>
+	<h1>Z80 Instruction Set &mdash; Control</h1>
+	<hr>
+<a href="#call">CALL</a><br>
+<a href="#djnz">DJNZ</a><br>
+<a href="#jp">JP</a><br>
+<a href="#jr">JR</a><br>
+<a href="#nop">NOP</a><br>
+<a href="#ret">RET</a><br>
+<a href="#reti">RETI</a><br>
+<a href="#retn">RETN</a><br>
+<a href="#rst">RST</a><br>
+
+	<hr>
+
+<a name="call"></a>
+	<h2>CALL</h2><p>
+
+	<tt><b>CALL imm<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The current <tt>PC</tt> value plus three is pushed onto the stack, then is loaded
+	with <tt>imm<sub>16</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11001101 : imm<sub>LSB</sub> : imm<sub>MSB</sub></tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>17</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>CALL cc,imm<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>If condition <tt>cc</tt> is true, the current <tt>PC</tt> value plus three is pushed
+	onto the stack, then is loaded with <tt>imm<sub>16</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11[cc]100 : imm<sub>LSB</sub> : imm<sub>MSB</sub></tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Condition</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>NZ</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>Z</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>NC</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>PO</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>PE</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>P</tt></th>
+		<td><tt>110</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>M</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td>If <tt>cc</tt> is true: <tt>17</tt><br>If <tt>cc</tt> is false: <tt>10</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="djnz"></a>
+	<h2>DJNZ</h2><p>
+
+	<tt><b>DJNZ imm<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The <tt>B</tt> register is decremented, and if not zero, the signed value
+	<tt>imm<sub>8</sub></tt> is added to <tt>PC</tt>. The jump is measured from the address
+	of the instruction op code.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00010000 : [imm<sub>8</sub>]</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td>If <tt>B</tt> is not 0: <tt>13</tt><br>If <tt>B</tt> is 0: <tt>8</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="jp"></a>
+	<h2>JP</h2>
+
+	<tt><b>JP imm<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td><tt>imm<sub>16</sub></tt> is copied to <tt>PC</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11000011 : [imm<sub>LSB</sub>] : [imm<sub>MSB</sub>]</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>10</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>JP cc,imm<sub>16</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>If condition <tt>cc</tt> is true, <tt>imm<sub>16</sub></tt> is copied to <tt>PC</tt>.
+	</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11[cc]010 : [imm<sub>LSB</sub>] : [imm<sub>MSB</sub>]</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Condition</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>NZ</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>Z</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>NC</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>PO</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>PE</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>P</tt></th>
+		<td><tt>110</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>M</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>10</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="jr"></a>
+	<h2>JR</h2>
+
+	<tt><b>JR imm<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The signed value <tt>imm<sub>8</sub></tt> is added to <tt>PC</tt>. The jump is
+	measured from the address of the instruction op code.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00011000 : [imm<sub>8</sub>]</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>12</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>JR cc,imm<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>If condition <tt>cc</tt> is true, the signed value <tt>imm<sub>8</sub></tt> is added
+	to <tt>PC</tt>. The jump is measured from the address of the instruction op code.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>001[cc]000</tt>
+<table class=Flags>
+	<tr>
+		<th class=Heading>Condition</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>NZ</tt></th>
+		<td><tt>00</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>Z</tt></th>
+		<td><tt>01</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>NC</tt></th>
+		<td><tt>10</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>11</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td>If <tt>cc</tt> is true: <tt>12</tt><br>If <tt>cc</tt> is false: <tt>7</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="nop"></a>
+	<h2>NOP</h2><p>
+
+	<tt><b>NOP</b></tt><br>
+<table class=Normal widht=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>No operation is performed.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>00000000</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>4</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="ret"></a>
+	<h2>RET</h2><p>
+
+	<tt><b>RET</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The top stack entry is popped into <tt>PC</tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11001001</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>10</tt></td>
+</tr>
+</table><p>
+
+	<tt><b>RET cc</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>If condition <tt>cc</tt> is true, the top stack entry is popped into <tt>PC</tt>.
+	</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11[cc]000</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Condition</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>NZ</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>Z</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>NC</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>C</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>PO</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>PE</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>P</tt></th>
+		<td><tt>110</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>M</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td>If <tt>cc</tt> is true: <tt>11</tt><br>If <tt>cc</tt> is false: <tt>5</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="reti"></a>
+	<h2>RETI</h2><p>
+
+	<tt><b>RETI</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Used at the end of a maskable interrupt service routine. The top stack entry is
+	popped into <tt>PC</tt>, and signals an I/O device that the interrupt has finished,
+	allowing nested interrupts (not a consideration on the TI).</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 01001101</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>14</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="retn"></a>
+	<h2>RETN</h2><p>
+
+	<tt><b>RETN</b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>Used at the end of a non-maskable interrupt service routine (located at
+	<tt>$0066</tt>) to pop the top stack entry into <tt>PC</tt>. The value of <tt>IFF2</tt> is 
+	copied to <tt>IFF1</tt> so that maskable interrupts are allowed to continue as before.
+	NMIs are not enabled on the TI.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11101101 : 01000101</tt></td>
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>14</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+
+<a name="rst"></a>
+	<h2>RST</h2><p>
+
+	<tt><b>RST imm<sub>8</sub></b></tt><br>
+<table class=Normal width=100%>
+<tr>
+	<th class=SubHeading width=15%>Operation</th>
+	<td>The current <tt>PC</tt> value plus three is pushed onto the stack. The MSB is loaded
+	with <tt>$00</tt> and the LSB is loaded with <tt>imm<sub>8</sub></tt>.</td>
+</tr>
+<tr>
+	<th class=SubHeading>Op Code</th>
+	<td><tt>11[imm<sub>8</sub>]111</tt>
+	<table class=Flags>
+	<tr>
+		<th class=Heading>Address</th>
+		<th class=Heading>Bit Field</th></td>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>00h</tt></th>
+		<td><tt>000</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>08h</tt></th>
+		<td><tt>001</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>10h</tt></th>
+		<td><tt>010</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>18h</tt></th>
+		<td><tt>011</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>20h</tt></th>
+		<td><tt>100</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>28h</tt></th>
+		<td><tt>101</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>30h</tt></th>
+		<td><tt>110</tt>
+	</tr>
+	<tr>
+		<td class=SubHeading><tt>38h</tt></th>
+		<td><tt>111</tt>
+	</tr>
+	</table></td>	
+</tr>
+<tr>
+	<th class=SubHeading>T States</th>
+	<td><tt>11</tt></td>
+</tr>
+</table><p>
+
+	<div align=center><a href="#top">Top</a></div>
+	<hr>
+<address>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br>
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+See the file gfdl.html for copying conditions
+</address>
+<hr>
