@@ -29,7 +29,89 @@
     
 <a name="req"></a>
     <h2>Requirements for Learning</h2>
+    <p>
     To learn assembly programming for the TI-83 Plus, you will require a few things.
+    This lesson will guide you through setting up all the required tools and
+    creating your first program.
+    </p>
+
+    <p>It is also highly recommended that you be fairly competent in any
+    programming language. And when I say "any programming language", I mean, of
+    course, C.  If z80 is your first venture into programming, many portions of
+    this tutorial will be confusing.  I will use C as a kind of "pseudocode"
+    from time to time, so if you know any kind of high-level language (with the
+    definite exception of TI-BASIC) you should do okay.</p>
+
+    <h2>Software</h2>
+    In order to begin creating your own programs, you'll need a few tools on
+    your computer.
+
+    <h3>Assembler</h3>
+    <p>
+    The most important piece of software for building assembly programs is
+    the assembler, which translates your code into a format that can be
+    executed by the machine.
+    <a href="http://www.ticalc.org/archives/files/fileinfo/15/1504.html">TASM</a>
+    was the traditional choice, but it no longer works on modern operating
+    systems, since it is a DOS program.  TASM also requires a separate
+    program to 'link' the assembler's output- package it into a file that
+    can be sent to a calculator (that is, a .8xp file).
+    </p>
+    <p>
+    In this tutorial, we will use
+    <a href="http://www.benryves.com/bin/brass3/">Brass</a>, which is a more
+    modern assembler capable of running on all major operating systems.  In
+    addition, Brass can perform the linking step on its own, so we don't need
+    any more programs.  The next section will guide you through setting up
+    Brass on your operating system- simply select from the list below.
+    </p>
+    <p style="color:red">ED NOTE: OS autodetection from user agent expected here,
+    with fallback to this list.</p>
+    <span style="display:none">Your current OS has been automatically detected as 
+        <span id="detectedOS">UNKNOWN</span>.
+        If this is incorrect or you want to set things up on a different system,
+        select the desired operating system from the list below.
+    </span>
+    <ul>
+        <li><a href="#windows">Windows</a></li>
+        <li><a href="#linux">Linux</a></li>
+        <li><a href="#osx">Mac OS X</a></li>
+    </ul>
+
+    <h4 id="windows">Windows</h4>
+    <h4 id="linux">Linux</h4>
+    <h4 id="osx">Mac OS X</h4>
+
+    <h3>Editor</h3>
+    <p>For writing source code, you will need a text editor.  The source code is
+    just plain text, so nearly any program will do.  Some common choices are
+    given in the table below, with the supported operating systems for each.</p>
+
+    <p style="color:red">ED NOTE: better styling of table TODO</p>
+    <table>
+        <tr><td>Name</td><td>Windows</td><td>Linux</td><td>Mac</td><td>Comments</td></tr>
+        <tr>
+            <td>Notepad</td>
+            <td>X</td><td /><td />
+            <td>Included with every installation of Windows, but not many features.</td>
+        </tr>
+        <tr>
+            <td>Notepad++</td>
+            <td>X</td><td /><td />
+            <td>Lots of features, and easy to use.  Recommended for inexperienced
+                programmers.</td>
+        </tr>
+        <tr>
+            <td>Vim</td>
+            <td>X</td><td>X</td><td>X</td>
+            <td>The hacker's editor.  Extremely powerful, but has a very steep
+                learning curve.</td>
+        </tr>
+    </table>
+    <p style="color: red">ED NOTE: Editor recommendations welcome.</p>
+
+
+    <h3>Emulator</h3>
 
 <table class=Info>
 <tr>
@@ -48,7 +130,6 @@
 </tr>
 </table>
 
-It is also highly recommended that you be fairly competent in any programming language. And when I say "any programming language", I mean, of course, C.  If z80 is your first venture into programming, I guarantee you, reading this guide will give you a brain aneurysm. Well, maybe that's a bit harsh, but I will use C as a kind of "pseudocode" from time to time, so if you know any kind of high-level language (with the definite exception of TI-BASIC) you should do okay.<p>
 
 <a name="dev"></a>
     <h2>Development of a Z80 Program</h2>
