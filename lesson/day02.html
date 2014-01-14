@@ -27,23 +27,22 @@
 Every Z80 program consists of several parts combined in a certain way. Today, we will take a look at these sections, using the program from yesterday as an example. For the sake of clarity, I have colorized common parts.<p>
 
 <div class=Program>
-<pre><span class=dir>.NOLIST
-#INCLUDE</span> "ti83plus.inc"
-<span class=dir>#DEFINE</span>  <span class=mem>ProgStart</span>    $9D95
-<span class=dir>.LIST</span>
-<span class=dir>.ORG</span>    <span class=mem>ProgStart</span> - 2
-<span class=dir>.DB</span>     <span class=mem>t2ByteTok</span>, <span class=mem>tAsmCmp</span>
-    b_call(_ClrLCDFull)
-    <span class=ins>LD</span>     <span class=reg>HL</span>, 0
-    <span class=ins>LD</span>     <span class=mem>(PenCol)</span>, <span class=reg>HL</span>
-    <span class=ins>LD</span>     <span class=reg>HL</span>, <span class=mem>msg</span>
+<pre><span class=dir>.nolist
+#include</span> "ti83plus.inc"
+<span class=dir>#define</span>  <span class=mem>ProgStart</span>    $9D95
+<span class=dir>.list</span>
+<span class=dir>.org</span>    <span class=mem>ProgStart</span> - 2
+<span class=dir>.db</span>     <span class=mem>t2ByteTok</span>, <span class=mem>tAsmCmp</span>
+    b_call(_homeup)
+    <span class=ins>ld</span>     <span class=reg>hl</span>, 0
+    <span class=ins>ld</span>     <span class=mem>(CurCol)</span>, <span class=reg>hl</span>        <span class=cmt>; Shortcut to setting CurCol and CurRow to 0</span>
+    <span class=ins>ld</span>     <span class=reg>hl</span>, <span class=mem>msg</span>
     b_call(_PutS)        <span class=cmt>; Display the text</span>
     b_call(_NewLine)
-    <span class=ins>RET</span>
+    <span class=ins>ret</span>
 <span class=mem>msg:</span>
-    <span class=dir>.DB</span> "Hello world!", 0
-<span class=dir>.END
-.END</span>
+    <span class=dir>.db</span> "Hello world!", 0
+<span class=dir>.end</span>
 </pre>
 </div>
 
@@ -154,8 +153,9 @@ The stuff in blue is required for every program. To save space, all example prog
 </div>
     <hr>
 <address>
-This is part of Learn TI-83 Plus Assembly In 28 Days<br>
-Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br>
+This is part of Learn TI-83 Plus Assembly In 28 Days<br />
+Copyright (c) 2002, 2003, 2004 Sean McLaughlin<br />
+Modifications copyright (c) 2012-2014 Christopher Mitchell, Peter Marheine, et alia<br />
 See the file gfdl.html for copying conditions
 </address>
 <hr>
