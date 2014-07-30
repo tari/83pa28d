@@ -18,12 +18,7 @@
     <b><font color=#006600>novice</font> <font color=#CCCCCC>intermediate advanced expert</font></b><hr>
 
 <ul class=TopicList>
-<li type="disc"><a href="#req">Requirements for Learning</a>
-<li type="disc"><a href="#dev">Development</a>
-<li type="disc"><a href="#asm">Assembling</a>
-<li type="disc"><a href="#pgm">Sample Program</a>
-<li type="square"><a href="#dos">DOS</a>
-<li type="disc"><a href="#lnk">Sending</a>
+    TOC here.
 </ul>
     <hr>
     
@@ -59,7 +54,7 @@
     </p>
     <p>
     In this tutorial, we will use
-    <a href="http://www.benryves.com/bin/brass3/">Brass</a>, which is a more
+    <a href="http://www.benryves.com/bin/brass/">Brass</a>, which is a more
     modern assembler capable of running on all major operating systems.  In
     addition, Brass can perform the linking step on its own, so we don't need
     any more programs.  The next section will guide you through setting up
@@ -112,6 +107,17 @@
 
 
     <h3>Emulator</h3>
+    <p>Once you've written a program, you need a way to run it.  Simply transferring
+    it to your calculator and running it there is one option (which we'll discuss later),
+    but it becomes very hard to debug programs running on a calculator (and there
+    will be bugs in your programs).  For that reason, we'll use an emulator, which is a
+    program that runs on your computer and acts like a calculator would.</p>
+
+    <p>Our emulator of choice here is <a href="https://wabbit.codeplex.com/">WabbitEmu</a>,
+    as it is the best emulator that is still actively developed.</p>
+
+    <span class="todo">Wabbit setup instructions here.</span>
+    <span class="todo">ROM dumping instructions here.</span>
 
 <table class=Info>
 <tr>
@@ -132,8 +138,51 @@
 
 
 <a name="dev"></a>
-    <h2>Development of a Z80 Program</h2>
-The first step is to create the source code in a text editor. Use Notepad for this, because it saves its files in ASCII text format. As your programs get more involved, it might be a good idea to switch to a specialized <a style="cursor: help" onClick="alert('Integrated Developer Environment: provides all the tools necessary to assemble a program with special treats like syntax coloring'); return false">IDE</a> (Crimson Editor is a good one). When you save your source file, give it a name descriptive of its function, and add a .z80 extension.<p>
+    <h2>Creating your first program</h2>
+    <p>Now that you've set up all the tools for building and testing programs,
+    it's time to actually create one.  Create a new file with your text editor,
+    and paste the following code into it.</p>
+
+<div class=Program>
+<pre>.nolist
+#include "ti83plus.inc"
+#define ProgStart $9D95
+.list
+.org ProgStart - 2
+.db t2ByteTok, tAsmCmp
+
+    b_call(_ClrLCDFull)
+    ld a, 0
+    ld (CurRow), a
+    ld (CurCol), a
+    ld hl, msg
+    b_call(_PutS)            ; Display the text
+    b_call(_NewLine)
+    ret
+
+msg:
+    .db "Hello world!", 0
+.end</pre>
+</div>
+<span class="todo">Discuss the potential optimizations: <code>xor a</code>,
+    or <code>ld (CurRow), hl</code> after zeroing HL.</span>
+
+<p>Save this file as hello.asm.  This should be easy if you're using a competent
+editor, but some programs (notably Notepad) make it annoyingly difficult.
+<span class="todo">Need more information on this for Windows users.</span>
+</p>
+
+<span class="todo">Hand-hold through invoking the assembler and running in the emulator.</span>
+<br />
+
+The first step is to create the source code in a text editor. Use Notepad for
+this, because it saves its files in ASCII text format. As your programs get
+more involved, it might be a good idea to switch to a specialized <a
+    style="cursor: help" onClick="alert('Integrated Developer Environment:
+    provides all the tools necessary to assemble a program with special treats
+    like syntax coloring'); return false">IDE</a> (Crimson Editor is a good
+one). When you save your source file, give it a name descriptive of its
+function, and add a .z80 extension.<p>
 
 There is a minor irritant we have to fix first, though: when you save your source file, Notepad will name it <tt>source.z80.txt</tt> because it's stupid enough to think it knows better than you. This is definitely not what you want. To fix this, follow these steps (Windows 98).
 <ol>
@@ -199,26 +248,6 @@ And save as <tt>asm.bat</tt>. What you just made is called a batch file and is s
     <h2>Sample Z80 Program</h2>
 Now to make sure that everything has been set up satisfactorialy, we are going to write, assemble, link, and send a little do-nothing program.  Enter the following source code and don't bother trying to understand it... yet.
 
-<div class=Program>
-<pre>.nolist
-#include "ti83plus.inc"
-#define    ProgStart    $9D95
-.list
-.org    ProgStart - 2
-    .db    t2ByteTok, tAsmCmp
-    b_call(_ClrLCDFull)
-    ld    hl, 0
-    ld    (PenCol), hl
-    ld    hl, msg
-    b_call(_PutS)            ; Display the text
-    b_call(_NewLine)
-    ret
-
-msg:
-    .db "Hello world!", 0
-.end
-.end</pre>
-</div>
 
 And save as <tt>hello.z80</tt> in the <tt>source</tt> directory<br>
 to compile, open up DOS (try Start menu, Run, then whichever of <tt>command.com</tt> or <tt>cmd.exe</tt> works) and go to the TASM directory. Type <tt>asm hello</tt> and press Enter.<p>
