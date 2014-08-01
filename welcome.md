@@ -1,6 +1,8 @@
-# Welcome
-
-* * *
+---
+title: Learn TI-83+ Assembly in 28 Days
+subtitle: Welcome
+next-lesson: lesson/day01
+---
 
 Welcome, one and all, to Learn TI-83 Plus Assembly In 28 Days -- the
 _ultimate_ (read: "only") guide for learning how to program the TI-83 Plus
@@ -67,12 +69,4 @@ thought it would be more flavorful than just going "Lesson 6...Lesson
 Think you're ready? Then go to the [Table of Contents](lesson/toc.html), or
 just go straight to [Day 1](lesson/day01.html). You might also want to check
 out the [Formatting used in this guide](ref/format.html).
-
-* * *
-
-This is part of Learn TI-83 Plus Assembly In 28 Days  
-Copyright (c) 2002, 2003, 2004 Sean McLaughlin  
-See the file `gfdl.html` for copying conditions
-
-* * *
 

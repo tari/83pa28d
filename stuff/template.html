@@ -26,11 +26,13 @@ $endif$
 $for(header-includes)$
   $header-includes$
 $endfor$
+    $if(difficulty)$
     <style type="text/css">
         #lesson-difficulty > :nth-child($difficulty$) {
             font-weight: bold;
         }
     </style>
+    $endif$
 </head>
 <body>
 
@@ -52,6 +54,7 @@ $if(title)$
     $endif$
     &middot;
 
+    $if(difficulty)$
     <div id="lesson-difficulty">
         Difficulty:
         <span>novice</span> &middot;
@@ -59,6 +62,7 @@ $if(title)$
         <span>advanced</span> &middot;
         <span>expert</span>
     </div>
+    $endif$
 </header>
 $endif$
 
