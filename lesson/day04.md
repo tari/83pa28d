@@ -2,6 +2,8 @@
 title: Day 4
 subtitle: Flags
 difficulty: 1
+prev-lesson: day03
+next-lesson: day05
 ---
 
 We briefly touched on the F register yesterday. Today we'll take a more
