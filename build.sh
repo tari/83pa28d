@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PANDOC_OPTS="-t html5 --template=stuff/template.html --toc -c stuff/style.css" # -H stuff/nav.js
+
 case "$1" in
     "" | build)
         find -name '*.md' | (
@@ -8,7 +10,7 @@ case "$1" in
                 echo -n $MD
                 HTML=${MD%.md}.html
                 echo " => $HTML"
-                markdown_py -o html5 -x fenced_code -x footnotes -x toc -f $HTML $MD
+                pandoc $PANDOC_OPTS -o $HTML $MD
             done
         )
         ;;
