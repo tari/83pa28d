@@ -1,6 +1,7 @@
 #!/bin/bash
 
-PANDOC_OPTS="-t html5 --template=stuff/template.html --toc -c stuff/style.css" # -H stuff/nav.js
+MARKDOWN="markdown+definition_lists"
+PANDOC_OPTS="-f $MARKDOWN -t html5 --template=stuff/template.html --toc -c stuff/style.css" # -H stuff/nav.js
 
 case "$1" in
     "" | build)
