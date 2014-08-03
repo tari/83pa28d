@@ -205,16 +205,11 @@ That's one byte saved! Not much to get excited about, but imagine how
 much wasted space your computer would have if it didn't compress file
 info.
 
-  --------------------------------------------------------------------------
-  Element
-  Range of Values
-  Minimum Bits required
-  ------------------------ ------------------------ ------------------------
-  Month                    Day                      Year
-  0 to 11 (January to      0 to 30 (zero indexed    0 to 127 (as an offset
-  December)                for convenience)         from 1900)
-  4 (`24 = 16`)            5 (`25 = 32`)            7 (`27 = 128`)
-  --------------------------------------------------------------------------
+| Element              |    Range of Values                          |  Minimum Bits required |
+|----------------------|---------------------------------------------| -----------------------|
+|  Month               | 0 to 11 (January to December)               |  4 (`24 = 16`)         |
+|  Day                 | 0 to 30 (zero indexed  for convenience)     |  5 (`25 = 32`)         |
+|  Year                | 0 to 127 (as an offset from 1900 from 1900) |  7 (`27 = 128`)        |
 
 To compress from three bytes to two.
 

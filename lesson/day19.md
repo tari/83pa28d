@@ -3,7 +3,7 @@ title: Day 19
 subtitle: User Variables
 prev-lesson: day18
 next-lesson: day20
-difficulty: 2
+difficulty: 3
 ---
 
 User variables are all those variables that you can create and delete.
