@@ -3,7 +3,7 @@ title: Day 25
 subtitle: Sprites
 difficulty: 4
 prev-lesson: day24
-next-lesson: day25
+next-lesson: day26
 ---
 
 Well, I can't tell you how they got the exotic name "sprite", but I can
