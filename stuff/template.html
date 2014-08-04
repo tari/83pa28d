@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html$if(lang)$ lang="$lang$"$endif$>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+$if(date-meta)$
+  <meta name="dcterms.date" content="$date-meta$">
+$endif$
+  <title>$title$: $subtitle$</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+$if(highlighting-css)$
+  <style type="text/css">
+$highlighting-css$
+  </style>
+$endif$
+$for(css)$
+  <link rel="stylesheet" href="$css$">
+$endfor$
+$if(math)$
+  $math$
+$endif$
+$for(header-includes)$
+  $header-includes$
+$endfor$
+    $if(difficulty)$
+    <style type="text/css">
+        #lesson-difficulty > :nth-child($difficulty$) {
+            font-weight: bold;
+        }
+    </style>
+    $endif$
+</head>
+<body>
+
+$for(include-before)$
+$include-before$
+$endfor$
+
+$if(title)$
+<header>
+    <h1 class="title">$title$</h1>
+    <h1 class="subtitle">$subtitle$</h1>
+
+    &middot; <a href="toc.html">Lesson Index</a>
+    $if(prev-lesson)$
+        &middot; <a href="$prev-lesson$.html">Previous</a>
+    $endif$
+    $if(next-lesson)$
+        &middot; <a href="$next-lesson$.html">Next</a>
+    $endif$
+    &middot;
+
+    $if(difficulty)$
+    <div id="lesson-difficulty">
+        Difficulty:
+        <span>novice</span> &middot;
+        <span>intermediate</span> &middot;
+        <span>advanced</span> &middot;
+        <span>expert</span>
+    </div>
+    $endif$
+</header>
+$endif$
+
+$if(toc)$
+<nav id="$idprefix$TOC">
+$toc$
+</nav>
+$endif$
+$body$
+$for(include-after)$
+$include-after$
+$endfor$
+
+&middot; <a href="toc.html">Lesson Index</a>
+$if(prev-lesson)$
+    &middot; <a href="$prev-lesson$.html">Previous</a>
+$endif$
+$if(next-lesson)$
+    &middot; <a href="$next-lesson$.html">Next</a>
+$endif$
+&middot;
+
+</body>
+</html>
