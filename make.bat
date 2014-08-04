@@ -9,13 +9,13 @@ if "%1"=="clean" goto :clean
 goto :eof
 
 :build
-for /R %%f in (*.md) do call :build_file %%~dpf%%~nf
+for /R %%f in (*.md) do call :build_file "%%~dpf%%~nf"
 goto :eof
 
 :build_file
-    set FILE=%1
+    set FILE=%~1
     echo %FILE%.md =^> %FILE%.html
-    pandoc %PANDOC_OPTS% -o %FILE%.html %FILE%.md
+    pandoc %PANDOC_OPTS% -o "%FILE%.html" "%FILE%.md"
     goto :eof
 
 :clean
