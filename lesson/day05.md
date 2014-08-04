@@ -375,7 +375,8 @@ Element Size: One Byte
 
 Table: Base Address: $8000<br />Element Size: One Byte
 
-...access the 5^th^ element and store it into C:
+...given a (different) array with 3-byte elements, access the 5^th^ element and
+store it into C:
 
     array_base      .EQU    $8000
     element_size    .EQU    3

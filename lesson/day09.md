@@ -216,7 +216,7 @@ To compress from three bytes to two.
         LD     A, (temp_year)  ; Temporary uncompressed year
         LD     B, 7
     PackYear:
-        RLA                   ; Put bit 0 into carry
+        RRA                   ; Put bit 0 into carry
         RR     H              ; Transfer to H
         DJNZ   PackYear
     ; HL = %yyyyyyy? ????????
