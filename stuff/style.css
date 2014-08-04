@@ -1,0 +1,98 @@
+.title {
+    font-size: 100%;
+}
+.subtitle {
+    font-size: 150%;
+}
+
+hr {
+    color: #CCC;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    max-height: 100%;
+    overflow-y: auto;
+    width: 280px;
+}
+header hr {
+    width: 80%;
+}
+header ~ * {
+    margin-left: 280px;
+}
+
+#lesson-difficulty {
+    font-size: 50%;
+    text-align: center;
+}
+
+#TOC ul {
+    list-style: decimal-leading-zero;
+}
+#TOC ul ul {
+    list-style: lower-alpha;
+    padding-left: .5em;
+}
+
+#lesson-nav {
+    text-align: center;
+}
+
+footer {
+    text-align: center;
+    border-top: 1px solid #CCC;
+}
+
+pre, code {
+    font-family: monospace;
+    background-color: #F5F5F5;
+    border: 1px solid #CCC;
+    border-radius: 3px;
+    padding: 1px 3px;
+}
+
+/* Multiline code blocks */
+pre > code {
+    border-style: none;
+}
+
+kbd {
+    color: white;
+    background-color: black;
+    padding: .2em;
+    border-radius: .5em;
+}
+
+dt {
+    float: left;
+    clear: none;
+    text-align: right;
+    font-weight: bold;
+    margin-right: .5em;
+}
+dt:after {
+    content: ":";
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+tbody {
+    border-top: 1px solid #CCC;
+    border-bottom: 1px solid #CCC;
+}
+tbody th, tbody td {
+    border: 1px solid #CCC;
+}
+tbody th:first-child, tbody td:first-child {
+    border-left: none;
+}
+tbody th:last-child, tbody td:last-child {
+    border-right: none;
+}
+tr:nth-child(even) {
+    background-color: #E8E8F0;
+}

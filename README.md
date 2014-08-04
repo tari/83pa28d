@@ -4,7 +4,7 @@ To view the contents of this guide, simply begin by opening `welcome.html`
 in your favorite web browser.
 
 The latest version of this guide can always be found at
-https://bitbucket.org/tari/83pa28d/
+<https://bitbucket.org/tari/83pa28d/>
 
 ## Compilation
 
@@ -36,7 +36,7 @@ The included `TI83PLUS.INC` is copyright (C) 1999 Texas Instruments.
 
 All other portions of this text are licensed as follows.
 
-Copyright (c) 2012-2014 The 83PA28D Project Contributors
+Copyright (c) 2012-2014 The 83PA28D Project Contributors\
 Copyright (c) 2002, 2003, 2004 Sean McLaughlin.
 
 Permission is granted to copy, distribute and/or modify this document
@@ -54,3 +54,10 @@ hypertext markup language, write to
       59 Temple Place - Suite 330
       Boston, MA 02111-1307
       USA
+
+---
+title: README
+subtitle: 83PA28D
+stylesheet: stuff/style.css
+tocpath: lesson/toc.html
+---
