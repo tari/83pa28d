@@ -19,12 +19,12 @@ goto :eof
     goto :eof
 
 :clean
-for /R %%f in (*.html) do call :clean_file %%~dpf%%~nf
+for /R %%f in (*.html) do call :clean_file "%%~dpf%%~nf"
 goto :eof
 
 :clean_file
-    set MD=%1.md
-    set HTML=%1.html
+    set MD=%~1.md
+    set HTML=%~1.html
     if EXIST %MD% (
         del %HTML%
     ) else (
