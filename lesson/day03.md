@@ -9,7 +9,7 @@ subtitle: Number Systems, Registers, Memory, and Variables
 It's high time we jumped in and actually started off on this assembly kick.
 Now, we are going to cover a lot of vital stuff concerning number theory, how
 it relates to computers, and yes, even some assembly. These are the absolute
-basics, and you _need_ to understand them or the rest of the guide is garbage.
+basics, and you need to understand them or the rest of the guide is garbage.
 The unfortunate part is that the length and the novel concepts combine to make
 this chapter a major hurdle, but don't get too discouraged! Just stick with it
 and it will start to click eventually.
@@ -36,7 +36,7 @@ You can, therefore, break down a decimal number, such as 276310, like this
 
     
     
-    276310  = (2 x 103) + (7 x 102) + (6 x 101) + (3 x 100)
+    2763  = (2 x 103) + (7 x 102) + (6 x 101) + (3 x 100)
             = (2 x 1000) + (7 x 100) + (6 x 10) + (3 x 1)
             = 2000 + 700 + 60 + 3
             = 276310
@@ -51,12 +51,12 @@ digit represents a power of 2:
 
     
     
-    101101012  = (1 x 27) + (0 x 26) + (1 x 25) + (1 x 24) + (0 x 23) + (1 x 22) + (0 x 21) + (1 x 20)
+    10110101b  = (1 x 27) + (0 x 26) + (1 x 25) + (1 x 24) + (0 x 23) + (1 x 22) + (0 x 21) + (1 x 20)
                = (1 x 128) + (0 x 64) + (1 x 32) + (1 x 16) + (0 x 8) + (1 x 4) + (0 x 2) + (1 x 1)
                = 128 + 32 + 16 + 4 + 1
                = 18110
 
-A single binary digit is familiarly called a _bit_. Eight bits are called a
+A single binary digit is familiarly called a bit. Eight bits are called a
 byte. Other combinations you could hear about:
 
 Name     | Size
@@ -85,7 +85,7 @@ the letters A to F that correspont to the decimal values 10 to 15.
 
     
     
-    1A2F16  = (1 x 163) + (10 x 162) + (2 x 161) + (15 x 160)
+    1A2Fh  = (1 x 163) + (10 x 162) + (2 x 161) + (15 x 160)
             = (1 x 4096) + (10 x 256) + (2 x 16) + (15 x 1)
             = 4096 + 2560 + 32 + 15
             = 670310
@@ -142,7 +142,7 @@ The special uses of the registers:
 
 8-bit Registers:     A is also called the "**a**ccumulator". It is the primary
 register for arithmetic operations and accessing memory. Indeed, it's the
-_only_ register you can use.     B is commonly used as an 8-bit counter.     C
+only register you can use.     B is commonly used as an 8-bit counter.     C
 is used when you want to interface with hardware ports.  
 F is known as the **f**lags. The bits of this register signify (that is to say
 they "flag") whether certain events have occured. For example, one of the
@@ -163,56 +163,31 @@ necessary (usually when HL is tied up). IX can do something special that no
 other register can though, we'll look at that in due time.  To store to a
 register, you use the LD instruction.
 
-`**LD** _destination_, _source_`
+`LD destination, source`
+:    Stores the value of `source` into `destination`.
 
-Stores the value of `_source_` into `_destination_`.
-
-**Valid arguments for LD**  
+###Valid arguments for LD  
 There are many more, but they involve registers you haven't heard of yet.  
 Note: `**imm8**`: 8-bit immediate value. `**imm16**`: 16-bit immediate value.
 
-Destination
-
-S  
-o  
-u  
-r  
-c  
-e
-
-`A` `B` `C` `D` `E` `H` `L` `BC` `DE` `HL` `(BC)` `(DE)` `(HL)` `(imm16)`
-
-`A`
-
-`B`
-
-`C`
-
-`D`
-
-`E`
-
-`H`
-
-`L`
-
-`BC`
-
-`DE`
-
-`HL`
-
-`(BC)`
-
-`(DE)`
-
-`(HL)`
-
-`(imm16)`
-
-`imm8`
-
-`imm16`
+| Source\\Destination | `A` | `B` | `C` | `D` | `E` | `H` | `L` | `BC` | `DE` | `HL` | `(BC)` | `(DE)` | `(HL)` | `(imm16)` |
+|--------------------|-----|-----|-----|-----|-----|-----|-----|------|------|------|--------|--------|--------|-----------|
+| `A`                | X   | X   | X   |  X  |  X  |  X  |  X  |      |      |      |   X    |   X    |   X    |   X       |
+| `B`                | X   | X   | X   |  X  |  X  |  X  |  X  |      |      |      |        |        |   X    |           |
+| `C`                | X   | X   | X   |  X  |  X  |  X  |  X  |      |      |      |        |        |   X    |           |
+| `D`                | X   | X   | X   |  X  |  X  |  X  |  X  |      |      |      |        |        |   X    |           |
+| `E`                | X   | X   | X   |  X  |  X  |  X  |  X  |      |      |      |        |        |   X    |           |
+| `H`                | X   | X   | X   |  X  |  X  |  X  |  X  |      |      |      |        |        |   X    |           |
+| `L`                | X   | X   | X   |  X  |  X  |  X  |  X  |      |      |      |        |        |   X    |           |
+| `BC`               |     |     |     |     |     |     |     |      |      |      |        |        |        |   X       |
+| `DE`               |     |     |     |     |     |     |     |      |      |      |        |        |        |   X       |
+| `HL`               |     |     |     |     |     |     |     |      |      |      |        |        |        |   X       |
+| `(BC)`             | X   |     |     |     |     |     |     |      |      |      |        |        |        |           |
+| `(DE)`             | X   |     |     |     |     |     |     |      |      |      |        |        |        |           |
+| `(HL)`             | X   | X   | X   | X   | X   | X   | X   |      |      |      |        |        |        |           |
+| `(imm16)`          | X   |     |     |     |     |     |     | X    | X    | X    |        |        |        |           |
+| `imm8`             | X   | X   | X   | X   | X   | X   | X   |      |      |      |        |        |   X    |           |
+| `imm16`            |     |     |     |     |     |     |     | X    | X    | X    |        |        |        |           |
 
 You obviously have no clue what difference parentheses make for an operand.
 You'll see shortly.
@@ -220,16 +195,13 @@ You'll see shortly.
 Examples:
 
 `LD A, 25`
-
-Stores 25 into register A
+:    Stores 25 into register A
 
 `LD D, B`
-
-Stores the value of register B into register D.
+:    Stores the value of register B into register D.
 
 `LD ($8325), A`
-
-Stores the value of register A into address `$8325` (explained later on).
+:    Stores the value of register A into address `$8325` (explained later on).
 
 Some points that should be made clear:
 
@@ -253,16 +225,15 @@ value that will be stored. There is a reason for this phenomenon that will be
 made clear shortly.
 
 An instruction similar to LD but functionally different, is EX. Despite the
-fact that it is very particular about its operands, it is a _very_ useful
+fact that it is very particular about its operands, it is a very useful
 instruction. (90% of the time the registers you want to exchange are HL and
 DE).
 
-`**EX** DE, HL`
-
-Swaps the value of DE with the value of HL.
+`EX DE, HL`
+:    Swaps the value of DE with the value of HL.
 
 Registers F and AF cannot be used as operands for the LD instruction.
-Actually, these registers can not be operands for _any_ instruction barring a
+Actually, these registers can not be operands for any instruction barring a
 few.
 
 ## Negative Numbers
@@ -308,9 +279,8 @@ never be negated.
 
 There is an instruction to automate two's complement:
 
-`**NEG**`
-
-Calculates the two's complement of the accumulator.
+`NEG`
+:    Calculates the two's complement of the accumulator.
 
 I'm sure you find the theory wonderfully engrossing, but what you're probably
 interested in is how the CPU handles the difference between unsigned and
@@ -318,14 +288,12 @@ signed numbers. The answer is, it doesn't. You see, the beauty of two's
 complement is that if we add or subtract two numbers, the result will be valid
 for both signed and unsigned values:
 
-    
-    
-    
-                         unsigned        signed
-            %00110010           5             5
-          _+ %11001110_       _+ 206_          _+ -5_
-          %1 00000000         256             0   (Disqualify ninth bit)
-    
+|             | unsigned | signed |
+|-------------|----------|--------|
+| \%00110010   |  5       | 5      |
+| <u>+ \%11001110</u> | <u> + 206 </u>  |  <u> + -5 </u>|
+| \%1 00000000 |   256    |  0   (Disqualify ninth bit) |
+
 
 This phenomenon was not lost on the makers of the Z80. You could use the same
 hardware for adding signed numbers as unsigned numbers only with two's
@@ -386,7 +354,7 @@ An integer constant is a symbol that represents an integer value. As the Z80
 only works with bytes and words, it would be pointless to have integers other
 than 8-bit or 16-bit. All integers must begin with a decimal digit, Therefore,
 hex integers that start with a letter must be preceeded by a zero if using
-_-h_ format.
+-h format.
 
 ### Character
 
@@ -435,8 +403,8 @@ manifest constant. Either of two directives may be used:
     
     
     
-        _symbol_   =     _literal_
-        _symbol_   .EQU  _literal_
+        symbol   =     literal
+        symbol   .EQU  literal
     
 
 After defining any equate, the symbol may be used anywhere its literal would
@@ -467,10 +435,10 @@ with the .MODULE directive:
     
     
     .MODULE   module_1
-       _Code here_     ; This code is in module module_1
+       Code here     ; This code is in module module_1
     
     .MODULE   module_2
-       _Code here_     ; This code is in module module_2
+       Code here     ; This code is in module module_2
                     ; (ain't I just the king of originality? :-)
     
 
@@ -496,7 +464,7 @@ A macro is a symbol that is assigned a text constant. Macros are defined as
 
     
     
-        #define   _symbol_   _literal_
+        #define   symbol   literal
 
 Macros can be used as replacements for equates, and even to insert equates.
 But what make macros particularly interesting is that they can be
@@ -548,11 +516,11 @@ variable. Immediately after the label, allocate memory for the variable using
     
     
     
-       .DB     _value_list_
-       .DW     _value_list_
+       .DB     value_list
+       .DW     value_list
     
 
-The `_value_list_` is a series of one or optionally more values, each
+The `value_list` is a series of one or optionally more values, each
 separated by a comma. The only difference between the two directives is that
 .DB formats each value as a byte, but .DW formats each value as a word. .DB
 can be used to replace .DW except for when one of the values is a 16-bit
@@ -650,27 +618,7 @@ See the table from before to see all the legal methods.
 But that's not all! You can use IX for indirection too, but there is a
 pleasant twist. You can add a constant value (called an offset or
 displacement) in the range -128 to +127 to the register's value:
-
-    
-    
-    
+  
         LD     IX, $8000
         LD     (IX + $26), 196      ; Store 196 to address $8026
     
-
-* * *
-
-[PREVIOUS - Day 2: The Components of a Z80 Program](day02.html)
-
-[NEXT - Day 4: Flags](day04.html)
-
-[Table Of Contents](toc.html)
-
-* * *
-
-This is part of Learn TI-83 Plus Assembly In 28 Days  
-Copyright (c) 2002, 2003, 2004 Sean McLaughlin  
-See the file gfdl.html for copying conditions
-
-* * *
-

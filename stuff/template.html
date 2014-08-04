@@ -17,9 +17,11 @@ $if(highlighting-css)$
 $highlighting-css$
   </style>
 $endif$
-$for(css)$
-  <link rel="stylesheet" href="$css$">
-$endfor$
+  <link rel="stylesheet" $if(stylesheet)$
+    href="$stylesheet$"
+  $else$
+    href="../stuff/style.css"
+  $endif$ >
 $if(math)$
   $math$
 $endif$
@@ -30,6 +32,7 @@ $endfor$
     <style type="text/css">
         #lesson-difficulty > :nth-child($difficulty$) {
             font-weight: bold;
+            font-size: 200%;
         }
     </style>
     $endif$
@@ -40,12 +43,51 @@ $for(include-before)$
 $include-before$
 $endfor$
 
-$if(title)$
 <header>
     <h1 class="title">$title$</h1>
     <h1 class="subtitle">$subtitle$</h1>
 
-    &middot; <a href="toc.html">Lesson Index</a>
+    $if(difficulty)$
+    Difficulty:
+    <div id="lesson-difficulty">
+        <span>novice</span> &middot;
+        <span>intermediate</span> &middot;
+        <span>advanced</span> &middot;
+        <span>expert</span>
+    </div>
+    $endif$
+    <hr />
+
+    $if(toc)$
+    <nav id="$idprefix$TOC">
+    $toc$
+    </nav>
+    <hr />
+    $endif$
+
+    <div id="lesson-nav">
+        $if(prev-lesson)$
+            &middot; <a href="$prev-lesson$.html">Previous</a>
+        $endif$
+        &middot; <a href="toc.html">Lesson Index</a>
+        $if(next-lesson)$
+            &middot; <a href="$next-lesson$.html">Next</a>
+        $endif$
+        &middot;
+    </div>
+</header>
+
+<article>
+$body$
+</article>
+
+$for(include-after)$
+$include-after$
+$endfor$
+
+<footer>
+    &middot;
+    <a href="$if(tocpath)$ $tocpath$ $else$ toc.html $endif$">Lesson Index</a>
     $if(prev-lesson)$
         &middot; <a href="$prev-lesson$.html">Previous</a>
     $endif$
@@ -53,37 +95,7 @@ $if(title)$
         &middot; <a href="$next-lesson$.html">Next</a>
     $endif$
     &middot;
-
-    $if(difficulty)$
-    <div id="lesson-difficulty">
-        Difficulty:
-        <span>novice</span> &middot;
-        <span>intermediate</span> &middot;
-        <span>advanced</span> &middot;
-        <span>expert</span>
-    </div>
-    $endif$
-</header>
-$endif$
-
-$if(toc)$
-<nav id="$idprefix$TOC">
-$toc$
-</nav>
-$endif$
-$body$
-$for(include-after)$
-$include-after$
-$endfor$
-
-&middot; <a href="toc.html">Lesson Index</a>
-$if(prev-lesson)$
-    &middot; <a href="$prev-lesson$.html">Previous</a>
-$endif$
-$if(next-lesson)$
-    &middot; <a href="$next-lesson$.html">Next</a>
-$endif$
-&middot;
+</footer>
 
 </body>
 </html>
