@@ -96,27 +96,27 @@ Now that you've set up all the tools for building and testing programs, it's
 time to actually create one. Create a new file with your text editor, and
 paste the following code into it.
 
-    
-    
-    .nolist
-    #include "ti83plus.inc"
-    #define ProgStart $9D95
-    .list
-    .org ProgStart - 2
-    .db t2ByteTok, tAsmCmp
-    
-        b_call(_ClrLCDFull)
-        ld a, 0
-        ld (CurRow), a
-        ld (CurCol), a
-        ld hl, msg
-        b_call(_PutS)            ; Display the text
-        b_call(_NewLine)
-        ret
-    
-    msg:
-        .db "Hello world!", 0
-    .end
+```z80
+.nolist
+#include "ti83plus.inc"
+#define ProgStart $9D95
+.list
+.org ProgStart - 2
+.db t2ByteTok, tAsmCmp
+
+    b_call(_ClrLCDFull)
+    ld a, 0
+    ld (CurRow), a
+    ld (CurCol), a
+    ld hl, msg
+    b_call(_PutS)            ; Display the text
+    b_call(_NewLine)
+    ret
+
+msg:
+    .db "Hello world!", 0
+.end
+```
 
 **TODO: Discuss the potential optimizations: `xor a`, or `ld (CurRow), hl` after
 zeroing HL.**

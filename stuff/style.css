@@ -58,6 +58,22 @@ pre > code {
     border-style: none;
 }
 
+.z80 .label {
+    color: darkmagenta;
+}
+.z80 .literal {
+    color: teal;
+}
+.z80 .comment {
+    color: darkslateblue;
+}
+.z80 .operator {
+    color: green;
+}
+.z80 .keyword {
+    color: black;
+}
+
 kbd {
     color: white;
     background-color: black;
