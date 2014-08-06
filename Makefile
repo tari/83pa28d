@@ -3,7 +3,7 @@ Z80_LEXER := ./highlight_z80
 PANDOC_OPTS := --filter=$(Z80_LEXER) -f $(MARKDOWN) -t html5 --template=stuff/template.html --toc -c stuff/style.css
 
 
-MARKDOWN := $(shell find -name '*.md')
+MARKDOWN := $(shell find . -name '*.md')
 HTML := $(addsuffix .html,$(basename $(MARKDOWN)))
 
 .PHONY: all, clean, clean-highlighter
