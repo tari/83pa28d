@@ -92,12 +92,12 @@ the least-significant byte.
 Hexadecimal is base-16, so it uses 16 digits: the regular digits 0 to 9, and
 the letters A to F that correspont to the decimal values 10 to 15.
     
--------- -----------------------------------------------------------------
- $1A2Fh$ $=(1\cdot16^{3})+(10\cdot16^{2})+(2\cdot16^{1})+(15\cdot16^{0})$
-         $=(1\cdot4096)+(10\cdot256)+(2\cdot16)+(15\cdot1)$
-         $=4096+2560+32+15$
-         $=6703_{10}$
--------- -----------------------------------------------------------------  
+------------------ -----------------------------------------------------------------
+  $\mathrm{1A2F}h$ $=(1\cdot16^{3})+(10\cdot16^{2})+(2\cdot16^{1})+(15\cdot16^{0})$
+			       $=(1\cdot4096)+(10\cdot256)+(2\cdot16)+(15\cdot1)$
+			       $=4096+2560+32+15$
+			       $=6703_{10}$
+------------------ -----------------------------------------------------------------  
 
 Hex values have an interesting relationship with binary: take the number
 110100112. In hex, this value is represented as D316, but consider the
