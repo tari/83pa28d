@@ -90,7 +90,7 @@ the least-significant byte.
 ### Hexadecimal
 
 Hexadecimal is base-16, so it uses 16 digits: the regular digits 0 to 9, and
-the letters A to F that correspont to the decimal values 10 to 15.
+the letters A to F that represent the decimal values 10 to 15.
     
 ------------------ -----------------------------------------------------------------
   $\mathrm{1A2F}h$ $=(1\cdot16^{3})+(10\cdot16^{2})+(2\cdot16^{1})+(15\cdot16^{0})$
@@ -100,11 +100,11 @@ the letters A to F that correspont to the decimal values 10 to 15.
 ------------------ -----------------------------------------------------------------  
 
 Hex values have an interesting relationship with binary: take the number
-110100112. In hex, this value is represented as D316, but consider the
+$11010011_{2}$. In hex, this value is represented as $\mathrm{D3}_{16}$, but consider the
 individual digits:  
 
-<pre>D<sub>16</sub> = 1101<sub>2</sub>
-3<sub>16</sub> = 0011<sub>2</sub></pre>
+* $\mathrm{D}_{16}=1101_{2}$
+* $3_{16}=0011_{2}$
 
 Compare these two binary numbers with the original. You should see that one
 hex digit is equivalent to one nibble. This is what's so great about
@@ -344,8 +344,8 @@ As the program is compiled, the location counter is incremented for each byte
 of machine code generated.
 
 The location counter's value can be used in programs. It is represented by $
-or *, $ being preferred, mainly because not very many people know about * :D.
-TASM doesn't have any problem with the location counter confliciting with
+or \*, $ being preferred, mainly because not very many people know about \* :D.
+TASM doesn't have any problem with the location counter conflicting with
 hexadecimalitude, in case you were wondering.
 
 ## Literal Constants
