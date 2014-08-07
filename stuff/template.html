@@ -44,16 +44,19 @@ $include-before$
 $endfor$
 
 <header>
+    <div id="titles-outer">
     <h1 class="title">$title$</h1>
     <h1 class="subtitle">$subtitle$</h1>
-
+    </div>
     $if(difficulty)$
+    <div id="lesson-difficulty-outer">
     Difficulty:
     <div id="lesson-difficulty">
         <span>novice</span> &middot;
         <span>intermediate</span> &middot;
         <span>advanced</span> &middot;
         <span>expert</span>
+    </div>
     </div>
     $endif$
     <hr />

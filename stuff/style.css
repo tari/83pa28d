@@ -23,9 +23,22 @@ header ~ * {
     margin-left: 280px;
 }
 
+article {
+    padding-left: 1em;
+    padding-right: 1em;
+    max-width: 40em;
+}
+
 #lesson-difficulty {
     font-size: 50%;
     text-align: center;
+}
+
+#TOC, #lesson-difficulty-outer {
+        background-color: #F5F5F5;
+    border: 1px solid #CCC;
+    border-radius: 3px;
+    padding: 1px 3px;
 }
 
 #TOC ul {
@@ -38,6 +51,10 @@ header ~ * {
 
 #lesson-nav {
     text-align: center;
+    background-color: #F5F5F5;
+    border: 1px solid #CCC;
+    border-radius: 3px;
+    padding: 1px 3px;
 }
 
 footer {
@@ -59,19 +76,35 @@ pre > code {
 }
 
 .z80 .label {
-    color: darkmagenta;
+    color: rgb(38,71,75);
 }
-.z80 .literal {
-    color: teal;
+.z80 .numeric {
+    color: rgb(28,1,206);
+}
+.z80 .string {
+    color: rgb(196,26,22);
 }
 .z80 .comment {
-    color: darkslateblue;
+    color: rgb(5,117,0);
 }
 .z80 .operator {
-    color: green;
+    color: rgb(100,56,32);
 }
 .z80 .keyword {
-    color: black;
+    color: rgb(127,2,127);
+}
+.z80 .macro {
+    color: rgb(100, 56,32);
+}
+.z80 .register {
+    color: rgb(63,110,117);
+    font-weight: bold;
+}
+.z80 .eightbit {
+    font-style: italic
+}
+.z80 .flagbit {
+    font-style: oblique;
 }
 
 kbd {

@@ -41,11 +41,12 @@ tokens :-
     $labelStart $label* :?      { \p s -> Label s }
 
     [0-9]+
-    | \" [^ \" ]+ \"
     | "$" $hex+
     | [0-9] $hex* h
     | \% [01]+
-    | [01]+ b                   { \p s -> Literal s }
+    | [01]+ b                   { \p s -> NumericLiteral s }
+    
+    \" [^ \" ]+ \"              { \p s -> StringLiteral s }
 
     "."[a-zA-Z]+
     | [\+\-\*\/]
@@ -60,7 +61,8 @@ tokens :-
 {
 data Token = Macro String
            | Label String
-           | Literal String
+           | NumericLiteral String
+           | StringLiteral String
            | Comment String
            | Operator String
            | Text String
@@ -76,7 +78,8 @@ formatHTML tokens = "<pre class='z80'>" ++ (concatMap formatHTML' tokens) ++ "</
 formatHTML' :: Token -> String
 formatHTML' (Macro s) = hs "macro" s
 formatHTML' (Label s) = hs "label" s
-formatHTML' (Literal s) = hs "literal" s
+formatHTML' (NumericLiteral s) = hs "numeric literal" s
+formatHTML' (StringLiteral s) = hs "string literal" s
 formatHTML' (Comment s) = hs "comment" s
 formatHTML' (Operator s) = hs "operator" s
 formatHTML' (EightBit s) = hs "eightbit register" s
