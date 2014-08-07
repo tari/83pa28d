@@ -5,7 +5,7 @@ HSC ?= ghc
 ALEX ?= alex
 
 MD_DIALECT := markdown+tex_math_dollars+definition_lists
-PANDOC_OPTS := -f $(MD_DIALECT) -t html5 --template=stuff/template.html --toc -c stuff/style.css
+PANDOC_OPTS := -f $(MD_DIALECT) -t html5 --template=stuff/template.html --toc -c stuff/style.css --indented-code-classes=z80
 
 ifeq ($(HIGHLIGHT),yes)
 	Z80_LEXER := ./highlight_z80

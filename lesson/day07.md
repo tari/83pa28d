@@ -159,10 +159,12 @@ jump to fail once a condition fails.
 
 E.g. this C code
 
-    if( (a >= 7) && (a != 8) )
-        goto success;
-    else
-        goto fail;
+```c
+if( (a >= 7) && (a != 8) )
+    goto success;
+else
+    goto fail;
+```
 
 could be translated into assembly as
 
@@ -183,10 +185,12 @@ success once a condition passes.
 
 E.g.
 
-    if( (a >= 7) || (a != 8) )
-        goto success;
-    else
-        goto fail;
+```c
+if( (a >= 7) || (a != 8) )
+    goto success;
+else
+    goto fail;
+```
 
         CP     7
         JR     NC, success
@@ -204,10 +208,12 @@ order the checks the right way.
 
 E.g.
 
-    if( (a >= 7 && a != 8) || a == 1 )
-        goto success;
-    else
-        goto fail;
+```c
+if( (a >= 7 && a != 8) || a == 1 )
+    goto success;
+else
+    goto fail;
+```
 
 Let's see? Looking at the expression, because it's OR, if A equals 1
 then the entire expression will be true, so:
@@ -282,10 +288,12 @@ loop operates.
 The most general loop is the while loop. It takes the following form in
 C:
 
-    while (expression)
-    {
-       statements
-    }
+```c
+while (expression)
+{
+   statements
+}
+```
 
 There is one important aspect of the while loop: the test for
 termination appears at the start of the loop. As a direct consequence,
@@ -293,9 +301,11 @@ the loop body may never even be executed.
 
 Consider the following implementation of a while loop:
 
-    int x = 0;
-    while (x < 100)
-        x++;
+```c
+int x = 0;
+while (x < 100)
+    x++;
+```
 
 `x = 0` is the initialization. `x < 100` is the termination condition
 i.e. the loop will not end as long as `x` is less than 100. `x` is
@@ -318,11 +328,13 @@ The do...while loop differs from the while loop in only one respect: the
 termination test comes at the end of the loop body. Due to this, a
 do...while loop is guaranteed to execute a minimum of once.
 
-    int x = 0;
-    do
-    {
-        x++;
-    } while (x < 100);
+```c
+int x = 0;
+do
+{
+    x++;
+} while (x < 100);
+```
 
         LD     A, 0
     Do:

@@ -38,7 +38,8 @@ tokens :-
     
     $labelStart $label* /\(     { \p s -> Macro s }
     
-    $labelStart $label* :?      { \p s -> Label s }
+    \$
+    | $labelStart $label* :?    { \p s -> Label s }
 
     [0-9]+
     | "$" $hex+
@@ -46,14 +47,16 @@ tokens :-
     | \% [01]+
     | [01]+ b                   { \p s -> NumericLiteral s }
     
-    \" [^ \" ]+ \"              { \p s -> StringLiteral s }
+    \' . \'
+    | \" [^ \" ]+ \"            { \p s -> StringLiteral s }
 
     "."[a-zA-Z]+
-    | [\+\-\*\/=\\]
+    | [\+\-\*\/=\\\|]
+    | \<\< | \>\>
     | "#"[a-zA-z]+              { \p s -> Operator s }
 
     $white+
-    | [\(\)\,]                  { \p s -> Text s }
+    | [\(\)\,\.]                { \p s -> Text s }
 
     ";".*                       { \p s -> Comment s }
 
@@ -95,6 +98,8 @@ hs cls content = "<span class='" ++ cls ++ "'>" ++ content ++ "</span>"
 --- Top level pandoc filter
 syntaxHighlight :: Maybe Format -> Block -> Block
 
+-- If you need to debug, it's helpful to prepend the RawBlock
+-- with "trace code" to print each block before lexing it.
 syntaxHighlight (Just (Format "html5")) (CodeBlock (ident, "z80":classes, kvp) code) =
         RawBlock (Format "html") (formatHTML tokens)
     where tokens = alexScanTokens code

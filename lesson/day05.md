@@ -398,7 +398,9 @@ A one-dimensional array can be though of as a list of elements. To
 access an element, you need a function to convert an element's index
 into that element's address:
 
-    element_address = base_address + (index × element_size)
+```
+element_address = base_address + (index × element_size)
+```
 
 Where *base\_address* is the address of the array's first element,
 *index* is the element you want to get (starting from zero), and
@@ -476,11 +478,15 @@ to an array.
 
 Row major:
 
-    address = base_address + (col_index × row_size + row_index) × element_size
+```
+address = base_address + (col_index × row_size + row_index) × element_size
+```
 
 Column major:
 
-    address = base_address + (row_index × col_size + col_index) × element_size
+```
+address = base_address + (row_index × col_size + col_index) × element_size
+```
 
 Example, let's say we have a 4×6 row-major array of words with a base
 address of \$8000, and we have row index in B and a column index in C.
@@ -514,14 +520,16 @@ elements can vary. The whole purpose of a structure is to encapsulate
 data that is different but logically connected. If you were managing a
 CD database, you might use this hypothetical example:
 
-    struct CD {
-        byte  title[32];   // Name of the CD
-        byte  band[32];    // The guys what made it
-        word  release;     // Year of release
-        byte  tracks;      // Number of songs
-        word  length;      // Total disc length in seconds
-        byte  rating;      // How am I reflecting upon having thrown
-    }                      // my hard-earned cash at the RIAA today? (/10)
+```c
+struct CD {
+    byte  title[32];   // Name of the CD
+    byte  band[32];    // The guys what made it
+    word  release;     // Year of release
+    byte  tracks;      // Number of songs
+    word  length;      // Total disc length in seconds
+    byte  rating;      // How am I reflecting upon having thrown
+}                      // my hard-earned cash at the RIAA today? (/10)
+```
 
 The structure's elements are allocated one after another in memory, just
 like an array is. To access an element of the structure, you need to
@@ -579,14 +587,16 @@ access a structure element, just index the array and go for it. E.g.
 Suppose we have an array for 4 sprites in a game located at
 AppBackupScreen, and each element has this structure:
 
-    struct sprite {
-        byte  x;      // x-position
-        byte  y;      // y-position
-        byte  dx;     // delta-x each frame
-        byte  dy;     // delta-y each frame
-        byte  hp;     // hit points
-        byte  frame;  // animation frame
-    }
+```c
+struct sprite {
+    byte  x;      // x-position
+    byte  y;      // y-position
+    byte  dx;     // delta-x each frame
+    byte  dy;     // delta-y each frame
+    byte  hp;     // hit points
+    byte  frame;  // animation frame
+}
+```
 
 And suppose we wanted to add the `dx` byte to the `x` byte, and the `dy`
 byte to the `y` byte of each element. This could be done

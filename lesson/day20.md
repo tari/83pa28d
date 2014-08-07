@@ -90,14 +90,16 @@ letters, and numbers. For reference, you should know these tokens:
 A TI-BASIC program to convert the number in `X` to a string in `Str1` (I
 bet you didn't know that was possible):
 
-        :{X, 0}->LTEMP1
-        :{0, X}->LTEMP2
-        :LinReg(a+bx) LTEMP1, LTEMP2, Y1
-        :Equ>String(Y1, Str1)
-        :sub(Str1, 1, length(Str1)-4)->Str1
-        :DelVar LTEMP1
-        :DelVar LTEMP2
-        :DelVar Y1
+```
+:{X, 0}->LTEMP1
+:{0, X}->LTEMP2
+:LinReg(a+bx) LTEMP1, LTEMP2, Y1
+:Equ>String(Y1, Str1)
+:sub(Str1, 1, length(Str1)-4)->Str1
+:DelVar LTEMP1
+:DelVar LTEMP2
+:DelVar Y1
+```
 
 An assembly program to create this program:
 

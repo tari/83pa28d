@@ -299,20 +299,22 @@ is swapping the shadow registers when our interrupt is run, and we want
 them to stay swapped when the system interrupt is running. A section of
 the code at \$0038 looks like
 
-        0038: JR    $006A
-        003A: IN    A, (4)
-        .
-        .
-        006A: EX    AF, AF'
-        006B: EXX
-        006C: JR    $003A
+```
+0038: JR    $006A
+003A: IN    A, (4)
+.
+.
+006A: EX    AF, AF'
+006B: EXX
+006C: JR    $003A
+```
 
 Yes this is completely redundant, but by jumping to \$003A the exchanges
 get skipped over.
 
 This is useful if you still want `GetKey` and `GetCSC` and other Mode 1
 features to work while you're in Mode 2.\
- Also, if you don't switch back to Mode 1 when the program ends, your
+Also, if you don't switch back to Mode 1 when the program ends, your
 interrupt will still be active, even during graphing and (provided they
 don't use interrupts themselves) other programs! Unfortunately, drawing
 and archiving will kill 'em.

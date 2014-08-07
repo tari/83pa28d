@@ -863,20 +863,26 @@ first 12 bits of the fixed point number, which is 0.000100010001.
 
 We are now going to calculate the product as this:
 
-        q = x >> 4;
-        q = (q + x) >> 4;
-        q = (q + x) >> 4;
+```c
+q = x >> 4;
+q = (q + x) >> 4;
+q = (q + x) >> 4;
+```
 
 Did you get all that? Heh-heh-heh, okay, here's a blow-by-blow analysis
 of each operation.
 
-        q = x >> 4
+```c
+q = x >> 4
+```
 
 Okay, when we start, q = x × m, where m is initially 1 and will
 eventually become the reciprocal. A right shift by four will make m =
 .0001.
 
-        q = (q + x) >> 4
+```c
+q = (q + x) >> 4
+```
 
 If we add the original number, we get a multiplier m = 1.0001, see? If
 this is then shifted right by four, where the first shift is shifting in
@@ -888,8 +894,10 @@ forget it! The next step is to go the whole nine yards and get the
 remainder too. It's straightforward enough, remultiply the remainder by
 15.
 
-        r = (q << 4) - q;
-        r = x - r;
+```c
+r = (q << 4) - q;
+r = x - r;
+```
 
 Enough of all this C, let's see it in assembler already.
 
