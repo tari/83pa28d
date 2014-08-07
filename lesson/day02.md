@@ -134,8 +134,8 @@ A _much_ more in-depth discussion of manifest constants appears in a later
 chapter. Very briefly, a manifest constant is a symbolic representation of a
 number. Once a manifest constant has been defined, at every place in the
 source code it is encountered it is interpreted as the value it was defined
-as. There are three ways to define a manifest constant. You can use #define or
-.equ (see the table above), or you can use a label.  
+as. There are three ways to define a manifest constant. You can use `#define` or
+`.equ` (see the table above), or you can use a label.  
 Labels are headings for sections of the program. They have to be on the
 leftmost edge, and end with a colon. You will learn what value a label
 represents a little later.
