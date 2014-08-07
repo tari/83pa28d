@@ -49,7 +49,7 @@ tokens :-
     \" [^ \" ]+ \"              { \p s -> StringLiteral s }
 
     "."[a-zA-Z]+
-    | [\+\-\*\/]
+    | [\+\-\*\/=\\]
     | "#"[a-zA-z]+              { \p s -> Operator s }
 
     $white+

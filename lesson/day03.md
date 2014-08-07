@@ -29,17 +29,15 @@ everyday system of numbers, which uses base ten.
 
 Like you learned in grade school and forgot over summer, in a base ten number,
 each digit specifies a certain power of 10, and as a consequence you need ten
-different digits to denote any number. The rightmost digit specifies 100, the
-second digit specifies 101, the third 102 and so on.  
-You can, therefore, break down a decimal number, such as 276310, like this
+different digits to denote any number. The rightmost digit specifies 10^0^, the
+second digit specifies 10^1^, the third 10^2^ and so on.  
+You can, therefore, break down a decimal number, such as 2763~10~, like this
 (although it does wind up to be redundant):
 
-    
-    
-    2763  = (2 x 103) + (7 x 102) + (6 x 101) + (3 x 100)
-            = (2 x 1000) + (7 x 100) + (6 x 10) + (3 x 1)
-            = 2000 + 700 + 60 + 3
-            = 276310
+<pre>2763 = (2 x 10<sup>3</sup>) + (7 x 10<sup>2</sup>) + (6 x 10<sup>1</sup>) + (3 x 10<sup>0</sup>)
+     = (2 x 1000) + (7 x 100) + (6 x 10) + (3 x 1)
+     = 2000 + 700 + 60 + 3
+     = 2763<sub>10</sub></pre>
 
 Computers enjoy working with two other bases: binary and hexadecimal. Octal is
 base-8, and seems to have died out. It was only used by UNIX anyway.
@@ -51,20 +49,22 @@ digit represents a power of 2:
 
     
     
-    10110101b  = (1 x 27) + (0 x 26) + (1 x 25) + (1 x 24) + (0 x 23) + (1 x 22) + (0 x 21) + (1 x 20)
-               = (1 x 128) + (0 x 64) + (1 x 32) + (1 x 16) + (0 x 8) + (1 x 4) + (0 x 2) + (1 x 1)
-               = 128 + 32 + 16 + 4 + 1
-               = 18110
+<pre>10110101b  = (1 x 2<sup>7</sup>) + (0 x 2<sup>6</sup>) + (1 x 2<sup>5</sup>) + (1 x 2<sup>4</sup>) + (0 x 2<sup>3</sup>) + (1 x 2<sup>2</sup>) + (0 x 2<sup>1</sup>) + (1 x 2<sup>0</sup>)
+           = (1 x 128) + (0 x 64) + (1 x 32) + (1 x 16) + (0 x 8) + (1 x 4) + (0 x 2) + (1 x 1)
+           = 128 + 32 + 16 + 4 + 1
+           = 181<sub>10</sub></pre>
 
 A single binary digit is familiarly called a bit. Eight bits are called a
 byte. Other combinations you could hear about:
 
-Name     | Size
--------- | -------
-nibble   | 4 bits
-word     | 16 bits
-dword    | 32 bits
-quadword | 64 bits
+nibble
+:    4 bits
+word
+:    16 bits
+dword
+:    32 bits
+quadword
+:    64 bits
 
 Since the Z80 can directly manipulate only bytes and words (and nibbles in
 some circumstances), the majority of data handling you do will involve mostly
@@ -74,9 +74,16 @@ those, so you don't have to concern yourself with the others too much
 We will find ourselves working with, or at the very least referencing the
 individual bits of a byte or word. The nomenclature:
 
-  * If we arranged the bits out horizontally, we call the rightmost bit "bit 0", and each bit to the left is given a number one greater. 
-  * The leftmost and rightmost bits are given special names: the leftmost bit is called the high-order bit or the most-significant bit (since it controls the highest power of two of the number, it makes the most significant contrubution to the value). The rightmost bit is called the low-order bit or the least-significant bit. 
-  * We can apply these points to nibbles in a byte, bytes in a word or dword, etc. So for example the rightmost byte in a 64-bit quantity would be termed the least-significant byte. 
+  * If we arranged the bits out horizontally, we call the rightmost bit "bit
+    0", and each bit to the left is given a number one greater. 
+  * The leftmost and rightmost bits are given special names: the leftmost bit
+    is called the high-order bit or the most-significant bit (since it controls
+the highest power of two of the number, it makes the most significant
+contrubution to the value). The rightmost bit is called the low-order bit or
+the least-significant bit. 
+  * We can apply these points to nibbles in a byte, bytes in a word or dword,
+    etc. So for example the rightmost byte in a 64-bit quantity would be termed
+the least-significant byte. 
 
 ### Hexadecimal
 
@@ -85,18 +92,17 @@ the letters A to F that correspont to the decimal values 10 to 15.
 
     
     
-    1A2Fh  = (1 x 163) + (10 x 162) + (2 x 161) + (15 x 160)
-            = (1 x 4096) + (10 x 256) + (2 x 16) + (15 x 1)
-            = 4096 + 2560 + 32 + 15
-            = 670310
+<pre>1A2Fh  = (1 x 16<sup>3</sup>) + (10 x 16<sup>2</sup>) + (2 x 16<sup>1</sup>) + (15 x 16<sup>0</sup>)
+       = (1 x 4096) + (10 x 256) + (2 x 16) + (15 x 1)
+       = 4096 + 2560 + 32 + 15
+       = 6703<sub>10</sub></pre>
 
 Hex values have an interesting relationship with binary: take the number
 110100112. In hex, this value is represented as D316, but consider the
 individual digits:  
 
-    
-    
-    D16 = 11012    316 = 00112
+<pre>D<sub>16</sub> = 1101<sub>2</sub>
+3<sub>16</sub> = 0011<sub>2</sub></pre>
 
 Compare these two binary numbers with the original. You should see that one
 hex digit is equivalent to one nibble. This is what's so great about
@@ -114,7 +120,7 @@ symbolic prefix or an alphabetic suffix.
 
 Prefix Format | Suffix Format | Base
 --------------|---------------|------
-%`10011011` | `10011011b` | Binary
+`%10011011` | `10011011b` | Binary
 `$31D0` | `31D0h` | Hexadecimal
 `@174` | `174o` | Octal
 `12305` (no prefix) | `12305d` | Decimal
@@ -208,13 +214,11 @@ Some points that should be made clear:
 The two operands for LD cannot both be register pairs. You have to load the
 registers separately:
 
-    
-    
-    
-       ; Since we can't do LD DE, HL...
-       LD    D, H
-       LD    E, L
-    
+```z80
+   ; Since we can't do LD DE, HL...
+   LD    D, H
+   LD    E, L
+```
 
 If you use LD with a number that is too big for the register to hold, you will
 get an error at assembly time. Storing negative numbers, however, is legal,
@@ -265,13 +269,12 @@ can choose based on convenience.
 
   1. Calculate zero minus the number (like negative numbers in the Real World). If you're confused how to do this, you can consider 0 and 256 (or 65536 if appropriate) to be the same number. Therefore, -6 would be 256 - 6 or 250: %11111010. 
   2. Flip the state of every bit, and add one. Therefore, -6 would be %11111001 + 1 or %11111010.  There is one special case of two's complement where negation fails, and that is when you try to negate the smallest negative value: 
-    
-    
-    
-          %10000000        -128
-          %01111111        Invert all bits
-          %10000000        Add one (=-128)
-    
+
+```
+%10000000        -128
+%01111111        Invert all bits
+%10000000        Add one (=-128)
+```
 
 Of course -(-128) isn't -128, but the value +128 cannot be represented in
 two's complement with just eight bits, so the smallest negative value can
@@ -303,7 +306,9 @@ look at the 6502).
 
 ## Memory and the Location Counter
 
-![\[NO IMAGE\]](../img/memviz.png) The TI-83 Plus's RAM consists of 32
+![](../img/memviz.png)
+
+The TI-83 Plus's RAM consists of 32
 kilobytes, and each byte is distinguishable from its myriad bretheren by a
 unique number, called an address, which is a number from $8000 to $FFFF
 (addresses $0000 to $7FFF are used for the Flash ROM). Now, you must realize
@@ -400,11 +405,10 @@ such that:
 The equate is the general mechanism for assigning a literal constant to a
 manifest constant. Either of two directives may be used:
 
-    
-    
-    
-        symbol   =     literal
-        symbol   .EQU  literal
+```z80
+    symbol   =     literal
+    symbol   .EQU  literal
+```
     
 
 After defining any equate, the symbol may be used anywhere its literal would
@@ -419,88 +423,79 @@ could also make a label by equating a symbol to the value of the location
 counter. The label can then be used anywhere in the program where a word value
 can be put. E.g.
 
-    
-    
-    
-       Lable:               ; L.C. = $9452
-       LD     HL, Lable      ; HL = $9452
-    
+```z80
+Label:                    ; L.C. = $9452
+    LD     HL, Label      ; HL = $9452
+```
 
-### Local Lables
+### Local Labels
 
 One of TASM's features is the ability to make constant names local to a
 particular section of code known as a module. Denote the start of a module
 with the .MODULE directive:
 
+```z80
+.MODULE   module_1
+   Code here     ; This code is in module module_1
     
-    
-    .MODULE   module_1
-       Code here     ; This code is in module module_1
-    
-    .MODULE   module_2
-       Code here     ; This code is in module module_2
-                    ; (ain't I just the king of originality? :-)
-    
+.MODULE   module_2
+   Code here     ; This code is in module module_2
+                 ; (ain't I just the king of originality? :-)
+```
 
 A local label name (which begins with an underscore) can be defined multiple
 times as long as each new definition occurs in a different module.
+    
+```z80
+.ORG       $1000
+.MODULE    x
+_local:
+    LD     HL, _local    ; HL equals $1000
 
-    
-    
-    
-    .ORG       $1000
-    .MODULE    x
-    _local:
-        LD     HL, _local    ; HL equals $1000
-    
-    .MODULE   y
-    _local     .EQU    $5000
-        LD     HL, _local    ; HL equals $5000
-    
+.MODULE   y
+_local     .EQU    $5000
+    LD     HL, _local    ; HL equals $5000
+```
 
 ### Macros
 
 A macro is a symbol that is assigned a text constant. Macros are defined as
 
-    
-    
-        #define   symbol   literal
+```z80
+#define   symbol   literal
+```
 
 Macros can be used as replacements for equates, and even to insert equates.
 But what make macros particularly interesting is that they can be
 parameterized to create similar, but different, pieces of code.
 
-    
-    
-    
-        #define    move(src, dest)    LD dest, src
-    
+```z80
+#define    move(src, dest)    LD dest, src
+```
 
 For this example macro that could be nice if you are used to Motorola's
 syntax, the parameters src and dest are matched to the src and dest in the
 text constant. An example invocation
 
-    
-    
-       move(A, B)
+```z80
+    move(A, B)
+```
 
 Would be replaced with
 
-    
-    
-        LD    B, A
+```z80
+    LD    B, A
+```
 
 You can have any number of parameters as long as every parameter be used. To
 have a macro that is many lines long, use #defcont. Note the backslashes, they
 are mandatory if you want assembleable code.
 
-    
-    
-    
-        #define    add_sto(reg, addr)   LD A, (addr)
-        #defcont                     \ ADD A, reg
-        #defcont                     \ LD (addr), A
-    
+```z80
+#define    add_sto(reg, addr)   LD A, (addr)
+#defcont                     \ ADD A, reg
+#defcont                     \ LD (addr), A
+```
 
 ## Variables
 
@@ -513,12 +508,10 @@ At the end of the program, create a label that will be used to access this
 variable. Immediately after the label, allocate memory for the variable using
 .DB or .DW (you could instead use .BYTE and .WORD).
 
-    
-    
-    
-       .DB     value_list
-       .DW     value_list
-    
+```z80
+.DB     value_list
+.DW     value_list
+```
 
 The `value_list` is a series of one or optionally more values, each
 separated by a comma. The only difference between the two directives is that
@@ -530,18 +523,16 @@ Also remember that .DB and .DW don't intristically create variables, they just
 insert bytes into your program. If you know the hex codes, you can do machine
 language and prove yourself to be a wycked uβ3r1337 h4x0r.
 
-    
-    
-    
-       ; The machine code for LD B, 6  LD A, B  ADD A, H  LD B, A
-       .DB     $0E, $06, $78, $84, $67
-    
+```z80
+; The machine code for LD B, 6  LD A, B  ADD A, H  LD B, A
+.DB     $0E, $06, $78, $84, $67
+```
 
 So say you had a variable:
 
-    
-    
-       Var_X:     .DW     1000
+```z80
+Var_X:     .DW     1000
+```
 
 Then you access the data there using parentheses around the label name:
 `(Var_X)`. See the chart earlier for all LD forms for which this is legal.
@@ -555,9 +546,9 @@ bytes of scrap RAM, so never mind about them.
 
 To create a variable in this way, you use our old pal .EQU, like this:
 
-    
-    
-    trash    .EQU    AppBackUpScreen
+```z80
+trash    .EQU    AppBackUpScreen
+```
 
 AppBackUpScreen is equal to 39026 (it's moronic to communicate addresses in
 anything other than hexadecimal, I'm just playing around with ya :-), so when
@@ -565,12 +556,10 @@ you store to stuff, you are really storing to the 39027th byte of the
 calculator's RAM. To get access to the other 767 bytes of free RAM, you
 specify an offset, for example:
 
-    
-    
-    
-    garbage .EQU    AppBackUpScreen+4
-    refuse  .EQU    AppBackUpScreen+8
-    
+```z80
+garbage .EQU    AppBackUpScreen+4
+refuse  .EQU    AppBackUpScreen+8
+```
 
 The effect is that during assembly, TASM takes the value of AppBackUpScreen
 (39026) and adds 4 to it (in the case of variable garbage, resulting in
@@ -581,12 +570,10 @@ To store to a variable, you use the A register for one-byte numbers. For two-
 byte numbers, any two-byte register is fine, but HL is usually the best
 choice.
 
-    
-    
-    
-       LD    HL, 5611
-       LD    (garbage), HL
-    
+```z80
+    LD    HL, 5611
+    LD    (garbage), HL
+```
 
 #### Caution!
 
@@ -606,12 +593,10 @@ a practice called indirection or indirect access. Indirect access is indicated
 by enclosing the 16-bit register in parentheses (like immediate addresses).
 The memory address is then the numerical value of that register. E.g.
 
-    
-    
-    
-        LD     DE, $4102
-        LD     (DE), A     ; Store the value of A to address $4102
-    
+```z80
+    LD     DE, $4102
+    LD     (DE), A     ; Store the value of A to address $4102
+```
 
 See the table from before to see all the legal methods.
 
@@ -619,6 +604,7 @@ But that's not all! You can use IX for indirection too, but there is a
 pleasant twist. You can add a constant value (called an offset or
 displacement) in the range -128 to +127 to the register's value:
   
-        LD     IX, $8000
-        LD     (IX + $26), 196      ; Store 196 to address $8026
-    
+```z80
+    LD     IX, $8000
+    LD     (IX + $26), 196      ; Store 196 to address $8026
+```
