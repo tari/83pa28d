@@ -34,10 +34,12 @@ second digit specifies 10^1^, the third 10^2^ and so on.
 You can, therefore, break down a decimal number, such as 2763~10~, like this
 (although it does wind up to be redundant):
 
-<pre>2763 = (2 x 10<sup>3</sup>) + (7 x 10<sup>2</sup>) + (6 x 10<sup>1</sup>) + (3 x 10<sup>0</sup>)
-     = (2 x 1000) + (7 x 100) + (6 x 10) + (3 x 1)
-     = 2000 + 700 + 60 + 3
-     = 2763<sub>10</sub></pre>
+------- -------------------------------------------------------
+ $2763$ $=(2\cdot10^3)+(7\cdot10^2)+(6\cdot10^1)+(3\cdot10^0)$
+        $=(2\cdot1000)+(7\cdot100)+(6\cdot10)+(3\cdot1)$
+        $= 2000+700+60+3$
+        $= 2763_{10}$
+------- -------------------------------------------------------
 
 Computers enjoy working with two other bases: binary and hexadecimal. Octal is
 base-8, and seems to have died out. It was only used by UNIX anyway.
@@ -47,12 +49,12 @@ base-8, and seems to have died out. It was only used by UNIX anyway.
 Binary is a base-2 system, so it uses only two digits (0 and 1), and each
 digit represents a power of 2:
 
-    
-    
-<pre>10110101b  = (1 x 2<sup>7</sup>) + (0 x 2<sup>6</sup>) + (1 x 2<sup>5</sup>) + (1 x 2<sup>4</sup>) + (0 x 2<sup>3</sup>) + (1 x 2<sup>2</sup>) + (0 x 2<sup>1</sup>) + (1 x 2<sup>0</sup>)
-           = (1 x 128) + (0 x 64) + (1 x 32) + (1 x 16) + (0 x 8) + (1 x 4) + (0 x 2) + (1 x 1)
-           = 128 + 32 + 16 + 4 + 1
-           = 181<sub>10</sub></pre>
+------------ -------------------------------------------------------------------------------------------------------------------------------
+ $10110101b$ $=(1\cdot2^{7})+(0\cdot2^{6})+(1\cdot2^{5})+(1\cdot2^{4})+(0\cdot2^{3})+(1\cdot2^{2})+(0\cdot2^{1})+(1\cdot2^{0})$
+             $=(1\cdot128)+(0\cdot64)+(1\cdot32)+(1\cdot16)+(0\cdot8)+(1\cdot4)+(0\cdot2)+(1\cdot1)$
+             $=128+32+16+4+1$
+			 $=181_{10}$
+------------ -------------------------------------------------------------------------------------------------------------------------------
 
 A single binary digit is familiarly called a bit. Eight bits are called a
 byte. Other combinations you could hear about:
@@ -89,13 +91,13 @@ the least-significant byte.
 
 Hexadecimal is base-16, so it uses 16 digits: the regular digits 0 to 9, and
 the letters A to F that correspont to the decimal values 10 to 15.
-
     
-    
-<pre>1A2Fh  = (1 x 16<sup>3</sup>) + (10 x 16<sup>2</sup>) + (2 x 16<sup>1</sup>) + (15 x 16<sup>0</sup>)
-       = (1 x 4096) + (10 x 256) + (2 x 16) + (15 x 1)
-       = 4096 + 2560 + 32 + 15
-       = 6703<sub>10</sub></pre>
+-------- -----------------------------------------------------------------
+ $1A2Fh$ $=(1\cdot16^{3})+(10\cdot16^{2})+(2\cdot16^{1})+(15\cdot16^{0})$
+         $=(1\cdot4096)+(10\cdot256)+(2\cdot16)+(15\cdot1)$
+         $=4096+2560+32+15$
+         $=6703_{10}$
+-------- -----------------------------------------------------------------  
 
 Hex values have an interesting relationship with binary: take the number
 110100112. In hex, this value is represented as D316, but consider the

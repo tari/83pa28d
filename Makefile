@@ -1,4 +1,4 @@
-MARKDOWN := markdown+definition_lists
+MARKDOWN := markdown+tex_math_dollars+definition_lists
 Z80_LEXER := ./highlight_z80
 PANDOC_OPTS := --filter=$(Z80_LEXER) -f $(MARKDOWN) -t html5 --template=stuff/template.html --toc -c stuff/style.css
 
