@@ -103,8 +103,10 @@ Hex values have an interesting relationship with binary: take the number
 $11010011_{2}$. In hex, this value is represented as $\mathrm{D3}_{16}$, but consider the
 individual digits:  
 
+<div class="math">
 * $\mathrm{D}_{16}=1101_{2}$
 * $3_{16}=0011_{2}$
+</div>
 
 Compare these two binary numbers with the original. You should see that one
 hex digit is equivalent to one nibble. This is what's so great about
@@ -272,11 +274,11 @@ can choose based on convenience.
   1. Calculate zero minus the number (like negative numbers in the Real World). If you're confused how to do this, you can consider 0 and 256 (or 65536 if appropriate) to be the same number. Therefore, -6 would be 256 - 6 or 250: %11111010. 
   2. Flip the state of every bit, and add one. Therefore, -6 would be %11111001 + 1 or %11111010.  There is one special case of two's complement where negation fails, and that is when you try to negate the smallest negative value: 
 
-```
-%10000000        -128
-%01111111        Invert all bits
-%10000000        Add one (=-128)
-```
+<div class="math">
+* %10000000        -128
+* %01111111        Invert all bits
+* %10000000        Add one (=-128)
+</div>
 
 Of course -(-128) isn't -128, but the value +128 cannot be represented in
 two's complement with just eight bits, so the smallest negative value can
@@ -552,7 +554,7 @@ To create a variable in this way, you use our old pal .EQU, like this:
 trash    .EQU    AppBackUpScreen
 ```
 
-AppBackUpScreen is equal to 39026 (it's moronic to communicate addresses in
+`AppBackUpScreen` is equal to 39026 (it's moronic to communicate addresses in
 anything other than hexadecimal, I'm just playing around with ya :-), so when
 you store to stuff, you are really storing to the 39027th byte of the
 calculator's RAM. To get access to the other 767 bytes of free RAM, you
@@ -563,7 +565,7 @@ garbage .EQU    AppBackUpScreen+4
 refuse  .EQU    AppBackUpScreen+8
 ```
 
-The effect is that during assembly, TASM takes the value of AppBackUpScreen
+The effect is that during assembly, TASM takes the value of `AppBackUpScreen`
 (39026) and adds 4 to it (in the case of variable garbage, resulting in
 39030). So garbage is referencing the 39031st byte of RAM. It's a similar deal
 with refuse.
@@ -581,10 +583,10 @@ choice.
 
 If you have a 16-bit number in a 16-bit register, then it follows that you'd
 need 16 bits of memory to store it. In the above example, 5611 doesn't just
-take up (garbage), but also (garbage + 1), obliterating whatever was
+take up `(garbage)`, but also `(garbage + 1)`, obliterating whatever was
 previously stored there. So when defining your variables, put some space
 between them. And while we're at it, don't store a two-byte value to
-(AppBackUpScreen + 767) or (SaveSScreen + 767), or you could screw up your
+`(AppBackUpScreen + 767)` or `(SaveSScreen + 767)`, or you could screw up your
 calculator.
 
 ## Indirect Access
