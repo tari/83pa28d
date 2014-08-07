@@ -148,31 +148,40 @@ to, or it's just better to, use a specific one.
 
 The special uses of the registers:
 
-8-bit Registers:     A is also called the "**a**ccumulator". It is the primary
-register for arithmetic operations and accessing memory. Indeed, it's the
-only register you can use.     B is commonly used as an 8-bit counter.     C
-is used when you want to interface with hardware ports.  
-F is known as the **f**lags. The bits of this register signify (that is to say
-they "flag") whether certain events have occured. For example, one of the
-flags (bits) reports if the accumulator is zero or not. The uses of the flags
-will be explained at a later day because we have no use for them at this
+### 8-bit Registers
+
+ * A is also called the "**a**ccumulator". It is the primary register for
+   arithmetic operations and accessing memory. Indeed, it's the only register
+you can use.
+ * B is commonly used as an 8-bit counter.
+ * C is used when you want to interface with hardware ports.  
+ * F is known as the **f**lags. The bits of this register signify (that is to
+   say they "flag") whether certain events have occured. For example, one of
+the flags (bits) reports if the accumulator is zero or not. The uses of the
+flags will be explained at a later day because we have no use for them at this
 point.
 
-16-bit Registers:     HL has two purposes. One, it is like the 16-bit
-equivalent of the accumulator, i.e. it is used for 16-bit arithmetic. Two, it
-stores the **h**igh and **l**ow bytes of a memory address.     BC is used by
-instructions and code sections that operate on streams of bytes as a **b**yte
-**c**ounter.     DE holds the address of a memory location that is a
-**de**stination.     IX is a funky li'l register called an **i**nde**x**
-register. Almost everywhere HL is acceptable, so too is IX. Important to note
-that using IX results in slower and more inflated code than HL would
-(approximately double the size and time), so call on his services only when
-necessary (usually when HL is tied up). IX can do something special that no
-other register can though, we'll look at that in due time.  To store to a
-register, you use the LD instruction.
+### 16-bit Registers
 
+ * HL has two purposes. One, it is like the 16-bit equivalent of the
+   accumulator, i.e. it is used for 16-bit arithmetic. Two, it stores the
+**h**igh and **l**ow bytes of a memory address.
+ * BC is used by instructions and code sections that operate on streams of
+   bytes as a **b**yte **c**ounter.
+ * DE holds the address of a memory location that is a **de**stination.
+ * IX is a funky li'l register called an **i**nde**x** register. Almost
+   everywhere HL is acceptable, so too is IX. Important to note that using IX
+results in slower and more inflated code than HL would (approximately double
+the size and time), so call on his services only when necessary (usually when
+HL is tied up). IX can do something special that no other register can though,
+we'll look at that in due time.
+
+To store to a register, you use the LD instruction.
+
+<div class="instruction-def">
 `LD destination, source`
 :    Stores the value of `source` into `destination`.
+</div>
 
 ###Valid arguments for LD  
 There are many more, but they involve registers you haven't heard of yet.  
@@ -235,8 +244,10 @@ fact that it is very particular about its operands, it is a very useful
 instruction. (90% of the time the registers you want to exchange are HL and
 DE).
 
+<div class="instruction-def">
 `EX DE, HL`
 :    Swaps the value of DE with the value of HL.
+</div>>
 
 Registers F and AF cannot be used as operands for the LD instruction.
 Actually, these registers can not be operands for any instruction barring a
@@ -284,8 +295,10 @@ never be negated.
 
 There is an instruction to automate two's complement:
 
+<div class="instruction-def">
 `NEG`
 :    Calculates the two's complement of the accumulator.
+</div>
 
 I'm sure you find the theory wonderfully engrossing, but what you're probably
 interested in is how the CPU handles the difference between unsigned and
