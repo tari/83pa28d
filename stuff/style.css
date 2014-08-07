@@ -154,9 +154,22 @@ dt {
     text-align: right;
     font-weight: bold;
     margin-right: .5em;
+    min-width: 5em;
 }
 dt:after {
     content: ":";
+}
+
+.instruction-def {
+    background-color: rgb(51, 74, 140);
+    color: white;
+    padding: .5em;
+}
+.instruction-def code {
+    color: black;
+}
+.instruction-def dl {
+    margin: .1em;
 }
 
 table {
