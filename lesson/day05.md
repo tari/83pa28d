@@ -56,55 +56,78 @@ Okay! Let's play around with some data manipulation instructions.
 
 Just a whole slew of instructions:
 
+<div class="instruction-def">
 `INC { reg8 | reg16 | (HL) }`
 :    Adds one to the operand.
+</div>
 
-     |---|----------|
-     | S | affected |
-     | Z | affected |
-     | P/V | detects overflow |
-     | C | not affected |
+|---|----------|
+| S | affected |
+| Z | affected |
+| P/V | detects overflow |
+| C | not affected |
 
+------
+
+<div class="instruction-def">
 `DEC { reg8 | reg16 | (HL) }`
 :    Subtracts one from the operand.
+</div>
 
-     |---|----------|
-     | S | affected |
-     | Z | affected |
-     | P/V | detects overflow |
-     | C | not affected |
+|---|----------|
+| S | affected |
+| Z | affected |
+| P/V | detects overflow |
+| C | not affected |
 
+-------
+
+<div class="instruction-def">
 `ADD A, { reg8 | imm8 | (HL) }`
 :    Adds to the accumulator.
+</div>
 
+ ----------
+
+<div class="instruction-def">
 `ADD HL, reg16`
 :    Adds to HL.
+</div>
 
-     |---|----------|
-     | S | affected |
-     | Z | affected |
-     | P/V | detects overflow |
-     | C | affected |
+|---|----------|
+| S | affected |
+| Z | affected |
+| P/V | detects overflow |
+| C | affected |
 
+-------
+
+<div class="instruction-def">
 `SUB { reg8 | imm8 | (HL) }`
 :    Subtracts from the accumulator.
+</div>
 
-     |---|----------|
-     | S | affected |
-     | Z | affected |
-     | P/V | detects overflow |
-     | C | affected |
+|---|----------|
+| S | affected |
+| Z | affected |
+| P/V | detects overflow |
+| C | affected |
 
+----------
+
+<div class="instruction-def">
 `SBC HL, reg16`
 :    Subtracts `reg16` and the carry flag from `HL`.
+</div>
 
-     |---|----------|
-     | S | affected |
-     | Z | affected |
-     | P/V | detects overflow |
-     | C | affected |
+|---|----------|
+| S | affected |
+| Z | affected |
+| P/V | detects overflow |
+| C | affected |
 
 Examples:
+---------
 
 ----------------------------------------
 Before          Instruction  After
@@ -140,10 +163,9 @@ AF). Similarly for IX. Also, IX can *never* be an operand for SBC.
 Anyway, if you're ever confused, just look in the [Z80 Instruction Set
 Reference](../ref/z80is.html).
 
+###16-Bit Subtraction
 If you want to subtract a constant number *x* from HL, you should use
 ADD and load into the other operand the negative of *x*.
-
-Example:
 
 ```z80
     LD     HL, 46243
@@ -261,7 +283,7 @@ else in life, is to cheat.
 2.  Put the dividend into HL.
 3.  Look in H for the quotient.
 
-Example: 127 ÷ 52 (expect 2).
+####Example: 127 ÷ 52 (expect 2).
 
 ```z80
 	LD    HL, 127
