@@ -89,11 +89,10 @@ $include-after$
 $endfor$
 
 <footer>
-    &middot;
-    <a href="$if(tocpath)$ $tocpath$ $else$ toc.html $endif$">Lesson Index</a>
     $if(prev-lesson)$
         &middot; <a href="$prev-lesson$.html">Previous</a>
     $endif$
+    &middot; <a href="$tocpath$toc.html">Lesson Index</a>
     $if(next-lesson)$
         &middot; <a href="$next-lesson$.html">Next</a>
     $endif$
