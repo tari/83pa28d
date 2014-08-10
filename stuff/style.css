@@ -13,25 +13,32 @@ hr {
 }
 
 header {
-    position: fixed;
-    top: 0;
-    max-height: 100vh;
-    overflow-y: auto;
-    width: 18em;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    height: 100vh;
+    padding: 0.5em;
     background-color: rgb(51,74,140);
 }
-
 header hr {
     width: 80%;
 }
 header ~ * {
-    margin-left: 19.5em;
     padding-left: 1em;
     padding-right: 1em;
-    max-width: 40em;
+}
+
+/* Wide screens: header block sticks to the left edge. */
+@media screen and (min-width: 50em) {
+    header {
+        position: fixed;
+        top: 0;
+        max-height: 100vh;
+        overflow-y: auto;
+        width: 18em;
+        height: 100vh;
+    }
+
+    header ~ * {
+        margin-left: 19.5em;
+        max-width: 40em;
+    }
 }
 
 article {
@@ -146,6 +153,10 @@ kbd {
     background-color: black;
     padding: .2em;
     border-radius: .5em;
+}
+
+img {
+    max-width: 100%;
 }
 
 dt {
