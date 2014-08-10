@@ -367,20 +367,18 @@ Other String Functions
 Okay, so here is how to implement the most common string functions in
 assembly:
 
+<div class="no-pop">
 [Substring](#substring)
 :    Copies part of one string into another.
-
 [Index](#index)
 :    Finds the offset of the first occurence of one string in another.
-
 [Insert](#insert)
 :    Inserts one string into another.
-
 [Delete](#delete)
 :    Removes characters from a string.
-
 [Concatenate](#concatenate)
 :    Joins two strings.
+</div>
 
 Other functions, like reversing, converting to upper or lowercase, and
 creating a string composed of entirely the same character are too simple

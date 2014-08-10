@@ -56,10 +56,8 @@ Okay! Let's play around with some data manipulation instructions.
 
 Just a whole slew of instructions:
 
-<div class="instruction-def">
 `INC { reg8 | reg16 | (HL) }`
 :    Adds one to the operand.
-</div>
 
 |---|----------|
 | S | affected |
@@ -69,10 +67,8 @@ Just a whole slew of instructions:
 
 ------
 
-<div class="instruction-def">
 `DEC { reg8 | reg16 | (HL) }`
 :    Subtracts one from the operand.
-</div>
 
 |---|----------|
 | S | affected |
@@ -82,17 +78,13 @@ Just a whole slew of instructions:
 
 -------
 
-<div class="instruction-def">
 `ADD A, { reg8 | imm8 | (HL) }`
 :    Adds to the accumulator.
-</div>
 
  ----------
 
-<div class="instruction-def">
 `ADD HL, reg16`
 :    Adds to HL.
-</div>
 
 |---|----------|
 | S | affected |
@@ -102,10 +94,8 @@ Just a whole slew of instructions:
 
 -------
 
-<div class="instruction-def">
 `SUB { reg8 | imm8 | (HL) }`
 :    Subtracts from the accumulator.
-</div>
 
 |---|----------|
 | S | affected |
@@ -115,10 +105,8 @@ Just a whole slew of instructions:
 
 ----------
 
-<div class="instruction-def">
 `SBC HL, reg16`
 :    Subtracts `reg16` and the carry flag from `HL`.
-</div>
 
 |---|----------|
 | S | affected |

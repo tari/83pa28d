@@ -59,6 +59,7 @@ digit represents a power of 2:
 A single binary digit is familiarly called a bit. Eight bits are called a
 byte. Other combinations you could hear about:
 
+<div class="no-pop">
 nibble
 :    4 bits
 word
@@ -67,6 +68,7 @@ dword
 :    32 bits
 quadword
 :    64 bits
+</div>
 
 Since the Z80 can directly manipulate only bytes and words (and nibbles in
 some circumstances), the majority of data handling you do will involve mostly
@@ -180,10 +182,8 @@ we'll look at that in due time.
 
 To store to a register, you use the LD instruction.
 
-<div class="instruction-def">
 `LD destination, source`
 :    Stores the value of `source` into `destination`.
-</div>
 
 ###Valid arguments for LD  
 There are many more, but they involve registers you haven't heard of yet.  
@@ -213,14 +213,14 @@ You'll see shortly.
 
 Examples:
 
+<div class="no-pop">
 `LD A, 25`
 :    Stores 25 into register A
-
 `LD D, B`
 :    Stores the value of register B into register D.
-
 `LD ($8325), A`
 :    Stores the value of register A into address `$8325` (explained later on).
+</div>
 
 Some points that should be made clear:
 
@@ -246,10 +246,8 @@ fact that it is very particular about its operands, it is a very useful
 instruction. (90% of the time the registers you want to exchange are HL and
 DE).
 
-<div class="instruction-def">
 `EX DE, HL`
 :    Swaps the value of DE with the value of HL.
-</div>>
 
 Registers F and AF cannot be used as operands for the LD instruction.
 Actually, these registers can not be operands for any instruction barring a
@@ -297,10 +295,8 @@ never be negated.
 
 There is an instruction to automate two's complement:
 
-<div class="instruction-def">
 `NEG`
 :    Calculates the two's complement of the accumulator.
-</div>
 
 I'm sure you find the theory wonderfully engrossing, but what you're probably
 interested in is how the CPU handles the difference between unsigned and

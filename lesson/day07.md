@@ -70,6 +70,7 @@ To jump conditionally, modify the JP/JR syntax:
 
 `condition` is any one of the conditions listed below.
 
+<div class="no-pop">
 `Z`
 :    If the zero flag is set.
 `NZ`
@@ -86,6 +87,7 @@ To jump conditionally, modify the JP/JR syntax:
 :    If the sign flag is set.
 `P`
 :    If the sign flag is reset.
+</div>
 
 Four instructions can be used conditionally: CALL (discussed later on),
 RET, JP, and JR. JR is handicapped in that it can only be used with the

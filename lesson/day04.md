@@ -76,14 +76,10 @@ large to fit in an eight- or sixteen-bit register, this flag is set. It
 is also set if the result of a subtraction was negative.\
  There are two instructions that specifically affect the carry flag.
 
-<div class="instruction-def">
 `SCF`
 :    Sets the carry flag.
-</div>
 
  ----------- 
 
-<div class="instruction-def">
 `CCF`
 :    Inverts the carry flag.
-</div>

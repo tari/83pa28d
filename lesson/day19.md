@@ -121,6 +121,7 @@ An object type of EquObj or NewEquObj (no, I can't tell you the
 difference). Followed by token tVarEqu, one of the equation variable
 names from the below table, and a null.
 
+<div class="no-pop">
 `tY0` to `tY9`
 :    Function equations Y0 to Y9
 `tX1T` to `tX6T`
@@ -135,7 +136,7 @@ names from the below table, and a null.
 :    Sequence v(n)
 `twn`
 :    Sequence w(n)
-
+</div>
 
 | OP1 | +1 | +2 | +3 | +4 | +5 | +6 | +7 | +8 |    |
 |-----|----|----|----|----|----|----|----|----|----|
@@ -298,6 +299,7 @@ Initializing Variables
 Variables must be initialized before the program ends or a freeze is
 very likely. Each variable has a different structure for its data.
 
+<div class="no-pop">
 ### Real
 
 9 bytes in FP-number format. 
@@ -379,4 +381,5 @@ String "CASIO SUX"
 :    | \$09 | \$00 |      |      |      |      |      |      |      |
      |------|------|------|------|------|------|------|------|------|
      | tC   | tA   |   tS |   tI |   tO | tSpace | tS | tU   |   tX |
+</div>
 
