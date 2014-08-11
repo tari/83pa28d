@@ -32,12 +32,14 @@ Well, we *are* dealing with a calculator after all :).
 
 TI stores floating point numbers according to this structure:
 
-    struct FP {
-        byte  sign;           // Whether the number is positive or negative
-        byte  exponent;       // Locates the decimal point
-        byte  significand[7]; // The number itself
-        byte  guard[2];       // Guard digits for mathematics
-    };
+```c
+struct FP {
+    byte  sign;           // Whether the number is positive or negative
+    byte  exponent;       // Locates the decimal point
+    byte  significand[7]; // The number itself
+    byte  guard[2];       // Guard digits for mathematics
+};
+```
 
 The magnitude of every real number except zero can be represented as *m*
 × 10^*exp*^, where *exp* is an integer designating the exponent and *m*

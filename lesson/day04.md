@@ -78,6 +78,8 @@ is also set if the result of a subtraction was negative.\
 
 `SCF`
 :    Sets the carry flag.
+
+ ----------- 
+
 `CCF`
 :    Inverts the carry flag.
-

@@ -23,25 +23,29 @@ where the sprite is black, have a 1. Where the sprite is white, have a
 
 Here's what the data would look like:
 
-    0 0 1 1 1 1 0 0
-    0 1 1 1 1 1 1 0
-    1 1 1 1 0 0 1 1
-    1 1 1 0 0 0 1 1
-    1 1 0 0 0 1 1 1
-    1 1 0 0 1 1 1 1
-    0 1 1 1 1 1 1 0
-    0 0 1 1 1 1 0 0
+```
+0 0 1 1 1 1 0 0
+0 1 1 1 1 1 1 0
+1 1 1 1 0 0 1 1
+1 1 1 0 0 0 1 1
+1 1 0 0 0 1 1 1
+1 1 0 0 1 1 1 1
+0 1 1 1 1 1 1 0
+0 0 1 1 1 1 0 0
+```
 
 Now let's remove the zeros so it looks like something:
 
-        1 1 1 1    
-      1 1 1 1 1 1   
-    1 1 1 1     1 1
-    1 1 1       1 1
-    1 1       1 1 1
-    1 1     1 1 1 1
-      1 1 1 1 1 1  
-        1 1 1 1    
+```
+    1 1 1 1    
+  1 1 1 1 1 1   
+1 1 1 1     1 1
+1 1 1       1 1
+1 1       1 1 1
+1 1     1 1 1 1
+  1 1 1 1 1 1  
+    1 1 1 1    
+```
 
 Displaying Sprites
 ------------------
@@ -50,14 +54,16 @@ There is only one hard thing about displaying a sprite, and that is what
 to do when the sprite is placed so that one row straddles two bytes of
 the display:
 
-    xxxxxxxx xxxxxxxx xxxxxxxx xxx00111 100xxxxx xxxxxxxx
-    xxxxxxxx xxxxxxxx xxxxxxxx xxx01111 110xxxxx xxxxxxxx
-    xxxxxxxx xxxxxxxx xxxxxxxx xxx11110 011xxxxx xxxxxxxx
-    xxxxxxxx xxxxxxxx xxxxxxxx xxx11100 011xxxxx xxxxxxxx
-    xxxxxxxx xxxxxxxx xxxxxxxx xxx11000 111xxxxx xxxxxxxx
-    xxxxxxxx xxxxxxxx xxxxxxxx xxx11001 111xxxxx xxxxxxxx
-    xxxxxxxx xxxxxxxx xxxxxxxx xxx01111 110xxxxx xxxxxxxx
-    xxxxxxxx xxxxxxxx xxxxxxxx xxx00111 100xxxxx xxxxxxxx
+```
+xxxxxxxx xxxxxxxx xxxxxxxx xxx00111 100xxxxx xxxxxxxx
+xxxxxxxx xxxxxxxx xxxxxxxx xxx01111 110xxxxx xxxxxxxx
+xxxxxxxx xxxxxxxx xxxxxxxx xxx11110 011xxxxx xxxxxxxx
+xxxxxxxx xxxxxxxx xxxxxxxx xxx11100 011xxxxx xxxxxxxx
+xxxxxxxx xxxxxxxx xxxxxxxx xxx11000 111xxxxx xxxxxxxx
+xxxxxxxx xxxxxxxx xxxxxxxx xxx11001 111xxxxx xxxxxxxx
+xxxxxxxx xxxxxxxx xxxxxxxx xxx01111 110xxxxx xxxxxxxx
+xxxxxxxx xxxxxxxx xxxxxxxx xxx00111 100xxxxx xxxxxxxx
+```
 
 Cases like these can be remedied through shifting each row of the sprite
 until it's split appropriately, then bitmasking the split halves into

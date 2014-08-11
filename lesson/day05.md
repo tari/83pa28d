@@ -38,8 +38,10 @@ always be zero (regardless of whether it is or not).
 
 Zero extension on the Z80 is easy:
 
+```z80
     ;Zero extend DE
     LD    D, 0
+```
 
 Sign extension is tougher, you need to decide whether to store \$00 or
 \$FF. The instructions to do this haven't been learned yet, and I don't
@@ -57,52 +59,63 @@ Just a whole slew of instructions:
 `INC { reg8 | reg16 | (HL) }`
 :    Adds one to the operand.
 
-     |---|----------|
-     | S | affected |
-     | Z | affected |
-     | P/V | detects overflow |
-     | C | not affected |
+|---|----------|
+| S | affected |
+| Z | affected |
+| P/V | detects overflow |
+| C | not affected |
+
+------
 
 `DEC { reg8 | reg16 | (HL) }`
 :    Subtracts one from the operand.
 
-     |---|----------|
-     | S | affected |
-     | Z | affected |
-     | P/V | detects overflow |
-     | C | not affected |
+|---|----------|
+| S | affected |
+| Z | affected |
+| P/V | detects overflow |
+| C | not affected |
+
+-------
 
 `ADD A, { reg8 | imm8 | (HL) }`
 :    Adds to the accumulator.
 
+ ----------
+
 `ADD HL, reg16`
 :    Adds to HL.
 
-     |---|----------|
-     | S | affected |
-     | Z | affected |
-     | P/V | detects overflow |
-     | C | affected |
+|---|----------|
+| S | affected |
+| Z | affected |
+| P/V | detects overflow |
+| C | affected |
+
+-------
 
 `SUB { reg8 | imm8 | (HL) }`
 :    Subtracts from the accumulator.
 
-     |---|----------|
-     | S | affected |
-     | Z | affected |
-     | P/V | detects overflow |
-     | C | affected |
+|---|----------|
+| S | affected |
+| Z | affected |
+| P/V | detects overflow |
+| C | affected |
+
+----------
 
 `SBC HL, reg16`
 :    Subtracts `reg16` and the carry flag from `HL`.
 
-     |---|----------|
-     | S | affected |
-     | Z | affected |
-     | P/V | detects overflow |
-     | C | affected |
+|---|----------|
+| S | affected |
+| Z | affected |
+| P/V | detects overflow |
+| C | affected |
 
 Examples:
+---------
 
 ----------------------------------------
 Before          Instruction  After
@@ -138,15 +151,16 @@ AF). Similarly for IX. Also, IX can *never* be an operand for SBC.
 Anyway, if you're ever confused, just look in the [Z80 Instruction Set
 Reference](../ref/z80is.html).
 
+###16-Bit Subtraction
 If you want to subtract a constant number *x* from HL, you should use
 ADD and load into the other operand the negative of *x*.
 
-Example:
-
-        LD     HL, 46243
-        LD     BC, -1000
-        ADD    HL, BC
-    ; HL now equals 45243
+```z80
+    LD     HL, 46243
+    LD     BC, -1000
+    ADD    HL, BC
+	; HL now equals 45243
+```
 
 However, if the number is already in a register from a previous
 calculation, you have to use SBC. This becomes quite a sticky situation,
@@ -154,9 +168,11 @@ because you might not know what the carry flag's value is, thus giving
 an erroneous result 50% of the time. The solution is to ensure that the
 carry is reset before doing the subtraction. How to do that?
 
-        SCF    ; Force carry = 1
-        CCF    ; Flip carry so it is 0
-        SBC    HL, BC
+```z80
+    SCF    ; Force carry = 1
+    CCF    ; Flip carry so it is 0
+    SBC    HL, BC
+```
 
 This is actually the most idiotic way to force the carry to zero, since
 it can be done in just one instruction. Problem is, that instruction
@@ -168,52 +184,58 @@ Finally, before I forget, what if you wanted to do the above, but with
 IX? Since SBC won't accept an index register, you must use ADD, and
 manually negate the second register.
 
-        LD     A, B
-        CPL
-        LD     B, A
-        LD     A, C
-        CPL
-        LD     C, A
-    ; We have now found the one's complement of BC so, by definition of
-    ; the two's complement:
-        INC    BC
-        ADD    IX, BC
+```z80
+	LD     A, B
+	CPL
+	LD     B, A
+	LD     A, C
+	CPL
+	LD     C, A
+; We have now found the one's complement of BC so, by definition of
+; the two's complement:
+	INC    BC
+	ADD    IX, BC
+```
 
 ### Multiplying
 
 If the number you want to multiply happens to be a power of two, then
 it's a cake walk, because you only need a sequence of ADD instructions.
 
-        LD     HL, 10
-        ADD    HL, HL        ; 10 * 21 = 20
-        ADD    HL, HL        ; 10 * 22 = 40
-        ADD    HL, HL        ; 10 * 23 = 80
-        ; et cetera
+```z80
+	LD     HL, 10
+	ADD    HL, HL        ; 10 * 21 = 20
+	ADD    HL, HL        ; 10 * 22 = 40
+	ADD    HL, HL        ; 10 * 23 = 80
+	; et cetera
+```
 
 If the number is not a power of two, but can be expressed as the sum or
 difference of two powers of two, then its still pretty easy, just a
 little less efficient.
 
-    ; Calculate HL * 40 as (HL * 32) + (HL * 8)
-        ADD    HL, HL
-        ADD    HL, HL
-        ADD    HL, HL        ; HL * 8
-        LD     D, H
-        LD     E, L          ; Save it for later
-        ADD    HL, HL
-        ADD    HL, HL        ; HL * 32
-        ADD    HL, DE        ; HL * 32 + HL * 8
+```z80
+; Calculate HL * 40 as (HL * 32) + (HL * 8)
+	ADD    HL, HL
+	ADD    HL, HL
+	ADD    HL, HL        ; HL * 8
+	LD     D, H
+	LD     E, L          ; Save it for later
+	ADD    HL, HL
+	ADD    HL, HL        ; HL * 32
+	ADD    HL, DE        ; HL * 32 + HL * 8
 
-    ; Calculate HL * 15 as (HL * 16) - (HL * 1)
-        LD     D, H
-        LD     E, L          ; Save HL * 1 for later
-        ADD    HL, HL
-        ADD    HL, HL
-        ADD    HL, HL
-        ADD    HL, HL        ; HL * 16
-        SCF
-        CCF
-        SBC    HL, DE        ; HL * 16 - HL * 1
+; Calculate HL * 15 as (HL * 16) - (HL * 1)
+	LD     D, H
+	LD     E, L          ; Save HL * 1 for later
+	ADD    HL, HL
+	ADD    HL, HL
+	ADD    HL, HL
+	ADD    HL, HL        ; HL * 16
+	SCF
+	CCF
+	SBC    HL, DE        ; HL * 16 - HL * 1
+```
 
 What if it is an awkward number like 13? In this case, it might be
 better to follow this general-purpose algorithm:
@@ -224,7 +246,7 @@ better to follow this general-purpose algorithm:
     *above* the preceding one.
 4.  Load HL into DE.
 
-```
+```z80
 ;Calculate HL * 13
     LD     D, H
     LD     E, L
@@ -249,16 +271,18 @@ else in life, is to cheat.
 2.  Put the dividend into HL.
 3.  Look in H for the quotient.
 
-Example: 127 ÷ 52 (expect 2).
+####Example: 127 ÷ 52 (expect 2).
 
-        LD    HL, 127
-        LD    D, H
-        LD    E, L
+```z80
+	LD    HL, 127
+	LD    D, H
+	LD    E, L
 
-    ; 256 ÷ 52 = 5, find 127 × 5
-        ADD    HL, HL    ; HL = $00FE
-        ADD    HL, HL    ; HL = $01FC
-        ADD    HL, DE    ; HL = $027B
+; 256 ÷ 52 = 5, find 127 × 5
+	ADD    HL, HL    ; HL = $00FE
+	ADD    HL, HL    ; HL = $01FC
+	ADD    HL, DE    ; HL = $027B
+```
 
 Please note that this this method gives only a very rough approximation
 for the quotient. Later on, I will show you a way to divide a number
@@ -271,8 +295,10 @@ When a register's value is increased beyond the largest value it can
 contain, it's value will start over at the smallest value and continue
 incrementing:
 
-        LD     A, 203
-        ADD    A, 119
+```z80
+	LD     A, 203
+	ADD    A, 119
+```
 
 If we add 119 to 203, we would get 322, but this does not fit in eight
 bits, so we have to wrap around. If we look at the binary value of 322,
@@ -287,7 +313,9 @@ similar phenomenon when subtracting.
 
 Suppose you type out an instruction like
 
-        LD    HL, $D361
+```z80
+	LD    HL, $D361
+```
 
 Which puts \$D361 into HL. No big suprise there, but since 16-bit
 registers are just two 8-bit registers taken together, what happens to H
@@ -302,7 +330,9 @@ from the left, it makes sense that \$D3 is stored into H. Similarily,
 
 Now take this instruction
 
-        LD    ($2315), HL
+```z80
+	LD    ($2315), HL
+```
 
 Since H comes before L, You'd figure that register H would be stored in
 byte \$2315 and L would be stored into byte \$2316. I mean, it just
@@ -356,7 +386,9 @@ A one-dimensional array can be though of as a list of elements. To
 access an element, you need a function to convert an element's index
 into that element's address:
 
-    element_address = base_address + (index × element_size)
+```
+element_address = base_address + (index × element_size)
+```
 
 Where *base\_address* is the address of the array's first element,
 *index* is the element you want to get (starting from zero), and
@@ -375,15 +407,19 @@ Element Size: One Byte
 
 Table: Base Address: $8000<br />Element Size: One Byte
 
-...access the 5^th^ element and store it into C:
+...given a (different) array with 3-byte elements, access the 5^th^ element and
+store it into C:
 
-    array_base      .EQU    $8000
-    element_size    .EQU    3
-        LD     A, (array_base+(4*element_size))
-        LD     C, A
+```z80
+array_base      .EQU    $8000
+element_size    .EQU    3
+	LD     A, (array_base+(4*element_size))
+	LD     C, A
+```
 
 If the index is in a register, you have a bit more work to do.
 
+```z80
         LD     A, 3              ; Put index in A
         LD     B, A              ; Multiply by element size
         ADD    A, A
@@ -396,6 +432,7 @@ If the index is in a register, you have a bit more work to do.
         ADD    HL, DE
 
         LD     C, (HL)
+```
 
 ### 2-D Arrays
 
@@ -429,33 +466,39 @@ to an array.
 
 Row major:
 
-    address = base_address + (col_index × row_size + row_index) × element_size
+```
+address = base_address + (col_index × row_size + row_index) × element_size
+```
 
 Column major:
 
-    address = base_address + (row_index × col_size + col_index) × element_size
+```
+address = base_address + (row_index × col_size + col_index) × element_size
+```
 
 Example, let's say we have a 4×6 row-major array of words with a base
 address of \$8000, and we have row index in B and a column index in C.
 What we would like to do is get the indexed element into HL.
 
-    array_base    .EQU    $8000
-    row_size      .EQU    4
-    col_size      .EQU    3
+```z80
+array_base    .EQU    $8000
+row_size      .EQU    4
+col_size      .EQU    3
 
-        LD     HL, array_base
-        LD     A, C       ; Multiply by row size
-        ADD    A, A
-        ADD    A, A
-        ADD    A, B       ; Add in row index
-        LD     D, 0
-        LD     E, A
-        ADD    HL, DE
+	LD     HL, array_base
+	LD     A, C       ; Multiply by row size
+	ADD    A, A
+	ADD    A, A
+	ADD    A, B       ; Add in row index
+	LD     D, 0
+	LD     E, A
+	ADD    HL, DE
 
-        LD     A, (HL)
-        INC    HL
-        LD     H, (HL)
-        LD     L, A
+	LD     A, (HL)
+	INC    HL
+	LD     H, (HL)
+	LD     L, A
+```
 
 Structures
 ----------
@@ -465,14 +508,16 @@ elements can vary. The whole purpose of a structure is to encapsulate
 data that is different but logically connected. If you were managing a
 CD database, you might use this hypothetical example:
 
-    struct CD {
-        byte  title[32];   // Name of the CD
-        byte  band[32];    // The guys what made it
-        word  release;     // Year of release
-        byte  tracks;      // Number of songs
-        word  length;      // Total disc length in seconds
-        byte  rating;      // How am I reflecting upon having thrown
-    }                      // my hard-earned cash at the RIAA today? (/10)
+```c
+struct CD {
+    byte  title[32];   // Name of the CD
+    byte  band[32];    // The guys what made it
+    word  release;     // Year of release
+    byte  tracks;      // Number of songs
+    word  length;      // Total disc length in seconds
+    byte  rating;      // How am I reflecting upon having thrown
+}                      // my hard-earned cash at the RIAA today? (/10)
+```
 
 The structure's elements are allocated one after another in memory, just
 like an array is. To access an element of the structure, you need to
@@ -503,22 +548,24 @@ Example, given this instance of our CD:
 
 And say we wanted to set the `length` element to its proper value:
 
-        LD     HL, disc01 + length
-        LD     (HL), $9F
-        INC    HL
-        LD     (HL), $22
+```z80
+	LD     HL, disc01 + length
+	LD     (HL), $9F
+	INC    HL
+	LD     (HL), $22
 
-        LD     IX, disc01
-        LD     (IX + CD.length), $9F
-        LD     (IX + CD.length + 1), $22
+	LD     IX, disc01
+	LD     (IX + CD.length), $9F
+	LD     (IX + CD.length + 1), $22
 
-    disc01:
-    .DB   "Pulse"
-    .DB   "Pink Floyd"
-    .DW   1995
-    .DB   23
-    .DW   6502
-    .DB   10
+disc01:
+.DB   "Pulse"
+.DB   "Pink Floyd"
+.DW   1995
+.DB   23
+.DW   6502
+.DB   10
+```
 
 ### Arrays of Structures
 
@@ -528,44 +575,48 @@ access a structure element, just index the array and go for it. E.g.
 Suppose we have an array for 4 sprites in a game located at
 AppBackupScreen, and each element has this structure:
 
-    struct sprite {
-        byte  x;      // x-position
-        byte  y;      // y-position
-        byte  dx;     // delta-x each frame
-        byte  dy;     // delta-y each frame
-        byte  hp;     // hit points
-        byte  frame;  // animation frame
-    }
+```c
+struct sprite {
+    byte  x;      // x-position
+    byte  y;      // y-position
+    byte  dx;     // delta-x each frame
+    byte  dy;     // delta-y each frame
+    byte  hp;     // hit points
+    byte  frame;  // animation frame
+}
+```
 
 And suppose we wanted to add the `dx` byte to the `x` byte, and the `dy`
 byte to the `y` byte of each element. This could be done
 
-    x       .EQU  0
-    y       .EQU  1
-    dx      .EQU  2
-    dy      .EQU  3
-    hp      .EQU  4
-    frame   .EQU  5
-    sizeof  .EQU  6     ; Size of each element
+```z80
+x       .EQU  0
+y       .EQU  1
+dx      .EQU  2
+dy      .EQU  3
+hp      .EQU  4
+frame   .EQU  5
+sizeof  .EQU  6     ; Size of each element
 
-        LD    IX, AppBackupScreen     ; Get array base
-        LD    DE, sizeof              ; Use this to update IX
+	LD    IX, AppBackupScreen     ; Get array base
+	LD    DE, sizeof              ; Use this to update IX
 
-        LD    A, (IX + x)
-        ADD   A, (IX + dx)
-        LD    (IX + x), A
-        ADD   IX, DE
+	LD    A, (IX + x)
+	ADD   A, (IX + dx)
+	LD    (IX + x), A
+	ADD   IX, DE
 
-        LD    A, (IX + x)
-        ADD   A, (IX + dx)
-        LD    (IX + x), A
-        ADD   IX, DE
+	LD    A, (IX + x)
+	ADD   A, (IX + dx)
+	LD    (IX + x), A
+	ADD   IX, DE
 
-        LD    A, (IX + x)
-        ADD   A, (IX + dx)
-        LD    (IX + x), A
-        ADD   IX, DE
+	LD    A, (IX + x)
+	ADD   A, (IX + dx)
+	LD    (IX + x), A
+	ADD   IX, DE
 
-        LD    A, (IX + x)
-        ADD   A, (IX + dx)
-        LD    (IX + x), A
+	LD    A, (IX + x)
+	ADD   A, (IX + dx)
+	LD    (IX + x), A
+```

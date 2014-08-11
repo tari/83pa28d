@@ -96,27 +96,27 @@ Now that you've set up all the tools for building and testing programs, it's
 time to actually create one. Create a new file with your text editor, and
 paste the following code into it.
 
-    
-    
-    .nolist
-    #include "ti83plus.inc"
-    #define ProgStart $9D95
-    .list
-    .org ProgStart - 2
-    .db t2ByteTok, tAsmCmp
-    
-        b_call(_ClrLCDFull)
-        ld a, 0
-        ld (CurRow), a
-        ld (CurCol), a
-        ld hl, msg
-        b_call(_PutS)            ; Display the text
-        b_call(_NewLine)
-        ret
-    
-    msg:
-        .db "Hello world!", 0
-    .end
+```z80
+.nolist
+#include "ti83plus.inc"
+#define ProgStart $9D95
+.list
+.org ProgStart - 2
+.db t2ByteTok, tAsmCmp
+
+    b_call(_ClrLCDFull)
+    ld a, 0
+    ld (CurRow), a
+    ld (CurCol), a
+    ld hl, msg
+    b_call(_PutS)            ; Display the text
+    b_call(_NewLine)
+    ret
+
+msg:
+    .db "Hello world!", 0
+.end
+```
 
 **TODO: Discuss the potential optimizations: `xor a`, or `ld (CurRow), hl` after
 zeroing HL.**
@@ -161,23 +161,24 @@ Look here for compiled programs
 In the `Tasm` folder, make a new text file and type in this:
 
     
-    
-    @echo off
-    echo ==== Now assembling %1.z80 for the TI-83 Plus ====
-    tasm -80 -i -b c:\asm\source\%1.z80 c:\asm\exec\%1.bin
-    if errorlevel 1 goto ERRORS
-    rem This is necessary because of a DevPac8x bug
-    cd c:\asm\exec
-    c:\asm\tasm\devpac8x %1
-    cd c:\asm\tasm
-    echo ==== Job finished. Program saved as %1.8xp ====
-    goto DONE
-    :ERRORS
-    echo ==== Errors!!! ====
-    :DONE
-    del c:\asm\source\%1.lst > NUL
-    del c:\asm\exec\%1.bin > NUL
-    echo ==== Done ====
+```batch
+@echo off
+echo ==== Now assembling %1.z80 for the TI-83 Plus ====
+tasm -80 -i -b c:\asm\source\%1.z80 c:\asm\exec\%1.bin
+if errorlevel 1 goto ERRORS
+rem This is necessary because of a DevPac8x bug
+cd c:\asm\exec
+c:\asm\tasm\devpac8x %1
+cd c:\asm\tasm
+echo ==== Job finished. Program saved as %1.8xp ====
+goto DONE
+:ERRORS
+echo ==== Errors!!! ====
+:DONE
+del c:\asm\source\%1.lst > NUL
+del c:\asm\exec\%1.bin > NUL
+echo ==== Done ====
+```
 
 And save as `asm.bat`. What you just made is called a batch file and is
 similar in purpose to TI-BASIC programs.
@@ -206,7 +207,11 @@ enough experience with file managers like Explorer to know what things like
 
 Command Prompt
 
-    At the extreme left of the screen is the command prompt. This is the name of the current drive, current directory, and all parent directories. The format of internet URLs are directly based on the command prompt (although not specifically the DOS prompt), so you shouldn't have any trouble interpreting it.
+At the extreme left of the screen is the command prompt. This is the name of
+the current drive, current directory, and all parent directories. The format of
+internet URLs are directly based on the command prompt (although not
+specifically the DOS prompt), so you shouldn't have any trouble interpreting
+it.
 
 `cd _directory_`     Changes the current directory. The directory changed to
 must be a subdirectory of the current one.

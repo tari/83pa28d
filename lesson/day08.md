@@ -2,8 +2,8 @@
 title: Day 8
 subtitle: Bit-Level Instructions
 difficulty: 2
-prev-lesson: day08
-next-lesson: day10
+prev-lesson: day07
+next-lesson: day09
 ---
 
 The Z80's bit-level instructions enable you to manipulate the individual

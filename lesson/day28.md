@@ -512,6 +512,7 @@ nice to have one more way to crash the calculator :-).
 And that's the program. I'm sure that there's a few commands you can
 think of to add. Some suggestions are
 
+<div class="no-pop">
 `B[oolean]`
 :    Calculates the AND, OR, and XOR of two 16-bit numbers
 `J[ump]`
@@ -519,12 +520,16 @@ think of to add. Some suggestions are
 `V[ariable]`
 :    Given the name of a program, returns the data and symbol
      table location.
+</div>
 
 Conclusion
 ----------
 
 I think I hear a fat lady singing... oh well! I hope you had fun these
 past few weeks, I know I did (really, hand-coding HTML is rollicksome
-good fun :-). I wish you the best of luck on the rest of your Z80
+good fun :-)[^lie]. I wish you the best of luck on the rest of your Z80
 experience. What, you didn't know you weren't finished? Gee, is that the
 time...
+
+[^lie]: This is a lie, and precisely why this tutorial's markup is now (mostly)
+generated automatically.

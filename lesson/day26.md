@@ -27,14 +27,12 @@ Control Ports
 
 The two ports that control the LCD are
 
+<div class="no-pop">
 `$10`
-:    Command Port
-
-     Alters the driver's status.
+:    Command Port. Alters the driver's status.
 `$11`
-:    Data Port
-
-     Lets you muck about with the driver's RAM.
+:    Data Port. Lets you muck about with the driver's RAM.
+</div>
 
 In order to send a command to the driver, interrupts must be disabled.
 And since the driver is so slow, you need a 10µs delay between
@@ -64,10 +62,12 @@ column command through the command port. The only confusing thing is
 that the Cartesian plane is flipped: the column is called Y and the row
 is called X. The commands are:
 
+<div class="no-pop">
 `$20` to `$2E`
 :    Set column: 0 (leftmost 8 pixels) to 14 (rightmost 8 pixels).
 `$80` to `$BF`
 :    Set row: 0 (top row) to 63 (bottom row).
+</div>
 
 Auto-Addressing
 ---------------
@@ -76,22 +76,16 @@ So that life with the driver is not as grim as it could be, the driver
 will automatically update the LCD coordinates after a data read or
 write. There are four modes.
 
+<div class="no-pop">
 `$04`
-:    X auto-decrement.
-
-     Driver moves back one byte along X.
+:    X auto-decrement. Driver moves back one byte along X.
 `$05`
-:    X auto-increment
-
-     Driver moves forward one byte along X.
+:    X auto-increment. Driver moves forward one byte along X.
 `$06`
-:    Y auto-decrement
-
-     Driver moves back one byte along Y.
+:    Y auto-decrement. Driver moves back one byte along Y.
 `$07`
-:    Y auto-increment
-
-     Driver moves forward one byte along Y.
+:    Y auto-increment. Driver moves forward one byte along Y.
+</div>
 
 The TI-OS expects X auto-increment mode for all its routines, and must
 be set back to this mode if you change it. Although the results could be
@@ -327,10 +321,12 @@ think of a better one, so oh well.
 
 The word size is changed with two commands:
 
+<div class="no-pop">
 `$00`
 :    Configure six bits per word
 `$01`
 :    Configure eight bits per word
+</div>
 
 What can we use this for? Well, Toshiba thought it would be nice if
 computers could have two font sizes, and in fact the 6x8 character

@@ -82,6 +82,7 @@ the entries are written backwards!
 
 Key:
 
+<div class="no-pop">
 T
 :    The object type and system effects:
 
@@ -93,7 +94,6 @@ T
      :    Variable is used during graphing if set.
      7
      :    Variable is designated for link transfer if set.
-
 T2
 :    Reserved for future use
 Ver
@@ -108,7 +108,7 @@ NL
 :    The length of the name. For lists, `tVarLst` is included in the value.
 F\#
 :    Number of a formula attached to a list, or 0 if no formula.
-
+</div>
 
 The structure of a list formula is
 

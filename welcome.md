@@ -2,6 +2,8 @@
 title: Learn TI-83+ Assembly in 28 Days
 subtitle: Welcome
 next-lesson: lesson/day01
+stylesheet: stuff/style.css
+tocpath: lesson/
 ---
 
 Welcome, one and all, to Learn TI-83 Plus Assembly In 28 Days -- the

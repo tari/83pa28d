@@ -10,22 +10,24 @@ Every Z80 program consists of several parts combined in a certain way. Today,
 we will take a look at these sections, using the program from yesterday as an
 example. For the sake of clarity, I have colorized common parts.
     
-    .nolist
-    #include "ti83plus.inc"
-    #define  ProgStart    $9D95
-    .list
-    .org    ProgStart - 2
-    .db     t2ByteTok, tAsmCmp
-        b_call(_homeup)
-        ld     hl, 0
-        ld     (CurCol), hl        ; Shortcut to setting CurCol and CurRow to 0
-        ld     hl, msg
-        b_call(_PutS)        ; Display the text
-        b_call(_NewLine)
-        ret
-    msg:
-        .db "Hello world!", 0
-    .end
+```z80
+.nolist
+#include "ti83plus.inc"
+#define  ProgStart    $9D95
+.list
+.org    ProgStart - 2
+.db     t2ByteTok, tAsmCmp
+    b_call(_homeup)
+    ld     hl, 0
+    ld     (CurCol), hl        ; Shortcut to setting CurCol and CurRow to 0
+    ld     hl, msg
+    b_call(_PutS)        ; Display the text
+    b_call(_NewLine)
+    ret
+msg:
+    .db "Hello world!", 0
+.end
+```
     
 ## Directives
 
@@ -35,38 +37,52 @@ Directives are normally on the leftmost edge, but they can be indented any way
 you want. Here are some very candid descriptions of the functions of the
 directives used above.
 
-    .nolist  
+```z80
+.nolist  
 
-    .list
+.list
+```
 
 These affect something called a listing file that TASM creates. Not really
 important, but have them in anyway.
 
-    #define text1 text2
+```z80
+#define text1 text2
+```
 
 Replaces all instances of `text1` in the program -- that aren't in quotation
 marks or part of larger words -- with `text2`. Essentially just a Find/Replace
 command.
 
-    #include "filename"
+```z80
+#include "filename"
+```
 
 Inserts the contents of `filename` into the source code.
 
-    text .equ number
+```z80
+text .equ number
+```
 
 Virtually identical to `#define`, when `text2` is a number.
 
-    .db
+```z80
+.db
+```
 
 Specifies data.
 
-    .end
+```z80
+.end
+```
 
 Signifies the end of the source code. There are two here because TASM has this
 annoying tendency to ignore the last line in a file. the second one is
 redundant, but oh well.
 
-    .org number
+```z80
+.org number
+```
 
 Specifies where in memory the program is loaded into (not exactly true), which
 is always `$9D95`. Notice the "`- 2`"? Don't worry about it now.
@@ -101,7 +117,9 @@ to several kilobytes). These miniprograms are stored in the calculator's ROM
 location in ROM where the code is stored, and returns to the program when
 finished. You execute a ROM call like this:
 
+```z80
     b_call(ROM_Call_Name)
+```
 
 ROM calls must be tabbed in along with instructions.
 
@@ -116,8 +134,8 @@ A _much_ more in-depth discussion of manifest constants appears in a later
 chapter. Very briefly, a manifest constant is a symbolic representation of a
 number. Once a manifest constant has been defined, at every place in the
 source code it is encountered it is interpreted as the value it was defined
-as. There are three ways to define a manifest constant. You can use #define or
-.equ (see the table above), or you can use a label.  
+as. There are three ways to define a manifest constant. You can use `#define` or
+`.equ` (see the table above), or you can use a label.  
 Labels are headings for sections of the program. They have to be on the
 leftmost edge, and end with a colon. You will learn what value a label
 represents a little later.
@@ -127,12 +145,16 @@ comes up, it's function will be fully (or at leat mostly) explained, along
 with any data you have to apply (called arguments or operands) to make it
 work. Kinda like these:
 
+```z80
     RET
+```
 
 Quits the program and returns to the TI-OS. All programs _must_ eventually
 execute this instruction.
 
-    _ClrLCDFull
+```z80
+_ClrLCDFull
+```
 
 Clears the screen
 
@@ -144,14 +166,16 @@ style conventions](../ref/format.html).
 Programs always need some assembler commands in order to work right. When
 making your own programs, all you need to do is follow this format:
     
-    .nolist
-    #include    "ti83plus.inc"
-    .list
-    .org    $9D93
-    .db    t2ByteTok, tAsmCmp
-        ; Your program goes here.
-    .end
-    .end
+```z80
+.nolist
+#include    "ti83plus.inc"
+.list
+.org    $9D93
+.db    t2ByteTok, tAsmCmp
+    ; Your program goes here.
+.end
+.end
+```
 
 The stuff in blue is required for every program. To save space, all example
 programs in this guide will omit it. If you want to test an example program,
