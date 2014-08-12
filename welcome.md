@@ -72,3 +72,49 @@ Think you're ready? Then go to the [Table of Contents](lesson/toc.html), or
 just go straight to [Day 1](lesson/day01.html). You might also want to check
 out the [Formatting used in this guide](ref/format.html).
 
+## History & Legal
+
+This is version 3.0 of "Learn TI-83 Plus Assembly In 28 Days." Versions
+up to 2.0 were written by Sean "Sigma" McLaughlin, most recently published
+in 2004. While the substantial content of this tutorial series remains
+accurate now, 10 years later, there remain certain factual, typographic and
+other errors. This version is the result of a team effort to correct those
+errors and in general update this tutorial for the 5^th^ decade.[^posix]
+
+### Previous Versions
+
+ * Version 2.0: published May 10, 2004 by Sean McLaughlin.
+ * Version 3.0 and later: an ongoing effort by numerous contributors,
+   first set up in 2012 and begun in earnest in mid-2014.
+   You can always find the latest version at
+   <https://bitbucket.org/tari/83pa28d/>.
+
+For information on the authors, refer to the [acknowledgements] page.
+
+This writing is licensed under the GNU Free Documentation License,
+which grants you the right to copy and redistribute it freely. You may
+also modify it and distribute those modifications, subject to certain
+restrictions. Refer to the [full license text][gfdl] for details.
+
+[acknowledgements]: ref/credit.html
+[gfdl]: gfdl.html
+
+### Warranty disclaimer
+
+THIS DOCUMENT IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS DOCUMENT, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+That is to say: while we have attempted to ensure that the information
+in this tutorial is accurate and safe, we cannot be held responsible for
+any damage or injury sustained as a result of its use.
+
+[^posix]: Reckoned of course by UNIX time, the 2010s being the fifth decade
+since the UNIX epoch (which begins at the beginning of 1970).
