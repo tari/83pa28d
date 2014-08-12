@@ -21,8 +21,6 @@ statement you see in higher-lever languages.
 
 `JP label`
 :    Causes execution to jump to `label`.
-`JR label`
-:    Causes execution to jump to `label`.
 
 At first glance, JP and JR look exactly the same. There are a few key
 differences, though:
