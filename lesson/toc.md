@@ -3,13 +3,13 @@ title: Table of Contents
 tocpath:
 ---
 
-<div class="no-pop">
 ## Lessons
 
 [Welcome](../welcome.html)
 
 ### Week 1
 
+<div class="no-pop">
 Day 1
 :    [Introduction](day01.html)
 Day 2
@@ -24,9 +24,11 @@ Day 6
 :    [Stacks](day06.html)
 Day 7
 :    [Control Structures](day07.html)
+</div>
 
 ### Week 2
 
+<div class="no-pop">
 Day 8
 :    [Bit-Level Instruction](day08.html)
 Day 9
@@ -41,9 +43,11 @@ Day 13
 :    [More Program Control](day13.html)
 Day 14
 :    [Procedures](day14.html)
+</div>
 
 ### Week 3
 
+<div class="no-pop">
 Day 15
 :    [Advanced Math](day15.html)
 Day 16
@@ -58,9 +62,11 @@ Day 20
 :    [Programs and System Variables](day20.html)
 Day 21
 :    [The VAT](day21.html)
+</div>
 
 ### Week 4
 
+<div class="no-pop">
 Day 22
 :    [Port Input](day22.html)
 Day 23
@@ -75,11 +81,13 @@ Day 27
 :    [String and Numerical Input](day27.html)
 Day 28
 :    [Putting It All Together](day28.html)
+</div>
 
 ## Appendices
 
 ### Technical References and Datasheets
 
+<div class="no-pop">
 [Z80 Instruction Set](../ref/z80is.html)
 :    A listing of all the Z80 instructions available. Includes opcodes and the
      ones THE MAN doesn't want you to know about.
@@ -95,6 +103,7 @@ Day 28
 :    Table of most of the calculator's system flags.
 [Crashes](../ref/crash.html)
 :    Recovering from crashes.
+</div>
 
 ### Legalities
 
@@ -102,6 +111,7 @@ Day 28
 
 ### Miscellaneous
 
+<div class="no-pop">
 [Formatting in this Guide](../ref/format.html)
 :    Style conventions.
 [Acknowledgements](../ref/credit.html)
@@ -109,5 +119,5 @@ Day 28
 [Links](../ref/linx.html)
 :    A collection of websites you may find to be of much use when using this
      guide.
-
 </div>
+
