@@ -242,7 +242,7 @@ I think you'll agree that this isn't quite what you want in a
 time-critical section of your code (and the decompression code isn't any
 prettier), but that's just the price you pay.
 
-There are two other instructions you might find useful for packing: RRD
-and RLD. Since they are for BCD, I won't cover them, but you can see
-their effect in the [Z80 Instruction Set](z80is.html) if you're curious.
+There are two other instructions you might find useful for packing: RRD and
+RLD. Since they are for BCD, I won't cover them, but you can see their effect
+in the [Z80 Instruction Set](../ref/z80is.html) if you're curious.
 
