@@ -1,5 +1,6 @@
 ---
 title: Formatting of This Guide
+tocpath: ../lesson/
 ---
 
 ## Headings

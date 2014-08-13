@@ -139,7 +139,7 @@ displaying characters. This is what is meant by a "null-terminated
 string" ("null" is just a fancy (or German) way to say "zero"). If you
 don't supply a zero, `PutS` will keep on displaying characters until it
 comes across a byte containing zero (try it and see for yourself, it
-won't [cause a crash](../ref/lawyer.html) if you're wondering).
+won't [cause a crash](../ref/crash.html) if you're wondering).
 
 Small Variable-Width Text
 -------------------------

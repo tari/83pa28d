@@ -1,5 +1,6 @@
 ---
 title: Acknowledgements
+tocpath: ../lesson/
 ---
 
 This page is split into two groups: the contributors to the effort to
