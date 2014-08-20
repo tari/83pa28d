@@ -12,6 +12,7 @@ $hex = [a-fA-F0-9]
 
 
 tokens :-
+    \n                          { \p s -> BOL s }
     "a"|"f"|"b"|"c"|"d"|"e"|"h"|"l"|"ixh"|"ixl"|"iyh"|"iyl"|"r"|"i" -- not even a little bit elegant, but easier than concocting and testing regexes
     | "A"|"F"|"B"|"C"|"D"|"E"|"H"|"L"|"IXH"|"IXL"|"IYH"|"IYL"|"R"|"I"   { \p s -> EightBit s}
     
@@ -55,7 +56,7 @@ tokens :-
     | \<\< | \>\>
     | "#"[a-zA-z]+              { \p s -> Operator s }
 
-    $white+
+    ($white # [\n])+
     | [\(\)\,\.]                { \p s -> Text s }
 
     ";".*                       { \p s -> Comment s }
@@ -73,10 +74,11 @@ data Token = Macro String
            | SixteenBit String
            | EightBit String
            | FlagBit String
+           | BOL String
            deriving (Eq, Show)
 
 formatHTML :: [Token] -> String
-formatHTML tokens = "<pre class='z80'>" ++ (concatMap formatHTML' tokens) ++ "</pre>"
+formatHTML tokens = "<pre class='z80'>\n<span class='BOL'></span>" ++ (concatMap formatHTML' tokens) ++ "</pre>"
 
 formatHTML' :: Token -> String
 formatHTML' (Macro s) = hs "macro" s
@@ -90,6 +92,7 @@ formatHTML' (SixteenBit s) = hs "sixteenbit register" s
 formatHTML' (FlagBit s) = hs "flagbit register" s
 formatHTML' (Text s) = s
 formatHTML' (Keyword s) = hs "keyword" s
+formatHTML' (BOL s) = hs "BOL" s
 
 --- Generate an HTML span with CSS class and content.
 hs :: String -> String -> String

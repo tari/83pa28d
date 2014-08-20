@@ -116,6 +116,21 @@ pre > code {
     border-style: none;
 }
 
+.z80 {
+    counter-reset: BOL;
+}
+
+.z80 .BOL:after {
+    counter-increment: BOL;
+    content: counter(BOL);
+    display: inline-block;
+    margin-right: 5px;
+    padding-right: 5px;
+    text-align: right;
+    width: 2em;
+    border-right: 1px solid #CCC
+}
+
 .z80 .label {
     color: rgb(38,71,75);
 }
