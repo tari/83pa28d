@@ -537,19 +537,23 @@ an element, you can put the structure base address into HL, then add the
 offset. Alternatively, you might use IX and use the equated
 displacement. Slow, but easy to follow.
 
-Example, given this instance of our CD:
+For example, given this instance of our CD:
 
-    CD.title   =  "P·u·l·s·e"
-    CD.band    =  "Pink Floyd"
-    CD.release =  1995
-    CD.tracks  =  23
-    CD.length  =  8863
-    CD.rating  =  10   // Watch the video, it ownz.
+```c
+struct CD myCD = {
+    .title   =  "P·u·l·s·e"
+    .band    =  "Pink Floyd"
+    .release =  1995
+    .tracks  =  23
+    .length  =  8863
+    .rating  =  10   // Watch the video, it ownz.
+};
+```
 
 And say we wanted to set the `length` element to its proper value:
 
 ```z80
-	LD     HL, disc01 + length
+	LD     HL, disc01 + CD.length
 	LD     (HL), $9F
 	INC    HL
 	LD     (HL), $22
@@ -559,13 +563,31 @@ And say we wanted to set the `length` element to its proper value:
 	LD     (IX + CD.length + 1), $22
 
 disc01:
-.DB   "Pulse"
-.DB   "Pink Floyd"
-.DW   1995
-.DB   23
-.DW   6502
-.DB   10
+.db   "Pulse", 0
+.block 32 - 6
+.db   "Pink Floyd", 0
+.block 32 - 11
+.dw   1995
+.db   23
+.dw   6502
+.db   10
 ```
+
+We used the `.block` directive here to pad the strings out to the
+correct length.
+
+`.block n`
+:    Advances the assembler's program counter by `n` bytes.
+
+If we didn't do that the structure would be too small, since the assembler
+would put "Pink Floyd" immediately following "Pulse" and our offsets such
+as `CD.length` wouldn't be correct for this CD instance[^terminator].
+
+[^terminator]: Note that because each of these strings is in a buffer
+32 bytes long, it can only contain 31 characters if there is a null
+terminator. You could instead opt to pad shorter strings with spaces
+so you can use all 32 bytes, though doing so is slightly more difficult
+because most strings *are* null-terminated.
 
 ### Arrays of Structures
 
