@@ -86,9 +86,12 @@ emulator, which is a program that runs on your computer and acts like a
 calculator would.
 
 Our emulator of choice here is [WabbitEmu](https://wabbit.codeplex.com/), as
-it is the best emulator that is still actively developed.
-
-**TODO: Wabbit setup instructions here. ROM dumping instructions here.**
+it is the best emulator that is still actively developed. All you have to do
+is install and run it. Then, you need a ROM image. A ROM image is the software,
+or OS of the calculator. You can get a ROM image by going through a process
+called ROM dumping. Please note that obtaining a ROM image in a way other
+than dumping your calculator's ROM to the computer is illegal. The tool of
+choice for a ROM dump is [rom8x] (http://www.ticalc.org/archives/files/fileinfo/373/37341.html).
 
 ## Creating your first program
 
