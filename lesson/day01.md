@@ -92,8 +92,22 @@ or OS of the calculator. You can get a ROM image by going through a process
 called ROM dumping. Please note that obtaining a ROM image in a way other
 than dumping your calculator's ROM to the computer is illegal. The tool of
 choice for a ROM dump is [rom8x](http://www.ticalc.org/archives/files/fileinfo/373/37341.html).
-To dump your ROM, find the folder named after your calculator. A TI-84+CSE
-would be under 84C, a TI-83+ would be under 83+,
+
+To dump your ROM, find the folder named after your calculator. For example, a
+TI-84+CSE would be under 84C, a TI-83+ would be under 83+, and a TI-83+ Silver
+Edition would be under 83S. Send those two .8xp files to your calculator, and
+run them one at a time. You might need to clear out some RAM space, though.
+Send the AppVar created by the program under its name to your computer. Then,
+download the latest OS upgrade file for your model on [TI's website](http://education.ti.com/).
+Then, in the Command Prompt window, navigate to the folder with rom8x.exe,
+the two AppVars, and the OS upgrade file, and type this in:
+
+rom8x 84PBE -1 MyDump1.8xv -2 MyDump2.8xv -u (OS upgrade file).8xu
+
+Normally, you can leave out the -1 and -2 tags on the command. You can't, in
+version 0.3.1, because there is a bug that can't use the normal command.
+Now, it Wabbitemu, you can upload the rom image that rom8x creates and you
+have a working emulator.
 
 ## Creating your first program
 
