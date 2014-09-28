@@ -91,7 +91,9 @@ is install and run it. Then, you need a ROM image. A ROM image is the software,
 or OS of the calculator. You can get a ROM image by going through a process
 called ROM dumping. Please note that obtaining a ROM image in a way other
 than dumping your calculator's ROM to the computer is illegal. The tool of
-choice for a ROM dump is [rom8x] (http://www.ticalc.org/archives/files/fileinfo/373/37341.html).
+choice for a ROM dump is [rom8x](http://www.ticalc.org/archives/files/fileinfo/373/37341.html).
+To dump your ROM, find the folder named after your calculator. A TI-84+CSE
+would be under 84C, a TI-83+ would be under 83+,
 
 ## Creating your first program
 
