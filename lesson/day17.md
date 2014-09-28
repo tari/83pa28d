@@ -102,30 +102,30 @@ standard ASCII, 128 bits, or 16 bytes are needed for a full character
 set.
 
 <table>
-<tr>
-    <td colspan="8">Byte 0</td>
-    <td>&#8230;</td>
-    <td colspan="8">Byte 15</td>
-</tr>
-<tr>
-    <td>0</td>
-    <td>1</td>
-    <td>2</td>
-    <td>3</td>
-    <td>4</td>
-    <td>5</td>
-    <td>6</td>
-    <td>7</td>
-    <td>&#8230;</td>
-    <td>120</td>
-    <td>121</td>
-    <td>122</td>
-    <td>123</td>
-    <td>124</td>
-    <td>125</td>
-    <td>126</td>
-    <td>127</td>
-</tr>
+ <tr>
+  <td colspan="8">Byte 0</td>
+  <td>&#8230;</td>
+  <td colspan="8">Byte 15</td>
+ </tr>
+ <tr>
+  <td>0</td>
+  <td>1</td>
+  <td>2</td>
+  <td>3</td>
+  <td>4</td>
+  <td>5</td>
+  <td>6</td>
+  <td>7</td>
+  <td>&#8230;</td>
+  <td>120</td>
+  <td>121</td>
+  <td>122</td>
+  <td>123</td>
+  <td>124</td>
+  <td>125</td>
+  <td>126</td>
+  <td>127</td>
+ </tr>
 </table>
 
 Bit seven of byte 0 corresponds to ASCII code 0. If this bit is set, the

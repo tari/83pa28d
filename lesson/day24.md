@@ -163,19 +163,19 @@ The result of the AND `7` gave us the position of the pixel in a byte
 as:
 
 <table>
-    <tr>
-        <td>0</td>
-        <td>1</td>
-        <td>2</td>
-        <td>3</td>
-        <td>4</td>
-        <td>5</td>
-        <td>6</td>
-        <td>7</td>
-    </tr>
-    <tr>
-        <td colspan="8">One byte</td>
-    </tr>
+ <tr>
+  <td>0</td>
+  <td>1</td>
+  <td>2</td>
+  <td>3</td>
+  <td>4</td>
+  <td>5</td>
+  <td>6</td>
+  <td>7</td>
+ </tr>
+ <tr>
+  <td colspan="8">One byte</td>
+ </tr>
 </table>
 
 Therefore we can create a bitmask by rotating \$80 right by the bit

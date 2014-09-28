@@ -32,46 +32,46 @@ the entries are written backwards!
 ### Program, AppVar, and Group
 
 <table>
-    <tr>
-        <td>-14</td> <td>-13</td> <td>-12</td>
-        <td>-11</td> <td>-10</td> <td>-9</td>
-        <td>-8</td> <td>-7</td> <td>-6</td>
-        <td>-5</td> <td>-4</td> <td>-3</td>
-        <td>-2</td> <td>-1</td> <td>0</td>
-    </tr>
-    <tr>
-        <td colspan="8">Variable name - Eight tokens maximum</td>
-        <td>NL</td>
-        <td>Page</td>
-        <td>DAH</td>
-        <td>DAL</td>
-        <td>Ver</td>
-        <td>T2</td>
-        <td>T</td>
-    </tr>
+ <tr>
+  <td>-14</td> <td>-13</td> <td>-12</td>
+  <td>-11</td> <td>-10</td> <td>-9</td>
+  <td>-8</td> <td>-7</td> <td>-6</td>
+  <td>-5</td> <td>-4</td> <td>-3</td>
+  <td>-2</td> <td>-1</td> <td>0</td>
+ </tr>
+ <tr>
+  <td colspan="8">Variable name - Eight tokens maximum</td>
+  <td>NL</td>
+  <td>Page</td>
+  <td>DAH</td>
+  <td>DAL</td>
+  <td>Ver</td>
+  <td>T2</td>
+  <td>T</td>
+ </tr>
 </table>
 
 ### List
 
 <table>
-    <tr>
-        <td>-13</td> <td>-12</td>
-        <td>-11</td> <td>-10</td> <td>-9</td>
-        <td>-8</td> <td>-7</td> <td>-6</td>
-        <td>-5</td> <td>-4</td> <td>-3</td>
-        <td>-2</td> <td>-1</td> <td>0</td>
-    </tr>
-    <tr>
-        <td colspan="5">List name - 5 tokens max</td>
-        <td>tVarLst</td>
-        <td>NL</td>
-        <td>Page</td>
-        <td>DAH</td>
-        <td>DAL</td>
-        <td>Ver</td>
-        <td>T2</td>
-        <td>T</td>
-    </tr>
+ <tr>
+  <td>-13</td> <td>-12</td>
+  <td>-11</td> <td>-10</td> <td>-9</td>
+  <td>-8</td> <td>-7</td> <td>-6</td>
+  <td>-5</td> <td>-4</td> <td>-3</td>
+  <td>-2</td> <td>-1</td> <td>0</td>
+ </tr>
+ <tr>
+  <td colspan="5">List name - 5 tokens max</td>
+  <td>tVarLst</td>
+  <td>NL</td>
+  <td>Page</td>
+  <td>DAH</td>
+  <td>DAL</td>
+  <td>Ver</td>
+  <td>T2</td>
+  <td>T</td>
+ </tr>
 </table>
 
 ### Real, Complex, Matrix, Equation, GDB, and Picture
