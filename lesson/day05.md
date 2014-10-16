@@ -204,9 +204,9 @@ it's a cake walk, because you only need a sequence of ADD instructions.
 
 ```z80
 	LD     HL, 10
-	ADD    HL, HL        ; 10 * 21 = 20
-	ADD    HL, HL        ; 10 * 22 = 40
-	ADD    HL, HL        ; 10 * 23 = 80
+	ADD    HL, HL        ; 10 * 2^1 = 20
+	ADD    HL, HL        ; 10 * 2^2 = 40
+	ADD    HL, HL        ; 10 * 2^3 = 80
 	; et cetera
 ```
 
