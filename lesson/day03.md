@@ -339,7 +339,7 @@ and say "Okay, this here will be the number of bixie manifestations recorded
 on the Kamchatka Linux newsgroup", and the next minute you're using it to
 store the state of the memory manager, you're a code grinder who gets a big
 red sticker that says "slap me, I'm a jackass". But now I'm just rambling,
-back to the action :-D
+back to the action. :-D
 
 When you run a program, the calculator takes the series of numbers that makes
 up the program, transfers it to some other place in RAM (to address $9D95 as
