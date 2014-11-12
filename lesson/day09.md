@@ -207,9 +207,9 @@ info.
 
 | Element              |    Range of Values                          |  Minimum Bits required |
 |----------------------|---------------------------------------------| -----------------------|
-|  Month               | 0 to 11 (January to December)               |  4 (`24 = 16`)         |
-|  Day                 | 0 to 30 (zero indexed  for convenience)     |  5 (`25 = 32`)         |
-|  Year                | 0 to 127 (as an offset from 1900 from 1900) |  7 (`27 = 128`)        |
+|  Month               | 0 to 11 (January to December)               |  4 (`2^4 = 16`)         |
+|  Day                 | 0 to 30 (zero indexed  for convenience)     |  5 (`2^5 = 32`)         |
+|  Year                | 0 to 127 (as an offset from 1900 from 1900) |  7 (`2^7 = 128`)        |
 
 To compress from three bytes to two.
 

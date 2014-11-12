@@ -161,7 +161,7 @@ format for such a counter is:
     Loop:
         LD     A, (count)
         INC    A
-        AND    2n-1
+        AND    2^n-1
         LD     (count), A
         JP     Z, Fishkill
         JR     Loop

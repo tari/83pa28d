@@ -363,7 +363,7 @@ hexadecimalitude, in case you were wondering.
 
 A literal constant has a value that is implicit from the characters and
 symbols that comprise it. You have no difficulty figuring out what the literal
-constants 86 and "mag ik heb een koekje?" mean by just looking at them.
+constants 86 and "Mag ik een koekje hebben?" mean by just looking at them.
 Literal constants are typed in the source code as needed for trivial purposes.
 
 ### Integers
