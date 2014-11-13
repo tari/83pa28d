@@ -147,6 +147,7 @@ move them around.
 
 `RRC { reg8 | (HL) }`
 :    Rotate right with carry. b~0~ to b~7~ and carry.
+
      S
      :    affected
      Z

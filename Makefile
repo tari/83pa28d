@@ -4,7 +4,7 @@ HIGHLIGHT ?= yes
 HSC ?= ghc
 ALEX ?= alex
 
-MD_DIALECT := markdown+tex_math_dollars+definition_lists
+MD_DIALECT := markdown+tex_math_dollars+definition_lists+compact_definition_lists
 PANDOC_OPTS := -f $(MD_DIALECT) -t html5 --template=stuff/template.html --toc -c stuff/style.css --indented-code-classes=z80
 
 ifeq ($(HIGHLIGHT),yes)
