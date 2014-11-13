@@ -223,7 +223,7 @@ To compress from three bytes to two.
         LD     A, (temp_day)   ; Temporary uncompressed day
         LD     B, 5
     PackDay:
-        RLA
+        RRA
         RR     H              ; Transfer to H
         RR     L              ; Catch runoff
         DJNZ   PackDay
@@ -231,7 +231,7 @@ To compress from three bytes to two.
         LD     A, (temp_month) ; Temporary uncompressed month
         LD     B, 4
     PackMonth:
-        RLA
+        RRA
         RR     H
         RR     L
         DJNZ   PackMonth
