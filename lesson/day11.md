@@ -246,7 +246,7 @@ prevent this, you need to wipe out Text Shadow.
      Destroys
      :    All
 
-`_ClrTxtShad`
+`_ClrTxtShd`
 :    Sets text shadow to all spaces.
 
      Destroys
