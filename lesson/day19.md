@@ -99,7 +99,7 @@ tVarLst, and either:
 
 | OP1 | +1 | +2 | +3 | +4 | +5 | +6 | +7 | +8 |    |
 |-----|----|----|----|----|----|----|----|----|----|
-| `RealObj` | `tVarLst` | `tL1` | `$00` | ?? | ?? | ?? | ?? | ?? | List `L`1 |
+| `ListObj` | `tVarLst` | `tL1` | `$00` | ?? | ?? | ?? | ?? | ?? | List `L`1 |
 | `CListObj` | `tVarLst` | `tD` | `tI` | `tS` | `tT` | `$00` | ?? | ?? | Complex list L`DIST` |
 
 ### Matrices, Pictures, Strings
