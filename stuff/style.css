@@ -56,7 +56,7 @@ article {
 }
 
 #TOC, #lesson-difficulty-outer, div.math {
-        background-color: #FFFFFF;
+    background-color: #FFFFFF;
     border: 1px solid #CCC;
     border-radius: 3px;
     padding: 1px 3px;
@@ -109,6 +109,7 @@ pre, code {
     border: 1px solid #CCC;
     border-radius: 3px;
     padding: 1px 3px;
+    overflow-x: auto;
 }
 
 /* Multiline code blocks */
@@ -180,10 +181,15 @@ dt {
     text-align: right;
     font-weight: bold;
     margin-right: .5em;
-    min-width: 5em;
 }
 dt:after {
     content: ":";
+}
+dd {
+    margin-left: 5em;
+}
+dd p {
+    margin: 0;
 }
 
 dl, .pop {
@@ -191,12 +197,36 @@ dl, .pop {
     color: white;
     padding: .5em;
 }
-dl code, .pop code {
-    color: black;
+dl a, .pop a {
+    color: #aaa;
 }
 .no-pop dl {
     background-color: #F5F5F5;
     color: black;
+}
+.no-pop dl a {
+    /* Mostly for the TOC */
+    color: #2C4388;
+}
+
+dl code, .pop code {
+    color: black;
+}
+
+dl div {
+    clear: left;
+    padding: .25em;
+}
+dl div * {
+    padding: 0;
+}
+dl div:before {
+    float: left;
+    opacity: .5;
+    content: attr(data-title);
+    text-transform: capitalize;
+    width: 4em;
+    margin-left: -5em;
 }
 
 table {

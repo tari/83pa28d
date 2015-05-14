@@ -9,7 +9,7 @@ tocpath:
 
 ### Week 1
 
-<div class="no-pop">
+<div class="no-pop" style="color: #2C4388">
 Day 1
 :    [Introduction](day01.html)
 Day 2

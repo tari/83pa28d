@@ -35,19 +35,21 @@ To begin with, we'll look at displaying single characters, then strings.
 `_PutMap`
 :    Displays a character at the current cursor position.
 
-     Input:
-
+     <div data-title="inputs">
      `A`
      :    [ASCII code](../ref/lfont.html) of character to display.
+     </div>
+
+<span></span>
 
 `_PutC`
 :    Displays a character at the current cursor position, and advances the
      cursor.
 
-     Input:
-
+     <div data-title="inputs">
      `A`
      :    [ASCII code](../ref/lfont.html) of character to display.
+     </div>
 
 ### Program 11-1
 
@@ -81,6 +83,9 @@ Other ways to affect the cursor position:
 `_NewLine`
 :    Moves cursor to start of next line. (CurCol) = 0, (CurRow) is
      incremented (provided the display didn't scroll).
+
+<span></span>
+
 `_HomeUp`
 :    (CurCol) = 0, (CurRow) = 0.
 
@@ -92,21 +97,21 @@ That wasn't so bad was it? Now for strings; a little more complex.
 :    Display a null-terminated string starting at the current cursor
      position.
 
-     Input
-
+     <div data-title="inputs">
      `HL`
      :    Pointer to start of string.
+     </div>
 
-     Output
-
+     <div data-title="outputs">
      `HL`
      :    Address of byte after the null.
+     </div>
 
-     Remarks
-
+     <div data-title="remarks">
      If the string is longer than the current row, will wrap to next row.
      Will scroll display if necessary. Cursor postion set to postion after
      the last character in the string.
+     </div>
 
 A *pointer* is a variable or register that holds the address of another
 variable. When `PutS` says it needs a pointer to the start of the
@@ -151,13 +156,14 @@ Again, single characters first, then strings.
 `_VPutMap`
 :    Displays a character at the current pen location.
 
-     Input
-
+     <div data-title="input">
      `A`
      :    [ASCII code](../ref/sfont.html) of character to display.
+     </div>
 
-     Destroys
-     :    All but `BC` and `HL`.
+     <div data-title="Destroys">
+     All but `BC` and `HL`.
+     </div>
 
 ### Program 11-3
 
@@ -174,15 +180,14 @@ Display the character 'q' in small font at (26, 31):
 `_VPutS`
 :    Displays a null-terminated string starting at the current pen location.
 
-     Input
-
+     <div data-title="input">
      `HL`
      :    Pointer to start of string.
 
-     Output
-
+     <div data-title="output">
      `HL`
      :    Address of byte after the null.
+     </div>
 
 ### The Procedure
 
@@ -208,16 +213,18 @@ Simple, just display the value of HL in the large font.
      five characters. For example, if HL ` = 125`, output will be \<space\>
      \<space\> '`1`' '`2`' '`5`'.
 
-     Input
-
+     <div data-title="input">
      `HL`
      :    Number to display.
+     </div>
      
-     Destroys 
-     :    `AF DE HL`
+     <div data-title="destroys">
+     `AF`, `DE`, `HL`
+     </div>
      
-     Remarks
-     :    String is cut-off at the screen's edge.
+     <div data-title="remarks">
+     String is cut-off at the screen's edge.
+     </div>
 
 Text Shadow
 -----------
@@ -243,21 +250,24 @@ prevent this, you need to wipe out Text Shadow.
 `_ClrScrnFull`
 :    Clears the screen and sets text shadow to all spaces.
 
-     Destroys
-     :    All
+     <div data-title="destroys">
+     All
+     </div>
+
+<span></span>
 
 `_ClrTxtShd`
 :    Sets text shadow to all spaces.
 
-     Destroys
-     :    `BC DE HL`
+     <div data-title="destroys">
+     `BC`, `DE`, `HL`
+     </div>
 
-You'll probably want to stop `PutS` and `PutC` from writing to text
-shadow. This is done by resetting the system flag AppTextSave at (IY +
-AppFlags) This will, as an added bonus, free up text shadow for variable
-storage. You will then have to clear it when you exit, or you'll see
-junk on the screen. Anyone who's ever played ZTetris knows what I'm
-talking about.
+You'll probably want to stop `PutS` and `PutC` from writing to text shadow. This
+is done by resetting the system flag `AppTextSave` at `(IY + AppFlags)` This
+will, as an added bonus, free up text shadow for variable storage. You will then
+have to clear it when you exit, or you'll see junk on the screen. Anyone who's
+ever played ZTetris knows what I'm talking about.
 
 Formatting Text
 ---------------
@@ -267,20 +277,20 @@ display.
 
 ### Inverted Text — The Pinnacle of Monochrome Graphics
 
-This is probably the most widely used flag. If TextInverse, (IY +
-TextFlags) is set, text will appear in reverse video (white on black).
+This is probably the most widely used flag. If `TextInverse, (IY +
+TextFlags)` is set, text will appear in reverse video (white on black).
 This gives the effect of a highlight, and can also give a psychedelic,
 seizure-inducing flash effect.
 
 ### Large Text — Where You Want It, When You Want It
 
-When FracDrawLFont, (IY + FontFlags) is set, then any routine that
+When `FracDrawLFont, (IY + FontFlags)` is set, then any routine that
 normally uses the small font will instead use the large. The point here
 is to display large text that isn't confined to a 16×8 grid.
 
 ### Scrolling — I Can't Think of a Clever Subtitle
 
-If you reset AppAutoScroll, (IY + AppFlags), the display will not scroll
-when (CurRow) is greater than 7. The problem is that you have to make
-sure to set (CurRow) to under 8 when you want to display text again, or
+If you reset `AppAutoScroll, (IY + AppFlags)`, the display will not scroll
+when `(CurRow)` is greater than 7. The problem is that you have to make
+sure to set `(CurRow)` to under 8 when you want to display text again, or
 it'll suck to be you.
