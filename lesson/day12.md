@@ -20,13 +20,15 @@ really only useful for games, so it'll be taken care of later.
 `_GetKey`
 :    Pauses the program until a key is pressed.
 
-     Output
-
+     <div data-title="outputs">
      `A`
      :    [Key code](../ref/keycodes.html) of key pressed, or 0 if the [ON] key
           was pressed.
-     Destroys
-     :    `BC DE HL`
+     </div>
+
+     <div data-title="destroys">
+     `BC DE HL`
+     </div>
 
 While `GetKey` is waiting for a key, you can do all sorts of things...
 
@@ -46,10 +48,13 @@ This is an undocumented ROM call. You must put \_GetKeyRetOff .EQU
 :    Exactly the same as `GetKey`, except that [2nd][ON] combination will
      return kOff in A.
 
-     Location
-     :    `$500B`
-     Remarks
-     :    `7, (IY + $28)` is set. You will learn what this means later.
+     <div data-title="location">
+     `$500B`
+     </div>
+
+     <div data-title="remarks">
+     `7, (IY + $28)` is set. You will learn what this means later.
+     </div>
 
 Something about `GetKeyRetOff` you should know: once you execute one
 `GetKeyRetOff`, all subsequent `_GetKey`s will behave similarly. This
@@ -138,18 +143,18 @@ terminate.
 `_GetCSC`
 :    Gets a key. Unlike `GetKey`, does not wait.
 
-     Output
-
+     <div data-title="outputs">
      `A`
      :    [Scan code](../ref/scancodes.html) of key pressed, or 0 if no key was
           pressed.
+     </div>
 
-     Destroys
-
+     <div data-title="destroys">
      `HL`
      :    `GetCSC` does not support any of the special features `GetKey` does. It
           also doesn't support 2nd or Alpha shift keys. It is a little faster than
           `GetKey`, and it also doesn't destroy as many registers.
+     </div>
 
 ### Program 12-3
 
