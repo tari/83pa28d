@@ -22,8 +22,8 @@ really only useful for games, so it'll be taken care of later.
 
      <div data-title="outputs">
      `A`
-     :    [Key code](../ref/keycodes.html) of key pressed, or 0 if the [ON] key
-          was pressed.
+     :    [Key code](../ref/keycodes.html) of key pressed, or 0 if the
+          <kbd>ON</kbd> key was pressed.
      </div>
 
      <div data-title="destroys">
@@ -34,19 +34,19 @@ While `GetKey` is waiting for a key, you can do all sorts of things...
 
 -   Change the contrast (like you normally would).
 -   Get screen shots with the Graph Link.
--   Turn the calculator off by hitting [2nd][ON]. In this case, the
-    program will terminate.
+-   Turn the calculator off by hitting <kbd>2nd</kbd><kbd>ON</kbd>. In this
+    case, the program will terminate.
 
 The third feature is bad: It will cause a memory leak. This means that
 the RAM the program takes up won't be reclaimed until you reset. To
 avoid this so you can exit the program manually:
 
-This is an undocumented ROM call. You must put \_GetKeyRetOff .EQU
-`$500B` in your program.
+This is an undocumented ROM call. You must put `_GetKeyRetOff .EQU
+$500B` in your program.
 
 `_GetKeyRetOff`
-:    Exactly the same as `GetKey`, except that [2nd][ON] combination will
-     return kOff in A.
+:    Exactly the same as `GetKey`, except that <kbd>2nd</kbd><kbd>ON</kbd>
+     combination will return `kOff` in A.
 
      <div data-title="location">
      `$500B`
@@ -57,11 +57,11 @@ This is an undocumented ROM call. You must put \_GetKeyRetOff .EQU
      </div>
 
 Something about `GetKeyRetOff` you should know: once you execute one
-`GetKeyRetOff`, all subsequent `_GetKey`s will behave similarly. This
-includes the `_GetKey` that the TI-OS is running at the homescreen, so
-you won't be able to turn off the calculator immediately after quitting
-the program. You need to press [2nd][Quit] or go into certain menus to
-turn this effect off.
+`GetKeyRetOff`, all subsequent `_GetKey`s will behave similarly. This includes
+the `_GetKey` that the TI-OS is running at the homescreen, so you won't be able
+to turn off the calculator immediately after quitting the program. You need to
+press <kbd>2nd</kbd><kbd>Quit</kbd> or go into certain menus to turn this effect
+off.
 
 ### Program 12-1
 
@@ -88,7 +88,7 @@ in all those BASIC programmers, and get rid of it.
 `_RunIndicOff`
 :    Deactivates the Run Indicator.
 
-And, if you want, it's opposite.
+And, if you want, its opposite.
 
 `_RunIndicOn`
 :    Activates the Run Indicator.
@@ -100,7 +100,7 @@ pressed, or loop back to the `GetKey` otherwise.
 ### Program 12-2
 
 This program will demonstrate using `GetKey` in a loop. You use the up
-and down arrow keys to change the number, and press [CLEAR] to
+and down arrow keys to change the number, and press <kbd>CLEAR</kbd> to
 terminate.
 
         b_call(_RunIndicOff)       ; Kill the run indicator.
@@ -151,10 +151,11 @@ terminate.
 
      <div data-title="destroys">
      `HL`
-     :    `GetCSC` does not support any of the special features `GetKey` does. It
-          also doesn't support 2nd or Alpha shift keys. It is a little faster than
-          `GetKey`, and it also doesn't destroy as many registers.
      </div>
+
+`GetCSC` does not support any of the special features `GetKey` does. It
+also doesn't support 2nd or Alpha shift keys. It is a little faster than
+`GetKey`, and it also doesn't destroy as many registers.
 
 ### Program 12-3
 
