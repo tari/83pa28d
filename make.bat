@@ -1,7 +1,7 @@
 @echo off
 
-set MARKDOWN=markdown+definition_lists
-set PANDOC_OPTS=-f %MARKDOWN% -t html5 --template=stuff\template.html --toc -c stuff\style.css
+set MARKDOWN=markdown+tex_math_dollars+definition_lists+compact_definition_lists
+set PANDOC_OPTS=-f %MARKDOWN% -t html5 --template=stuff\template.html --toc -c stuff\style.css --indented-code-classes=z80
 
 if "%1"=="all" goto :build
 if "%1"=="" goto :build
