@@ -35,7 +35,7 @@ Randall Hyde
      later exists because of the information in it. In fact, you could say
      this is sort of a ~~blatant rip-off~~ homage to AoA.
 Patai Gergely
-:    For his incredible [Z80 assembly guide](http://www.hszk.bme.hu/~pg429/z80guide/).
+:    For his incredible [Z80 assembly guide](http://sgate.emt.bme.hu/patai/publications/z80guide/).
 James Matthews
 :    He gets in, because I was so dissatisfied with AsmGuru that I decided to
      start this project. Hahahahahaha!!!
