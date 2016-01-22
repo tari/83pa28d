@@ -29,8 +29,8 @@ useage only.
 |-------|--------|---------------|
 |\$00 | RealObj | Real number |
 |\$01 | ListObj | List |
-|\$02 | MatObj 	Matrix |
-|\$03 | EquObj 	Equation |
+|\$02 | MatObj  | Matrix |
+|\$03 | EquObj  | Equation |
 |\$04 | StrngObj | String |
 |\$05 | ProgObj | Program |
 |\$06 | ProtProgObj | Protected program <br/>(Hidden from EDIT menu) |
@@ -168,122 +168,144 @@ prevent problems.
 -   Store data to the variable before the program ends, or the
     calculator will freeze.
 
-To check if a variable exists
+To check if a variable exists:
 
 `_FindSym`
 :    Finds variables that aren't programs, AppVars, or groups.
           
-     INPUT
-     :    `OP1`
-          :    Variable name. Not necessary to have the object type set.
+     <div data-title="inputs">
+     OP1
+     :    Variable name. Not necessary to have the object type set.
+     </div>
      
-     OUTPUT
-     :    `F`
-          :    Carry set if not found, reset if exists.
-          `A`
-          :    Object type. Bits 5-7 are basically garbage, so if you want to use it,
-               do AND` $1F`.
-          `B`
-          :    Archive status. 0 if in RAM
-          `DE`
-          :    Address of first byte of data
-          `HL`
-          :    Address of symbol table entry
+     <div data-title="outputs">
+     F
+     :    Carry set if not found, reset if exists.
+     A
+     :    Object type. Bits 5-7 are basically garbage, so if you want to use it,
+          do `AND $1F`.
+     B
+     :    Archive status. 0 if in RAM
+     DE
+     :    Address of first byte of data
+     HL
+     :    Address of symbol table entry
+     </div>
      
-     DESTROYS
-     :    If variable is found, then `C`. If variable is not found, then `All`.
+     <div data-title="destroys">
+     If variable is found, then C. If variable is not found, then all.
+     </div>
+
+or
 
 `_ChkFindSym     `
 :    Finds any variable.
      
-     INPUT
-     :    `OP1`
-          :    Variable name.
+     <div data-title="inputs">
+     OP1
+     :    Variable name.
+     </div>
      
-     OUTPUT
-     :    See `_FindSym`
+     <div data-title="outputs">
+     See `_FindSym`
+     </div>
      
 To delete a variable
      
 `_DelVar     `
 :    Deletes a variable if it's in RAM.
      
-     INPUT
-     :    `HL`
-          :    Pointer to start of symbol table entry.     
-          `DE`
-          :    Pointer to start of variable's data storage.
-          `B`
-          :    0 if variable resides in RAM. Otherwise the Flash ROM page it is
-               archived on.
+     <div data-title="inputs">
+     HL
+     :    Pointer to start of symbol table entry.     
+     DE
+     :    Pointer to start of variable's data storage.
+     B
+     :    0 if variable resides in RAM. Otherwise the Flash ROM page it is
+          archived on.
+     </div>
      
-     DESTROYS
-     :    `All`
+     <div data-title="destroys">
+     All.
+     </div>
      
-     Remarks
-     :    System error if the variable is archived. Use `_DelVarArc` to delete any
-          variable. Notice that the inputs to this routine are the same as the
-          outputs of `_FindSym`.
+     <div data-title="remarks">
+     System error if the variable is archived. Use `_DelVarArc` to delete any
+     variable. Notice that the inputs to this routine are the same as the
+     outputs of `_FindSym`.
+     </div>
 
 The routines to create variables are
 
 `_CreateCList`
 :    Complex list
 
-     INPUT
-     :    `HL`
-          :    Number of elements (<1000)
+     <div data-title="input">
+     HL
+     :    Number of elements (<1000)
+     </div>
 `_CreateCplx`
 :    Complex number
 
-     INPUT
-     :    None
+     <div data-title="input">
+     None
+     </div>
 `_CreateEqu`
 :    Equation
 
-     INPUT
-     :    `HL`
-          :    Number of bytes
+     <div data-title="input">
+     HL
+     :    Number of bytes
+     </div>
 `_CreatePict`
 :    Picture
 
-     INPUT
-     :    None
+     <div data-title="input">
+     None
+     </div>
 `_CreateProg`
 :    Program
 
-     INPUT
-     :    `HL`
-          :    Number of bytes
+     <div data-title="input">
+     HL
+     :    Number of bytes
+     </div>
 `_CreateProtProg`
 :    Protected program
 
-     INPUT
-     :    `HL`
-          :    Number of bytes
+     <div data-title="input">
+     HL
+     :    Number of bytes
+     </div>
 `_CreateReal`
 :    Real Number
 
-     INPUT
-     :    None
+     <div data-title="input">
+     None
+     </div>
 `_CreateRList`
 :    Real list
 
-     INPUT
-     :    `HL`
-          :    Number of elements (<1000)
+     <div data-title="input">
+     HL
+     :    Number of elements (<1000)
+     </div>
 `_CreateRMat`
 :    Matrix
 
-     INPUT
-     :    `HL`
-          :    H = rows (<100)<br/> L = columns (<100)
+     <div data-title="input">
+     H
+     :    rows (<100)
+     L
+     :    columns (<100)
+     </div>
 `_CreateStrng`
 :    String
 
-     INPUT
-     :    `HL`
-          :    Number of bytes
+     <div data-title="input">
+     HL
+     :    Number of bytes
+     </div>
 
 For these routines, HL is the dimensions of the variable (see the table)
 and OP1 holds the variable name. They output HL as a pointer to the VAT
@@ -299,23 +321,26 @@ Initializing Variables
 Variables must be initialized before the program ends or a freeze is
 very likely. Each variable has a different structure for its data.
 
-<div class="no-pop">
 ### Real
 
 9 bytes in FP-number format. 
 
-3.14159265357
-:    |------|------|------|------|------|------|------|------|------|
-     | \$00 | \$80 | \$31 | \$41 | \$59 | \$26 | \$53 | \$57 | \$00 |
+**3.14159265357**:
+
+|      |      |      |      |      |      |      |      |      |
+|------|------|------|------|------|------|------|------|------|
+| \$00 | \$80 | \$31 | \$41 | \$59 | \$26 | \$53 | \$57 | \$00 |
 
 ### Complex
 
 18 bytes in complex FP-number format.
 
-5219.86 - 0.1821*i*
-:    |------|------|------|------|------|------|------|------|------|
-     | \$0C | \$83 | \$52 | \$18 | \$86 | \$00 | \$00 | \$00 | \$00 |
-     | \$8C | \$7F | \$18 | \$21 | \$00 | \$00 | \$00 | \$00 | \$00 |
+**5219.86 - 0.1821*****i***:
+
+|      |      |      |      |      |      |      |      |      |
+|------|------|------|------|------|------|------|------|------|
+| \$0C | \$83 | \$52 | \$19 | \$86 | \$00 | \$00 | \$00 | \$00 |
+| \$8C | \$7F | \$18 | \$21 | \$00 | \$00 | \$00 | \$00 | \$00 |
 
 
 ### List
@@ -323,27 +348,29 @@ very likely. Each variable has a different structure for its data.
 Two bytes with the number of elements. Followed by *n* × 9 bytes, where
 *n* is the number of elements. Each element is an FP-number.
 
+**{-234.5, 0.01005712, 5}**:
 
-
-{-234.5, 0.01005712, 5}
-:    | \$03 | \$00 |      |      |      |      |      |      |      |
-     |------|------|------|------|------|------|------|------|------|
-     | \$80 | \$82 | \$23 | \$45 | \$00 | \$00 | \$00 | \$00 | \$00 |
-     | \$00 | \$7E | \$10 | \$00 | \$57 | \$12 | \$00 | \$00 | \$00 |
-     | \$00 | \$80 | \$50 | \$00 | \$00 | \$00 | \$00 | \$00 | \$00 |
+|      |      |      |      |      |      |      |      |      |
+|------|------|------|------|------|------|------|------|------|
+| \$03 | \$00 |      |      |      |      |      |      |      |
+| \$80 | \$82 | \$23 | \$45 | \$00 | \$00 | \$00 | \$00 | \$00 |
+| \$00 | \$7E | \$10 | \$00 | \$57 | \$12 | \$00 | \$00 | \$00 |
+| \$00 | \$80 | \$50 | \$00 | \$00 | \$00 | \$00 | \$00 | \$00 |
 
 ### Complex List
 
 Two bytes with the number of elements. Followed by 18 × *n* bytes, where
 *n* is the number of elements. Each element is a complex FP-number.
 
-{1+2*i*, -4+8*i*}
-:    | \$02 | \$00 |      |      |      |      |      |      |      |
-     |------|------|------|------|------|------|------|------|------|
-     | \$0C | \$80 | \$10 | \$00 | \$00 | \$00 | \$00 | \$00 | \$00 |
-     | \$0C | \$80 | \$20 | \$00 | \$00 | \$00 | \$00 | \$00 | \$00 |
-     | \$8C | \$80 | \$40 | \$00 | \$00 | \$00 | \$00 | \$00 | \$00 |
-     | \$0C | \$80 | \$80 | \$00 | \$00 | \$00 | \$00 | \$00 | \$00 |
+**{1+2*****i*****, -4+8*****i*****}**
+
+|      |      |      |      |      |      |      |      |      |
+|------|------|------|------|------|------|------|------|------|
+| \$02 | \$00 |      |      |      |      |      |      |      |
+| \$0C | \$80 | \$10 | \$00 | \$00 | \$00 | \$00 | \$00 | \$00 |
+| \$0C | \$80 | \$20 | \$00 | \$00 | \$00 | \$00 | \$00 | \$00 |
+| \$8C | \$80 | \$40 | \$00 | \$00 | \$00 | \$00 | \$00 | \$00 |
+| \$0C | \$80 | \$80 | \$00 | \$00 | \$00 | \$00 | \$00 | \$00 |
 
 ### Matrix
 
@@ -351,15 +378,20 @@ One byte with the number of columns, one byte with the number of rows.
 Followed by *r* × *c* × 9 bytes, each of which is a real FP-number.
 Matrices are organized in row-major order.
 
-[ [14.95727575, -836.7575474, -33.57614396]<br/>  [4.878167624, -85.56567278, 8.656019747 ] ]
-:    | \$03 | \$02 |      |      |      |      |      |      |      |
-     |------|------|------|------|------|------|------|------|------|
-     | \$00 | \$81 | \$14 | \$95 | \$72 | \$75 | \$75 | \$00 | \$00 |
-     | \$80 | \$82 | \$83 | \$67 | \$57 | \$54 | \$74 | \$00 | \$00 |
-     | \$80 | \$81 | \$33 | \$57 | \$61 | \$43 | \$96 | \$00 | \$00 |
-     | \$00 | \$80 | \$48 | \$48 | \$78 | \$16 | \$76 | \$24 | \$00 |
-     | \$80 | \$81 | \$85 | \$56 | \$56 | \$72 | \$78 | \$00 | \$00 |
-     | \$00 | \$80 | \$86 | \$56 | \$01 | \$97 | \$47 | \$00 | \$00 |
+```
+[ [14.95727575, -836.7575474, -33.57614396]
+  [4.878167624, -85.56567278, 8.656019747 ] ]
+```
+
+|      |      |      |      |      |      |      |      |      |
+|------|------|------|------|------|------|------|------|------|
+| \$03 | \$02 |      |      |      |      |      |      |      |
+| \$00 | \$81 | \$14 | \$95 | \$72 | \$75 | \$75 | \$00 | \$00 |
+| \$80 | \$82 | \$83 | \$67 | \$57 | \$54 | \$74 | \$00 | \$00 |
+| \$80 | \$81 | \$33 | \$57 | \$61 | \$43 | \$96 | \$00 | \$00 |
+| \$00 | \$80 | \$48 | \$48 | \$78 | \$16 | \$76 | \$24 | \$00 |
+| \$80 | \$81 | \$85 | \$56 | \$56 | \$72 | \$78 | \$00 | \$00 |
+| \$00 | \$80 | \$86 | \$56 | \$01 | \$97 | \$47 | \$00 | \$00 |
 
 
 ### Picture
@@ -377,9 +409,10 @@ you've just gotta be high.
 Two bytes with the number of bytes. Followed by a bunch of tokens or a
 mass of arbitrary data.
 
-String "CASIO SUX"
-:    | \$09 | \$00 |      |      |      |      |      |      |      |
-     |------|------|------|------|------|------|------|------|------|
-     | tC   | tA   |   tS |   tI |   tO | tSpace | tS | tU   |   tX |
-</div>
+**String "CASIO SUX"**:
+
+|      |      |      |      |      |      |      |      |      |
+|------|------|------|------|------|------|------|------|------|
+| \$09 | \$00 |      |      |      |      |      |      |      |
+| `tC` | `tA` | `tS` | `tI` | `tO` | `tSpace` | `tS` | `tU` | `tX` |
 
