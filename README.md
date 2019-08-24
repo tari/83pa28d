@@ -4,7 +4,7 @@ To view the contents of this guide, simply begin by opening `welcome.html`
 in your favorite web browser.
 
 The latest version of this guide can always be found at
-<https://bitbucket.org/tari/83pa28d/>
+<https://gitlab.com/taricorp/83pa28d>
 
 ## Compilation
 
