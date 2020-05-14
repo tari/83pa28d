@@ -146,13 +146,6 @@ called fail that should be executed if the condition fails.
 
 ### Conjunction (AND)
 
-> Conjunction junction, what's your function?[^conjunction]
-
-[^conjunction]: Sorry, couldn't resist. Come to think of it, *I'm* too young to
-know what that is. Next I'll be talking about some crappily animated piece of
-legislation bitching about how a bunch of corrupt Uncle Sam-types won't ratify
-him. :D
-
 If we have two conditions, and we want success to be executed only if
 both conditions are true, then check each condition in any order, and
 jump to fail once a condition fails.

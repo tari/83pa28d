@@ -174,15 +174,15 @@ carry is reset before doing the subtraction. How to do that?
     SBC    HL, BC
 ```
 
-This is actually the most idiotic way to force the carry to zero, since
+However, this is not a very good way to force the carry to zero, since
 it can be done in just one instruction. Problem is, that instruction
 doesn't *just* reset the carry flag, and it belongs to a family of
 instructions that do similar operations, and the whole thing would be
 just too much and too messy for one day.
 
-Finally, before I forget, what if you wanted to do the above, but with
-IX? Since SBC won't accept an index register, you must use ADD, and
-manually negate the second register.
+Finally, what if you wanted to do the above, but with IX? Since SBC
+won't accept an index register, you must use ADD, and manually negate
+the second register.
 
 ```z80
 	LD     A, B
@@ -261,9 +261,7 @@ better to follow this general-purpose algorithm:
 
 Dividing is trickier still. The best way to do this is to take a page
 out of your math text book and multiply by a reciprocal.\
- So now the question on everyone's minds is how to generate a reciprocal
-when all you've got are integers. The answer to that, as with everything
-else in life, is to cheat.
+ To generate a reciprocal:
 
 1.  Determine the number you want to divide by (the divisor). Figure out
     256 divided by this number and round. This is the number to multiply

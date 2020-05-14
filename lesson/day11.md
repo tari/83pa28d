@@ -292,5 +292,4 @@ is to display large text that isn't confined to a 16×8 grid.
 
 If you reset `AppAutoScroll, (IY + AppFlags)`, the display will not scroll
 when `(CurRow)` is greater than 7. The problem is that you have to make
-sure to set `(CurRow)` to under 8 when you want to display text again, or
-it'll suck to be you.
+sure to set `(CurRow)` to under 8 when you want to display text again.

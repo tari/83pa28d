@@ -339,11 +339,10 @@ replace ADC with SBC.
     result:    .DB    $00, $00, $00, $00
 
 This routine looks okay, but it has a subtle bug in it, and maybe the
-more observant of you have noticed. Maybe you're thinking, "Gee, Sean,
-what happens if the carry flag is set at the start?" and the answer to
-that is, "The answer's gonna be off by one." And now maybe you're
-thinking "Gee, Sean, doesn't that make us screwed?" and the answer to
-that is, "Yes, it does."\
+more observant of you have noticed. Maybe you're thinking, "What happens
+if the carry flag is set at the start?" and the answer to that is, "The
+answer will be off by one." And now maybe you're thinking "That is the
+bug." and the answer to that is, "Yes!"\
  Hmmm... it seems that the best way to fix this problem is to ensure
 that the carry flag is always reset before going into the loop. How do
 we do that? Maybe you'd like [a hint?](day08.html#bit-logic-instructions)

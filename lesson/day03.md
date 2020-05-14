@@ -6,6 +6,8 @@ title: Day 3
 subtitle: Number Systems, Registers, Memory, and Variables
 ---
 
+**Captain Calc Edit: Delete the following. Do not discourage the reader.**
+
 It's high time we jumped in and actually started off on this assembly kick.
 Now, we are going to cover a lot of vital stuff concerning number theory, how
 it relates to computers, and yes, even some assembly. These are the absolute
@@ -21,11 +23,8 @@ Necessary reading, this. Computer's don't count the same way you and I do.
 ### Decimal
 
 All number systems use a particular radix. Radix is synonymous with "base" if
-it helps, although I should caution you that saying such things as "All you
-radix are belong to us" is a great way to get people to throw pointy things at
-you (but whether it's because of the horrid pun or the tired pop-culture
-reference is hard to say... :-). To understand what a radix is, consider our
-everyday system of numbers, which uses base ten.
+it helps. To understand what a radix is, consider our everyday system of numbers,
+which uses base ten.
 
 Like you learned in grade school and forgot over summer, in a base ten number,
 each digit specifies a certain power of 10, and as a consequence you need ten
@@ -173,12 +172,12 @@ point.
  * BC is used by instructions and code sections that operate on streams of
    bytes as a **b**yte **c**ounter.
  * DE holds the address of a memory location that is a **de**stination.
- * IX is a funky li'l register called an **i**nde**x** register. Almost
-   everywhere HL is acceptable, so too is IX. Important to note that using IX
-results in slower and more inflated code than HL would (approximately double
-the size and time), so call on his services only when necessary (usually when
-HL is tied up). IX can do something special that no other register can though,
-we'll look at that in due time.
+ * IX is the **i**nde**x** register. Almost everywhere HL is acceptable, so
+   too is IX. Important to note that using IX results in slower and more
+   inflated code than HL would (approximately double the size and time), so
+   call on his services only when necessary (usually when HL is tied up). IX
+   can do something special that no other register can though, we'll look at
+   that in due time.
 
 To store to a register, you use the LD instruction.
 
@@ -329,17 +328,7 @@ that all data on the calculator, from numbers to text to pictures, is really
 just an endless series of numbers to the computer (in fact, it isn't even
 that), and programs are no exception. This is related to an important point of
 computer science, and I want you to make it your mantra: _"Data is whatever
-you define it to be"_.  
-Seriously, the computer is an idiot and doesn't know dick-all about what this
-byte or that word is supposed to mean, that's why you can force Microsoft Word
-to open a JPEG. It won't look like much, but the fact that you can do it
-proves a related point, and that is that no matter what you do with your data,
-be consistent with it. If in one moment you point your finger at a memory cell
-and say "Okay, this here will be the number of bixie manifestations recorded
-on the Kamchatka Linux newsgroup", and the next minute you're using it to
-store the state of the memory manager, you're a code grinder who gets a big
-red sticker that says "slap me, I'm a jackass". But now I'm just rambling,
-back to the action. :-D
+you define it to be"_.
 
 When you run a program, the calculator takes the series of numbers that makes
 up the program, transfers it to some other place in RAM (to address $9D95 as

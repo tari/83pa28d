@@ -530,9 +530,8 @@ adding. These local variables are best accessed using indexing.
 
 ### Program 14-5
 
-Okay, I absolutely agree that this is this is a mind-numbingly stupid
-and *horrendously* inefficent routine, but it does demonstrate local
-variables.
+Okay, I absolutely agree that this is a *horrendously* inefficent routine,
+but it does demonstrate local variables.
 
         LD     HL, $0000
         LD     DE, $FFFF

@@ -5,59 +5,35 @@ title: Day 1
 subtitle: Introduction
 ---
 
-## Requirements for Learning
+## Prerequisites
 
-To learn assembly programming for the TI-83 Plus, you will require a few
-things. This lesson will guide you through setting up all the required tools
-and creating your first program.
+To use this guide, you will need to have some experience with C or a similar programming language. C will be used frequently in this guide as "psuedocode".
 
-It is also highly recommended that you be fairly competent in any programming
-language. And when I say "any programming language", I mean, of course, C. If
-z80 is your first venture into programming, many portions of this tutorial
-will be confusing. I will use C as a kind of "pseudocode" from time to time,
-so if you know any kind of high-level language (with the definite exception of
-TI-BASIC) you should do okay.
+**[CAPTAIN CALC EDIT]: Should there be a definition of pseudocode?**
 
 ## Software
 
-In order to begin creating your own programs, you'll need a few tools on your
-computer.
+To create assembly programs, you will need an assembler, a source code editor, and
+an emulator.
 
 ### Assembler
 
-The most important piece of software for building assembly programs is the
-assembler, which translates your code into a format that can be executed by
-the machine.
-[TASM](http://www.ticalc.org/archives/files/fileinfo/15/1504.html) was the
-traditional choice, but it no longer works on modern operating systems, since
-it is a DOS program. TASM also requires a separate program to 'link' the
-assembler's output- package it into a file that can be sent to a calculator
-(that is, a .8xp file).
+An assembler translates source code into machine code that the calculator can execute. In this tutorial, we will use an assembler called [Brass](http://www.benryves.com/bin/brass/).
 
-In this tutorial, we will use [Brass](http://www.benryves.com/bin/brass/),
-which is a more modern assembler capable of running on all major operating
-systems. In addition, Brass can perform the linking step on its own, so we
-don't need any more programs. The next section will guide you through setting
-up Brass on your operating system- simply select from the list below.
+**[CAPTAIN CALC EDIT]: Should the Doors SDK also be mentioned here?**
 
-ED NOTE: OS autodetection from user agent expected here, with fallback to this
-list.
-
-Your current OS has been automatically detected as UNKNOWN. If this is
-incorrect or you want to set things up on a different system, select the
-desired operating system from the list below.
+The following section will show how to install Brass on Windows, Mac OS, and Linux.
 
 #### Windows
 
-#### Linux
+#### Mac OS
 
-#### Mac OS X
+#### Linux
 
 ### Editor
 
-For writing source code, you will need a text editor. The source code is just
-plain text, so nearly any program will do. Some common choices are given in
-the table below, with the supported operating systems for each.
+You will also need a text editor to write source code. Some common choices are given
+in the table below, with the supported operating systems for each.
 
 1. Notepad
     - OS Support: Windows
@@ -78,21 +54,28 @@ ED NOTE: Editor recommendations welcome.
 
 ### Emulator
 
-Once you've written a program, you need a way to run it. Simply transferring
-it to your calculator and running it there is one option (which we'll discuss
-later), but it becomes very hard to debug programs running on a calculator
-(and there will be bugs in your programs). For that reason, we'll use an
-emulator, which is a program that runs on your computer and acts like a
-calculator would.
+An emulator is a program that runs on a computer and simulates a physical
+calculator.
 
-Our emulator of choice here is [WabbitEmu](https://wabbit.codeplex.com/), as
-it is the best emulator that is still actively developed. All you have to do
-is install and run it. To use the emulator, you'll need a ROM image,a file
-containing a complete copy of your calculator's software, the process of
-obtaining which is known as 'ROM dumping'. Please note that obtaining a ROM
-image in a way other than dumping your calculator's ROM to the computer is
-illegal. The tool of choice for a ROM dump is [rom8x](http://www.ticalc.org/archives/files/fileinfo/373/37341.html).
-TiLP can also perform a ROM dump, but rom8x is far more diverse in usability.
+There are several emulators for the TI-83 Plus, such as [WabbitEmu](https://wabbit.codeplex.com/) and [JsTIfied](https://www.cemetech.net/projects/jstified/).
+
+WabbitEmu is an offline emulator that you can download and install like
+any other computer application.
+
+JsTIfied, on the other hand, is an online emulator offered for free by the computer/calculator enthusiast site, [Cemetech](https://www.cemetech.net/). To use this emulator
+you will need to setup a Cemetech account and have an Internet
+connection. Cemetech also offers a source code editor called [SourceCoder](https://www.cemetech.net/sc/)
+that allows you to create and save programs on the Cemetech site.
+
+Regardless of the emulator you choose, you will need a ROM image in order
+to use it. A ROM image, or simply ROM, is a copy of the calculator's
+software. To obtain a ROM image from your TI-83 Plus ("ROM dumping"), you
+can either use [rom8x](http://www.ticalc.org/archives/files/fileinfo/373/37341.html) or TiLP. Please note that you must get the ROM image
+from a calculator that you own. Obtaining a ROM image from anywhere else
+is illegal.
+
+**[CAPTAIN CALC EDIT]: Should the following be kept, or should it be replaced with
+a link to the rom8x readme?**
 
 To dump your ROM, find the folder named after your calculator. For example, a
 TI-84+CSE would be under 84C, a TI-83+ would be under 83+, and a TI-83+ Silver
@@ -144,10 +127,13 @@ msg:
 zeroing HL.**
 
 Save this file as hello.asm. This should be easy if you're using a competent
-editor, but some programs (notably Notepad) make it annoyingly difficult. Need
-more information on this for Windows users.
+editor, but some programs (notably Notepad) make it annoyingly difficult.
 
-Hand-hold through invoking the assembler and running in the emulator.  
+**[EDITOR NOTES]: Need more information on this for Windows users. Hand-hold
+through invoking the assembler and running in the emulator.**
+
+**[CAPTAIN CALC EDIT]: Condense the following**
+
 The first step is to create the source code in a text editor. Use Notepad for
 this, because it saves its files in ASCII text format. As your programs get
 more involved, it might be a good idea to switch to a specialized IDE (Crimson
@@ -163,6 +149,9 @@ linker called DevPac8x.
 Finally, you ship the program to the calculator and run it.
 
 ## Assembling
+
+**[CAPTAIN CALC EDIT]: The following assumes that the reader is using Windows. This
+section will also have to be rewritten for Brass.**
 
 If you didn't do it while you were viewing the readme file, create a new
 folder off the C:\ drive and call it `Asm`. In this folder create three new
@@ -247,27 +236,24 @@ getting your bearings.
 
 ## Sending to the Calculator
 
-Start the Graph Link software. Other programs like TI-Connect I am unfamiliar
-with and cannot give any help. Click on `_L_ink`, `_S_end To >`, then `_R_AM`.
+Start the Graph Link software. Click on `_L_ink`, `_S_end To >`, then `_R_AM`.
 Navigate to the `C:\Asm\Exec` folder and send `hello.8xp` over.
 
-To run the program, paste `Asm(` from the catalog and `HELLO` from the PRGM
-menu...
+**[CAPTAIN CALC EDIT]: Add instructions for TI-Connect**
 
-And you should get this:
+To run the program, paste `Asm(` from the catalog and `HELLO` from the PRGM menu.
 
 ![\[NO IMAGE\]](../img/hello.png)
 
-GAHHHHHHHHHHHHHHHHHHH! Okay, so maybe I _don't_ have a creative bone in my
-body :-) but, if the screen went blank, it means that there's an error in the
-program that's caused the calculator to crash. All you can do is turn the
-calculator back on and be greeted by a "RAM Cleared" message, which means
-exactly what you think it does. [Crashes](../ref/crash.html) wipe out the RAM
-and reset the calculator's defaults (fortunately, archived variables are
-safe). Go back to the "Sample Z80 Program" section and try again.
+Congratulations, you have created your first ASM program! If the calculator
+crashed when you ran the program, check your code for errors and rerun the program.
+To recover from a crash, turn the calculator back on and you will see a "RAM Cleared"
+message. [Crashes](../ref/crash.html) clear the calculator's RAM and reset the
+calculator's settings. Archived variables and programs are not affected by RAM resets.
 
-## One Last Important Thing
+## Assembly Program Size
 
-Assembly programs for the TI-83 Plus cannot be more than 8811 bytes in size.
-Well they can, but just keep them below that.
+Assembly programs for the TI-83 Plus should not exceed 8811 bytes.
+
+**[CAPTAIN CALC EDIT]: Reader response here: Why?**
 

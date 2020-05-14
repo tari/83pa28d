@@ -16,7 +16,7 @@ have a stack overwrite your program, would it :-)
 
 ##How A Stack Works
 
-All stacks operate in a Last-in-first-out manner. What that means is
+All stacks operate in a last-in-first-out manner. What that means is
 that the last item to be placed onto a stack ("pushed") is the first
 item that is taken off ("popped"). Think of it as like one of those
 dinner plate wells you see in buffets. Each plate is the value of a
