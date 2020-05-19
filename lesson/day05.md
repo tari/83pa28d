@@ -259,8 +259,9 @@ better to follow this general-purpose algorithm:
 
 ### Dividing
 
+**[CAPTAIN CALC EDIT]: Point out that this is an approximation**
 Dividing is trickier still. The best way to do this is to take a page
-out of your math text book and multiply by a reciprocal.\
+out of your math text book and multiply by a reciprocal.
  To generate a reciprocal:
 
 1.  Determine the number you want to divide by (the divisor). Figure out

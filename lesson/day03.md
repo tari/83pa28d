@@ -328,7 +328,8 @@ that all data on the calculator, from numbers to text to pictures, is really
 just an endless series of numbers to the computer (in fact, it isn't even
 that), and programs are no exception. This is related to an important point of
 computer science, and I want you to make it your mantra: _"Data is whatever
-you define it to be"_.
+you define it to be"_. **[CAPTAIN CALC EDIT]: Make footnote about opening pictures
+files with Word, or similar analogy**
 
 When you run a program, the calculator takes the series of numbers that makes
 up the program, transfers it to some other place in RAM (to address $9D95 as
