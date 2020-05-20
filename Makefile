@@ -1,4 +1,5 @@
 ## User-overridable options
+DESTDIR ?= .
 PANDOC ?= pandoc
 HIGHLIGHT ?= yes
 HSC ?= ghc
@@ -16,11 +17,14 @@ else
 endif
 
 MARKDOWN := $(shell find . -name '*.md')
-HTML := $(addsuffix .html,$(basename $(MARKDOWN)))
+HTML := $(addprefix $(DESTDIR)/,$(addsuffix .html,$(basename $(MARKDOWN))))
 
 .PHONY: all, clean, clean-highlighter
 
-all: $(HTML)
+all: $(DESTDIR) $(HTML)
+
+$(DESTDIR):
+	mkdir -p $(DESTDIR)
 
 clean: clean-highlighter
 	rm -f $(HTML)
@@ -32,6 +36,7 @@ highlight_z80: stuff/z80.x
 	$(ALEX) -o stuff/highlight_z80.hs stuff/z80.x
 	$(HSC) -o highlight_z80 stuff/highlight_z80.hs
 	
-%.html : %.md $(Z80_LEXER) stuff/template.html
+$(DESTDIR)/%.html : %.md $(Z80_LEXER) stuff/template.html
+	mkdir -p $(DESTDIR)/$(dir $<)
 	$(PANDOC) $(PANDOC_OPTS) -o $@ $<
 	
