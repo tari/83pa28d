@@ -1,0 +1,11 @@
+
+pages:
+  stage: deploy
+  image: tari/83pa28d-build
+  script:
+  - make DESTDIR=public
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
