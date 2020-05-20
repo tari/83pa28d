@@ -87,7 +87,7 @@ errors and in general update this tutorial for the 5^th^ decade.[^posix]
  * Version 3.0 and later: an ongoing effort by numerous contributors,
    first set up in 2012 and begun in earnest in mid-2014.
    You can always find the latest version at
-   <https://bitbucket.org/tari/83pa28d/>.
+   <https://gitlab.com/taricorp/83pa28d>.
 
 For information on the authors, refer to the [acknowledgements] page.
 
