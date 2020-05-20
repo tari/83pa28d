@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 difficulty: 1
 prev-lesson: day05
 next-lesson: day07

@@ -59,5 +59,5 @@ hypertext markup language, write to
 title: README
 subtitle: 83PA28D
 stylesheet: stuff/style.css
-tocpath: lesson/
+tocpath:
 ---

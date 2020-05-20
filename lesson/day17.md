@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 17
 subtitle: Character Sets
 difficulty: 3

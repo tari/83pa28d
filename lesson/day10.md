@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 10
 subtitle: The Other Registers
 prev-lesson: day09

@@ -1,7 +1,7 @@
 ---
 title: Crashes
 subtitle: What to do when things go wrong
-tocpath: ../lesson/
+tocpath: ../
 ---
 
 Not fun. An unavoidable part of assembly is the crashing. Some minor

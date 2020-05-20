@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 2
 subtitle: The Components of a Z80 Program
 difficulty: 1

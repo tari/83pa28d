@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 7
 subtitle: Control Structures
 difficulty: 1

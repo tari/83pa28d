@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 9
 subtitle: Bit Shifting
 prev-lesson: day08

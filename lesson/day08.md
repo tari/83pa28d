@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 8
 subtitle: Bit-Level Instructions
 difficulty: 2

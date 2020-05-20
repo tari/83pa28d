@@ -1,6 +1,6 @@
 ---
 title: Large Font Character Map
-tocpath: ../lesson/
+tocpath: ../
 ---
 
 Rows are the first (hex) digit, columns are the second. For example,

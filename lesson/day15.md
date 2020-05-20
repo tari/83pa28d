@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 15
 subtitle: Advanced Math
 difficulty: 3

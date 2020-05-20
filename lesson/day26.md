@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 26
 subtitle: The LCD Driver
 difficulty: 4

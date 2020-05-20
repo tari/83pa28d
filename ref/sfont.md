@@ -1,6 +1,6 @@
 ---
 title: Small Font Character Map
-tocpath: ../lesson/
+tocpath: ../
 ---
 
 I apologize for the hideousness. Note that most (but not all) of the

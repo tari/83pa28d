@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 20
 subtitle: Program and System Variables
 difficulty: 3

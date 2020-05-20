@@ -1,6 +1,6 @@
 ---
 title: Key Codes
-tocpath: ../lesson/
+tocpath: ../
 ---
 
 These are the codes returned from the `GetKey` routine. They are grouped into

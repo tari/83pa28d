@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 25
 subtitle: Sprites
 difficulty: 4

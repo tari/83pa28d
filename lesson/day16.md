@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 16
 subtitle: Character Strings
 prev-lesson: day15

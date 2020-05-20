@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 12
 subtitle: Key Input
 prev-lesson: day11

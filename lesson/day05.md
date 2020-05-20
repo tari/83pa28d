@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 5
 subtitle: Data Manipulation
 difficulty: 1

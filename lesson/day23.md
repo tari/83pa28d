@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 23
 subtitle: Interrupts
 difficulty: 4

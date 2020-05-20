@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 18
 subtitle: Floating-Point Arithmetic
 difficulty: 3

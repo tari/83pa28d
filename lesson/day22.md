@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 22
 subtitle: Low-level Key Input
 difficulty: 4

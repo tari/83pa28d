@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 11
 subtitle: Displaying Text
 difficulty: 2

@@ -1,6 +1,6 @@
 ---
 title: Scan Codes
-tocpath: ../lesson/
+tocpath: ../
 ---
 
 These are the codes returned from the `GetCSC` routine.

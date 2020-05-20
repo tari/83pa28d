@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 27
 subtitle: String and Numerical Input
 difficulty: 4

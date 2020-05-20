@@ -1,4 +1,5 @@
 ---
+tocpath: ../
 title: Day 4
 subtitle: Flags
 difficulty: 1
