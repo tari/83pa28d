@@ -18,13 +18,30 @@ endif
 
 MARKDOWN := $(shell find . -name '*.md')
 HTML := $(addprefix $(DESTDIR)/,$(addsuffix .html,$(basename $(MARKDOWN))))
+CSS := $(wildcard stuff/*.css)
+IMG := $(wildcard img/*)
+
+CSS_OUT := $(addprefix $(DESTDIR)/,$(CSS))
+IMG_OUT := $(addprefix $(DESTDIR)/,$(IMG))
 
 .PHONY: all, clean, clean-highlighter
 
-all: $(DESTDIR) $(HTML)
+all: $(DESTDIR) $(HTML) $(CSS_OUT) $(IMG_OUT)
+
+# Short circuit circular dependency if destdir is unset
+ifneq ($(DESTDIR),.)
+$(CSS_OUT): $(CSS) $(DESTDIR)/stuff
+	cp $(CSS) $(DESTDIR)/stuff
+
+$(IMG_OUT): $(IMG) $(DESTDIR)
+	cp -r img $(DESTDIR)
+endif
 
 $(DESTDIR):
 	mkdir -p $(DESTDIR)
+
+$(DESTDIR)/stuff:
+	mkdir -p $(DESTDIR)/stuff
 
 clean: clean-highlighter
 	rm -f $(HTML)
