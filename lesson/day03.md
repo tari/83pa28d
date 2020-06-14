@@ -6,19 +6,10 @@ title: Day 3
 subtitle: Number Systems, Registers, Memory, and Variables
 ---
 
-**Captain Calc Edit: Delete the following. Do not discourage the reader.**
-
-It's high time we jumped in and actually started off on this assembly kick.
-Now, we are going to cover a lot of vital stuff concerning number theory, how
-it relates to computers, and yes, even some assembly. These are the absolute
-basics, and you need to understand them or the rest of the guide is garbage.
-The unfortunate part is that the length and the novel concepts combine to make
-this chapter a major hurdle, but don't get too discouraged! Just stick with it
-and it will start to click eventually.
+A firm understanding of the underlying concepts of Z80 assembly is essential
+in order to write assembly programs.
 
 ## Number Systems
-
-Necessary reading, this. Computer's don't count the same way you and I do.
 
 ### Decimal
 
@@ -26,10 +17,9 @@ All number systems use a particular radix. Radix is synonymous with "base" if
 it helps. To understand what a radix is, consider our everyday system of numbers,
 which uses base ten.
 
-Like you learned in grade school and forgot over summer, in a base ten number,
-each digit specifies a certain power of 10, and as a consequence you need ten
-different digits to denote any number. The rightmost digit specifies 10^0^, the
-second digit specifies 10^1^, the third 10^2^ and so on.  
+In a base ten number, each digit specifies a certain power of 10, and as a
+consequence you need ten different digits to denote any number. The rightmost
+digit specifies 10^0^, the second digit specifies 10^1^, the third 10^2^ and so on.  
 You can, therefore, break down a decimal number, such as 2763~10~, like this
 (although it does wind up to be redundant):
 
@@ -110,9 +100,9 @@ individual digits:
 </div>
 
 Compare these two binary numbers with the original. You should see that one
-hex digit is equivalent to one nibble. This is what's so great about
-hexadecimal, converting binary numbers used by the computer into more
-manageable hex values is a snap.
+hex digit is equivalent to one nibble. This direct correlation between each
+hex digit and a nibble makes converting between hexadecimal and binary very
+easy.
 
 ## Designating Base
 
@@ -207,8 +197,6 @@ Note: `**imm8**`: 8-bit immediate value. `**imm16**`: 16-bit immediate value.
 | `imm8`             | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   |      |      |      |        |        |   ✓    |           |
 | `imm16`            |     |     |     |     |     |     |     | ✓    | ✓    | ✓    |        |        |        |           |
 
-You obviously have no clue what difference parentheses make for an operand.
-You'll see shortly.
 
 Examples:
 
@@ -328,7 +316,7 @@ that all data on the calculator, from numbers to text to pictures, is really
 just an endless series of numbers to the computer (in fact, it isn't even
 that), and programs are no exception. This is related to an important point of
 computer science, and I want you to make it your mantra: _"Data is whatever
-you define it to be"_. **[CAPTAIN CALC EDIT]: Make footnote about opening pictures
+you define it to be"_. **[ED NOTE]: Make footnote about opening pictures
 files with Word, or similar analogy**
 
 When you run a program, the calculator takes the series of numbers that makes
@@ -388,16 +376,14 @@ marks, and is interpreted as a sequence of the ASCII codes of each character.
 
 Text constants are discernable from string constants in that they aren't
 flanked by quotation marks. Text constants are used by the assembler to create
-the program. You can think of the entire source file as a text constant. Of
-course, I'm just telling you this for trivia.
+the program. You can think of the entire source file as a text constant.
 
 ## Manifest Constants
 
 A manifest constant is a stand-in for a literal constant. You can assign a
 literal constant to a valid TASM symbol, and at every place that symbol is
-encountered it is replaced with the literal constant associated with it. Maybe
-I should tell you what a "valid TASM symbol" is. It's a sequence of characters
-such that:
+encountered it is replaced with the literal constant associated with it. A
+"valid TASM symbol" is a sequence of characters such that:
 
   * It is comprised of letters, digits, underscores, and periods. 
   * It is a maximum of 32 characters long. 
@@ -523,8 +509,8 @@ can be used to replace .DW except for when one of the values is a 16-bit
 manifest constant.
 
 Also remember that .DB and .DW don't intristically create variables, they just
-insert bytes into your program. If you know the hex codes, you can do machine
-language and prove yourself to be a wycked uβ3r1337 h4x0r.
+insert bytes into your program. If you know the hex codes, you can write machine
+language to these bytes.
 
 ```z80
 ; The machine code for LD B, 6  LD A, B  ADD A, H  LD B, A
@@ -544,8 +530,7 @@ The second way to create a variable is to find some free RAM not being used by
 the calculator. There are 768 bytes of RAM not used by the system at
 AppBackUpScreen. And if this isn't enough, you can use SaveSScreen (another
 768 bytes), as long as the Automatic Power Down doesn't trigger. There are a
-couple other places, but I can't possibly see how you'd need more than 1536
-bytes of scrap RAM, so never mind about them.
+few other spare RAM areas besides these that you can use as well.
 
 To create a variable in this way, you use our old pal .EQU, like this:
 
@@ -553,11 +538,9 @@ To create a variable in this way, you use our old pal .EQU, like this:
 trash    .EQU    AppBackUpScreen
 ```
 
-`AppBackUpScreen` is equal to 39026 (it's moronic to communicate addresses in
-anything other than hexadecimal, I'm just playing around with ya :-), so when
-you store to stuff, you are really storing to the 39027th byte of the
-calculator's RAM. To get access to the other 767 bytes of free RAM, you
-specify an offset, for example:
+`AppBackUpScreen` is equal to 39026, so when you store to stuff, you are
+really storing to the 39027th byte of the calculator's RAM. To access the
+other 767 bytes of free RAM, you must specify an offset. For example:
 
 ```z80
 garbage .EQU    AppBackUpScreen+4

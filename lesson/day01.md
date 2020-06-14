@@ -62,8 +62,7 @@ An assembler translates source code into machine code that the calculator can ex
 this guide we will use an assembler called [Brass](http://www.benryves.com/bin/brass/). 
 **[CAPTAIN CALC EDIT]: Considering creating SDK for the guide that the reader can use**
 
-The following section will show how to install Brass on Windows, Mac OS, and Linux. **[CAPTAIN CALC EDIT]: The assembler should be placed in the directory for the assembler
-created beforehand**
+The following section will show how to install Brass on Windows, Mac OS, and Linux. **[ED NOTE]: The assembler should be placed in the directory for the assembler created beforehand**
 
 ### Windows
 (Need process description...)
@@ -138,7 +137,7 @@ it the name: `hello.asm.txt`. If it does, rename the file and save it again.
 
 Once you have saved the file in the appropriate directory...
 
-**[CAPTAIN CALC EDIT]: Process for assembling source code using Brass**
+**[ED NOTE]: Process for assembling source code using Brass**
  
 ## Running
 
@@ -154,5 +153,5 @@ To recover from a crash, turn the calculator back on and you will see a "RAM Cle
 message. [Crashes](../ref/crash.html) clear the calculator's RAM and reset the
 calculator's settings. Archived variables and programs are not affected by RAM resets.
 
-**[CAPTAIN CALC EDIT]: Removed the reference to program size. Need to find the
+**[ED NOTE]: Removed the reference to program size. Need to find the
 appropriate place to mention it**
