@@ -152,6 +152,7 @@ If you need help remembering the syntax for a specific command, you
 can look it up in the [Z80 Instruction Set Reference](../ref/z80is.html).
 
 ###16-Bit Subtraction
+
 If you want to subtract a constant number *x* from HL, you should use
 ADD and load into the other operand the negative of *x*.
 
