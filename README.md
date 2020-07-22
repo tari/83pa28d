@@ -1,7 +1,6 @@
 # Learn TI-83 Plus Assembly In 28 Days
 
-To view the contents of this guide, simply begin by opening `welcome.html`
-in your favorite web browser.
+**Read the most recent version of the guide online:** https://taricorp.gitlab.io/83pa28d/
 
 The latest version of this guide can always be found at
 <https://gitlab.com/taricorp/83pa28d>
