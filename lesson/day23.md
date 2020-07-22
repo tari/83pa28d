@@ -95,33 +95,34 @@ this address is a number taken from the data bus and is functionally
 random. Since addresses are 16 bits the pointer *must* be an even
 number, and for this reason bit 0 is always zero
 
-This is the official ZiLog description of a Mode 2 interrupt, on the TI
-calculators something is awry and interrupt behavior is contradictory to
-what was described above. With a lot of experimentation (and a lot of
-RAM clears), I have discovered that the value of the interrupt vector is
-made up as follows:
+This is the official ZiLog description of a Mode 2 interrupt; it seems
+TI never intended mode 2 be used on the calculators, so things are a bit
+harder for us. The low byte of the interrupt address coming from the
+data bus is effectively random, so we need to set aside a 257-byte
+region of memory that contains a repeating byte that refers to
+where our interrupt code is placed.[^random-data]
 
--   The upper 8 bits are taken from the contents of the I register.
--   The next two bits seem to be random.
--   The last six bits are always %111111.
+[^random-data]: Earlier versions of this guide claimed that the value
+                on the data bus was predictable such that only a few
+                vectors need be specified, but this is not true across
+                different calculator hardware versions. You might find
+                that your calculator always chooses one of a few addresses,
+                but assuming others will do the same will probably make
+                your users sad when your assumption turns out to have
+                been false.
 
-In the past, programmers who wanted to use an interrupt just assumed the
-low-order byte of the interrupt vector was random and had to set up a
-257-byte table made up of the same byte value over and over. As a
-result, the largest scrap RAM area would be untouchable for variable
-storage.
+Assume we've already placed code to run in interrupts at `$8A8A`:
 
-The vector table is initialized with code similar to the following:
-
-    ; Assume an ISR located at $9DF0
-        LD    HL, $9DF0
-
-        LD    ($993F), HL
-        LD    ($997F), HL
-        LD    ($99BF), HL
-        LD    ($99FF), HL
-
-N.B. All the vectors are stored in AppBackupScreen RAM area.
+    ; Vector table is based at $8B00
+        LD A, $8B
+        LD I, A
+    ; Fill the vector table with $8A so interrupts always jump to $8A8A,
+    ; no matter the value of the low byte.
+        LD HL, $8B00
+        LD (HL), $8A
+        LD DE, $8B01
+        LD BC, 256
+        LDIR
 
 Now we should create the ISR. When an ISR begins, it has to save the
 values of all the registers it will modify. The reason for this is
@@ -196,20 +197,24 @@ Here's a sample program that demonstrates everything so far.
 
         DI                     ; Turn interrupts off until we're ready
 
-    ; Load interrupt address vectors
-        LD     HL, interrupt
-        LD     ($993F), HL
-        LD     ($997F), HL
-        LD     ($99BF), HL
-        LD     ($99FF), HL
+    ; Set up vector table
+        LD A, $8B
+        LD I, A
+        LD HL, $8B00
+        LD (HL), $9A
+        LD DE, $8B01
+        LD BC, 256
+        LDIR
+    ; Copy the ISR into position
+        LD HL, interrupt
+        LD DE, $9A9A
+        LD BC, interruptEnd - interrupt
+        LDIR
 
-        LD     A, $99
-        LD     I, A
+        LD A, INTRPT_MASK      ; Enable hardware
+        OUT (3), A
 
-        LD     A, INTRPT_MASK   ; Enable hardware
-        OUT    (3), A
-
-        IM     2               ; Switch to Mode 2
+        IM 2                   ; Switch to Mode 2
         EI                     ; Activate interrupts
 
     ; GetKey and GetCSC only function in Mode 1, 
@@ -222,12 +227,16 @@ Here's a sample program that demonstrates everything so far.
         CP     %01111111       ; If [DEL] pressed, exit
         JR     NZ, KeyLoop
 
-        LD     A, %00001011     ; Enable hardware
+        LD     A, %00001011    ; Enable hardware
         OUT    (3), A
         IM     1               ; Calculator needs Mode 1
         RET
 
+    counter:
+        .DW    $0000
+
     interrupt:
+        .org $9A9A             ; This code runs from $9A9A
         EX     AF, AF'
         EXX
         XOR     A              ; Disable hardware
@@ -246,9 +255,7 @@ Here's a sample program that demonstrates everything so far.
         EXX
         EI
         RET
-
-    counter:
-        .DW    $0000
+    interruptEnd:
 
 The program counts at a frenetic pace until you press <kbd>DEL</kbd>. For more
 fun, change the value of INTRPT\_MASK to disable certain hardware
@@ -320,10 +327,17 @@ interrupt will still be active, even during graphing and (provided they
 don't use interrupts themselves) other programs! Unfortunately, drawing
 and archiving will kill 'em.
 
+Unfortunately, because you have no control over other code once your program
+exits, TSRs tend to be unpredictable- it's very easy for something else
+to stomp on the memory you were using and cause a crash.
+
 ### Program 23-2
 
 You can use this program instead of masking tape and a sharpie. Test it
 by pressing <kbd>LOG</kbd>.
+
+Note that this is very similar to the last program, but we deliberately
+skip returning to mode 1 before exiting the program.
 
         DI
 
@@ -333,8 +347,6 @@ by pressing <kbd>LOG</kbd>.
         LD     BC, interrupt_end - interrupt
         LDIR
 
-    ; Don't bother with specific memory locations, 
-    ; just storing $9A everywhere will work
         LD     HL, $9900
         LD     DE, $9901
         LD     BC, 256
