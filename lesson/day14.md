@@ -157,7 +157,7 @@ idea that the side effect has changed, so you can't fix the bug, get
 frustrated, cry for your momma, and flood bulletin boards, forums, and
 my e-mail with inane ramblings no one wants.
 
-*[ED NOTE]: Should the rant be kept?*
+**[ED NOTE]: Should the rant be kept?**
 
 \<\\rant\>
 
