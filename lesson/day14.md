@@ -33,13 +33,11 @@ defective procedure:
         PUSH    DE
         RET
 
-The `RET` instruction isn't aware that the top of the stack isn't an
-address, it's not as if there's a banner tagged on that says "hey `RET`
-I'm not what you're looking for so you better not screw with me!". No,
-it simply pops the top stack value blindly. Since it is very unlikely `DE`
-contains a matching value (the odds are 1 in 65, 536), the program will
-"return" into oblivion. Popping data before `RET` creates the same
-problem. So just remember to take proper care of the stack in a
+The `RET` instruction does not check to see if the top of the stack is an
+address. No, it simply pops the top stack value blindly. Since it is very
+unlikely `DE` contains a matching value (the odds are 1 in 65, 536), the
+program will "return" into oblivion. Popping data before `RET` creates the
+same problem. So just remember to take proper care of the stack in a
 procedure.
 
 ## Stack Frames
@@ -158,6 +156,8 @@ the big problem with SEP: side effects change. Even better, you have no
 idea that the side effect has changed, so you can't fix the bug, get
 frustrated, cry for your momma, and flood bulletin boards, forums, and
 my e-mail with inane ramblings no one wants.
+
+*[ED NOTE]: Should the rant be kept?*
 
 \<\\rant\>
 
@@ -302,7 +302,7 @@ anyway.
         LD     HL, 0
         LD     (CurRow), HL
         CALL   Print_Out
-        .DB    "I ain't not a dorkus", 0
+        .DB    "Print this string!", 0
         RET
 
     Print_Out:
@@ -460,7 +460,7 @@ Procedure results can be stored in most of the ways input paramters can
 be (except the code stream). To use the stack, special considerations
 have to be made.
 
-### Using that Friggin' EX (SP), HL
+### Using EX (SP), HL
 
 So the top of the stack is the return address, and HL holds the return
 value?
@@ -490,11 +490,11 @@ This can be extended for multiple values.
         PUSH   DE
         RET
 
-### Using that Friggin' Index Register
+### Using the Index Register
 
-Pretty simple, you just use your index register to overwrite the input
-parameters. If you need more space, push garbage values onto the stack
-beforehand as placeholders.
+You can use the index register to overwrite input parameters. If you need
+more space, you can push garbage values onto the stack beforehand as
+placeholders.
 
         CALL   Fetch
         POP    HL
