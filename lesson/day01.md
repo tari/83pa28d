@@ -6,7 +6,6 @@ subtitle: Introduction
 ---
 
 # Prerequisites
-  ---------------------
 
 In order to use this guide, it is recommended that you have some familiarity with C or a
 similar programming language. C will be used frequently in this guide as “pseudocode”.
@@ -15,7 +14,6 @@ This guide assumes that you have had enough experience with programming to know 
 programming terms, such as *directory*, *source code*, and *compiling*.
 
 # Setup
-  ---------------------
 
 First, you will need to create a directory to store your programs and the tools you will 
 need. The method for doing this varies between operating systems.
@@ -32,7 +30,6 @@ three more directories: one for your program’s source code, one for the assemb
 (Need process description...)
 
 # Tools
-  ---------------------
 
 ## Source Code Editor
 
@@ -98,7 +95,7 @@ with the rom8x download explains how to dump a ROM from your calculator.
 
 
 # Creating Your First Program
-  -----------------------------------
+
   
 ## Editing
 
