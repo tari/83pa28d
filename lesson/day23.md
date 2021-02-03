@@ -70,7 +70,7 @@ an opcode. The calculator cannot use mode 0.
 
 ### Mode 1
 
-At a frequency of about 140Hz or less, the CPU executes a RST `28H`
+At a frequency of about 140Hz or less, the CPU executes a RST `38H`
 instruction. The TI-83 Plus uses this interrupt to detect keys, blink
 the cursor, check the linkport, etc.
 
