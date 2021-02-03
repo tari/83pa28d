@@ -15,7 +15,7 @@ There are three methods of getting a keypress. The two that this lesson
 covers involve simple ROM calls. The third is more complex, and is
 really only useful for games, so it'll be taken care of later.
 
-##Getting Input With GetKey
+## Getting Input With GetKey
 
 
 `_GetKey`
@@ -79,7 +79,7 @@ keycode.
         b_call(_NewLine)   ; This will shift the "Done" message down one line.
         RET
 
-##Run Indicator
+## Run Indicator
 Run this program a few times, hit a few keys, yada-yada-yada. But look
 at the top-right part of the screen when `GetKey` is running. You should
 see the Run Indicator, the little line scrolling up continuously. Isn't
@@ -139,7 +139,7 @@ terminate.
         POP    BC
         JR     KeyLoop    ; Get another key.
 
-##Getting Input With GetCSC
+## Getting Input With GetCSC
 
 `_GetCSC`
 :    Gets a key. Unlike `GetKey`, does not wait.
