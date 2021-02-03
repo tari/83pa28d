@@ -312,13 +312,12 @@ while (x < 100)
 i.e. the loop will not end as long as `x` is less than 100. `x` is
 termed a loop control variable, because it controls whether or not the
 loop will terminate. `x++` is the body and is the code that executes on
-each pass through the loop.\
- You can convert this to Z80 as:
+each pass through the loop. You can convert this to Z80 as:
 
         LD     A, 0          ; Initialization
     While:
         CP     100          ; Loop termination test
-        JR     C, EndWhile
+        JR     NC, EndWhile
         INC    A            ; Loop body
         JR     While
     EndWhile:
