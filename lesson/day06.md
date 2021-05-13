@@ -6,18 +6,17 @@ next-lesson: day07
 title: Day 6
 subtitle: Stacks
 ---
-##What Is A Stack?
 
-A stack is a type of data structure that is used to store items of data.
-Now the interesting thing about a stack is that it has no fixed size, it
-can shrink down until it comprises zero bytes, or it can grow until it
-takes up all of addressable memory. Stacks are usually confined to a
-smallish section of memory (since it wouldn't be a very good thing to
-have a stack overwrite your program, would it :-)
+###What Is A Stack?
 
-##How A Stack Works
+A stack is a special kind of data structure that has no fixed size. Its
+size changes as data is added or removed from it. Stacks are usually
+confined to a small amount of memory, but they can shrink to zero bytes
+or grow until they take up all of the addressed memory on your calculator.
 
-All stacks operate in a Last-in-first-out manner. What that means is
+###How A Stack Works
+
+All stacks operate in a last-in-first-out manner. What that means is
 that the last item to be placed onto a stack ("pushed") is the first
 item that is taken off ("popped"). Think of it as like one of those
 dinner plate wells you see in buffets. Each plate is the value of a
@@ -27,14 +26,14 @@ if you wanted to remove a plate that wasn't the topmost one, you
 couldn't get it directly because the whole stack is sunken into the
 counter. You would first have to remove all the plates on top of it.
 
-##What You Need to Make A Stack
+###What You Need to Make A Stack
 
-Ok, you know how a stack works, and now you want to make one. To have a
-fully operational stack structure you need two things: a chunk of memory
-the stack can exist in, and a stack pointer. The stack pointer is a
-variable that tracks the address of the next free byte or the topmost
-entry, either will work fine.\
- A stack can change size in two ways. Either it can grow up (new stack
+To have a fully operational stack structure you need two things: an amount
+of memory the stack can exist in, and a stack pointer. The stack pointer is
+a variable that tracks the address of the next free byte or of the topmost
+entry.
+
+A stack can change size in two ways. It can either it can grow up (new stack
 entries exist at higher addresses than previous ones) or down (new stack
 entries exist at lower addresses than previous ones).
 
@@ -43,7 +42,7 @@ stack is currently address \$1009 and this is also the value of the
 stack pointer. If we were to push an entry onto this stack, we would
 write to \$1009. As this action would move the stack top one byte
 forward, the stack pointer must then be incremented so that it once
-again points to the top of the stack. On the flip side, if we wished to
+again points to the top of the stack. On the other hand, if we wished to
 pop an entry off this stack, we first decrement the stack pointer
 because it currently points to nothing, then read from that address.
 
@@ -100,10 +99,10 @@ Example: Pop the top 16 bits of a register that grows down into DE
         INC    HL
         LD     (stack_ptr), HL    ; Save new stack pointer
 
-##The Z80's Stack
+###The Z80's Stack
 
 Stacks are very useful data structures. So much so that almost every
-computer has specific instructions that operate with a stack mentality.
+computer has specific instructions that operate on the stack.
 
 `PUSH reg16`
 :   Stores `reg16` to the stack. 
@@ -135,8 +134,9 @@ And that POP HL is identical to
         INC   SP
 
 Note that you can only PUSH/POP registers in pairs. So if you just want
-to store E, you would have to do PUSH DE.\
- Also, you're under no obligation to POP into the same register you
+to store E, you would have to do PUSH DE.
+
+Also, you're under no obligation to POP into the same register you
 PUSHed. This is perfectly acceptable:
 
         PUSH   AF
@@ -157,10 +157,13 @@ showing how the stack looks through operation.
 
 ![[NO IMAGE]](../img/stack.png)
 
-Take care with the stack. Since the operating system also uses the
-stack, you really have less than 400 bytes of stack space to work with.
-Nevertheless, this should be sufficient for all your needs. What you
-should be more concerned about is leaving the stack in the exact same
-state is was as when the program started. I don't think I need to tell
-you the [ramifications](../ref/crash.html) of not heeding this warning.
+You should use caution when you work with the stack. Since the operating
+system also uses the stack, you actually have less than 400 bytes of
+useable stack space. Nevertheless, this should be sufficient for all of
+your needs.
 
+One of the most important facts to keep in mind when working with the
+stack is that your program should leave the stack in the exact same
+state that it found it. In other words, each PUSH should have a
+corresponding POP whatever registers are used. If your program does
+not follow this rule, [undefined behavior](../ref/crash.html) will occur.

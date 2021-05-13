@@ -7,11 +7,11 @@ prev-lesson: day04
 next-lesson: day06
 ---
 
-On Day 3, you developed an elementary understanding of registers and
-memory, and how to integrate the two. We will now do something more
-interesting than merely moving data around and actually operate on it,
-then finish things off by introducing two very simple, but very useful
-data stuctures: the array and the structure.
+On Day 3, you learned about registers, memory, and how each relates to
+the other. These concepts are foundational for learning how to manipulate
+and store data.
+**[ED NOTE]: Deleted last sentence, using the "Do not talk about
+what you will be talking about" rule.**
 
 Extension
 ---------
@@ -55,7 +55,7 @@ Okay! Let's play around with some data manipulation instructions.
 
 ### Adding and Subtracting
 
-Just a whole slew of instructions:
+Register commands:
 
 `INC { reg8 | reg16 | (HL) }`
 :    Adds one to the operand.
@@ -149,10 +149,11 @@ two 16-bit operands, is that the registers HL and IX are mutually
 exclusive. What that means is that if the first operand is HL, the
 second can be any other 16-bit register *except* IX (and, of course,
 AF). Similarly for IX. Also, IX can *never* be an operand for SBC.
-Anyway, if you're ever confused, just look in the [Z80 Instruction Set
-Reference](../ref/z80is.html).
+If you need help remembering the syntax for a specific command, you
+can look it up in the [Z80 Instruction Set Reference](../ref/z80is.html).
 
 ###16-Bit Subtraction
+
 If you want to subtract a constant number *x* from HL, you should use
 ADD and load into the other operand the negative of *x*.
 
@@ -175,15 +176,12 @@ carry is reset before doing the subtraction. How to do that?
     SBC    HL, BC
 ```
 
-This is actually the most idiotic way to force the carry to zero, since
-it can be done in just one instruction. Problem is, that instruction
-doesn't *just* reset the carry flag, and it belongs to a family of
-instructions that do similar operations, and the whole thing would be
-just too much and too messy for one day.
+However, this is not a very good way to force the carry to zero, since
+it can be done in just one instruction as you will learn in Day 8.
 
-Finally, before I forget, what if you wanted to do the above, but with
-IX? Since SBC won't accept an index register, you must use ADD, and
-manually negate the second register.
+Finally, what if you wanted to do the above, but with IX? Since SBC
+won't accept an index register, you must use ADD, and manually negate
+the second register.
 
 ```z80
 	LD     A, B
@@ -200,8 +198,8 @@ manually negate the second register.
 
 ### Multiplying
 
-If the number you want to multiply happens to be a power of two, then
-it's a cake walk, because you only need a sequence of ADD instructions.
+If the number you want to multiply is a power of two, you can use
+a sequence of ADD instructions to multiply it.
 
 ```z80
 	LD     HL, 10
@@ -261,10 +259,9 @@ better to follow this general-purpose algorithm:
 ### Dividing
 
 Dividing is trickier still. The best way to do this is to take a page
-out of your math text book and multiply by a reciprocal.\
- So now the question on everyone's minds is how to generate a reciprocal
-when all you've got are integers. The answer to that, as with everything
-else in life, is to cheat.
+out of your math text book and multiply by a reciprocal.
+
+To generate a reciprocal:
 
 1.  Determine the number you want to divide by (the divisor). Figure out
     256 divided by this number and round. This is the number to multiply
@@ -293,8 +290,8 @@ Overflow
 --------
 
 When a register's value is increased beyond the largest value it can
-contain, it's value will start over at the smallest value and continue
-incrementing:
+contain, it's value will start over at the smallest value and continue to
+increment:
 
 ```z80
 	LD     A, 203
@@ -335,9 +332,8 @@ Now take this instruction
 	LD    ($2315), HL
 ```
 
-Since H comes before L, You'd figure that register H would be stored in
-byte \$2315 and L would be stored into byte \$2316. I mean, it just
-makes sense, right?
+Since H comes before L, it would seem to make sense that register H
+would be stored in byte \$2315 and L would be stored into byte \$2316.
 
 -----------------------------------------
 \$2314 \$2315   \$2316   \$2317 \$2318 \$2319
@@ -349,9 +345,9 @@ makes sense, right?
        H        L
 -----------------------------------------
 
-Wrong. Because the Z80 is what's called a "little-endian processor",
-when you store HL to memory, the number gets "twisted around": The byte
-in register L is loaded first, *then* the byte in H (the number is
+This is not the case, however. The Z80 is what's called a "little-endian
+processor", so when you store HL to memory, the number gets "twisted around":
+The byte in register L is loaded first, *then* the byte in H (the number is
 stored "little-end" first). When you store from RAM to HL, the first
 byte goes into L and the next byte goes into H.
 
@@ -512,12 +508,12 @@ CD database, you might use this hypothetical example:
 ```c
 struct CD {
     byte  title[32];   // Name of the CD
-    byte  band[32];    // The guys what made it
+    byte  band[32];    // The band that made it
     word  release;     // Year of release
     byte  tracks;      // Number of songs
     word  length;      // Total disc length in seconds
-    byte  rating;      // How am I reflecting upon having thrown
-}                      // my hard-earned cash at the RIAA today? (/10)
+    byte  rating;      // How much the consumer likes it
+}
 ```
 
 The structure's elements are allocated one after another in memory, just
@@ -533,7 +529,7 @@ constants to help us:
     CD.length   .EQU  67
     CD.rating   .EQU  69
 
-These equates will help enormously in maintaining readability. To access
+These equates will help enormously in maintaining legibility. To access
 an element, you can put the structure base address into HL, then add the
 offset. Alternatively, you might use IX and use the equated
 displacement. Slow, but easy to follow.
@@ -547,7 +543,7 @@ struct CD myCD = {
     .release =  1995
     .tracks  =  23
     .length  =  8863
-    .rating  =  10   // Watch the video, it ownz.
+    .rating  =  10
 };
 ```
 
@@ -592,11 +588,10 @@ because most strings *are* null-terminated.
 
 ### Arrays of Structures
 
-Oh, to be sure, you can have an array of structures. I mean, a database
-would be pretty useless if all you keep track of was one measly CD. To
-access a structure element, just index the array and go for it. E.g.
-Suppose we have an array for 4 sprites in a game located at
-AppBackupScreen, and each element has this structure:
+It is also possibly to have arrays of structures. To access a structure
+element, index the array and then you can access it (E.g. Suppose we have
+an array for 4 sprites in a game located in the AppBackupScreen, and each
+element has this structure:
 
 ```c
 struct sprite {
@@ -610,7 +605,7 @@ struct sprite {
 ```
 
 And suppose we wanted to add the `dx` byte to the `x` byte, and the `dy`
-byte to the `y` byte of each element. This could be done
+byte to the `y` byte of each element. This can be done using the following:
 
 ```z80
 x       .EQU  0

@@ -34,7 +34,7 @@ msg:
 
 Directives are preceded by either a period or a "#". Their purpose is to give
 instructions to the assembler about how it is to interpret the source code.
-Directives are normally on the leftmost edge, but they can be indented any way
+Directives are usually flush with the left margin, but they can be indented any way
 you want. Here are some very candid descriptions of the functions of the
 directives used above.
 
@@ -44,8 +44,7 @@ directives used above.
 .list
 ```
 
-These affect something called a listing file that TASM creates. Not really
-important, but have them in anyway.
+These affect something called a listing file that TASM creates.
 
 ```z80
 #define text1 text2
@@ -77,26 +76,24 @@ Specifies data.
 .end
 ```
 
-Signifies the end of the source code. There are two here because TASM has this
-annoying tendency to ignore the last line in a file. the second one is
-redundant, but oh well.
+Signifies the end of the source code. There are two here because TASM has an
+annoying tendency to ignore the last line in a file.
 
 ```z80
 .org number
 ```
 
 Specifies where in memory the program is loaded into (not exactly true), which
-is always `$9D95`. Notice the "`- 2`"? Don't worry about it now.
+is always `$9D95`.
 
 ## Comments
 
-Anything that follows a semicolon is a comment, and will be totally ignored by
-the assembler. Comments are used to explain the effect of, or reasoning behind
-sections of code. They may not seem very useful for all the noddy programs you
-will get to see, and that's probably true. But if you've been working on a
-project for over a month, and you're puzzling over what you were thinking when
-you wrote that instruction block, that is a divine sign that you should be
-commenting your code.
+Anything that follows a semicolon is a comment, and will be ignored by the
+assembler. Comments are used to explain the effect of, or reasoning behind
+sections of code. They may not seem very useful for all of the example programs
+you will see, but if you've been working on a project for over a month, and you're
+puzzling over what you were thinking when you wrote that instruction block, that is
+a sign that you should be commenting your code.
 
 ## Instructions
 
@@ -124,10 +121,10 @@ finished. You execute a ROM call like this:
 
 ROM calls must be tabbed in along with instructions.
 
-Lots of people knock ROM calls because they believe them to be inherently slow
-and poorly implemented to boot. Okay, that's true, but no one can argue that
-for beginners, having simple to use prefabricated support software makes the
-difference between frustration and accomplishment.
+ROM calls are sometimes deprecated because of a common belief that they are
+inherently slow and poorly implemented. Okay, that's true, but no one can
+argue that for beginners, having simple to use prefabricated support software
+makes the difference between frustration and accomplishment.
 
 ## Manifest Constants
 
@@ -144,7 +141,7 @@ represents a little later.
 Throughout the course of this tutorial, when a new instruction or ROM call
 comes up, it's function will be fully (or at leat mostly) explained, along
 with any data you have to apply (called arguments or operands) to make it
-work. Kinda like these:
+work. Example:
 
 ```z80
     RET
@@ -178,7 +175,7 @@ making your own programs, all you need to do is follow this format:
 .end
 ```
 
-The stuff in blue is required for every program. To save space, all example
+The code in blue is required for every program. To save space, all example
 programs in this guide will omit it. If you want to test an example program,
 you will have to supply the required parts yourself. I would suggest you make
 a template file, then copy and rename it every time you want to test

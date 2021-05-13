@@ -90,7 +90,7 @@ Other ways to affect the cursor position:
 `_HomeUp`
 :    (CurCol) = 0, (CurRow) = 0.
 
-That wasn't so bad was it? Now for strings; a little more complex.
+Strings are a little more complex.
 
 ### Displaying Strings
 
@@ -289,9 +289,8 @@ When `FracDrawLFont, (IY + FontFlags)` is set, then any routine that
 normally uses the small font will instead use the large. The point here
 is to display large text that isn't confined to a 16×8 grid.
 
-### Scrolling — I Can't Think of a Clever Subtitle
+### Scrolling
 
 If you reset `AppAutoScroll, (IY + AppFlags)`, the display will not scroll
 when `(CurRow)` is greater than 7. The problem is that you have to make
-sure to set `(CurRow)` to under 8 when you want to display text again, or
-it'll suck to be you.
+sure to set `(CurRow)` to under 8 when you want to display text again.

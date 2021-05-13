@@ -27,7 +27,7 @@ At first glance, JP and JR look exactly the same. There are a few key
 differences, though:
 
 1.  JR has a limited range of where it can jump. Specifically, it can
-    jump forwards 129 bytes, or backwards 126 bytes... though this
+    jump forwards 129 bytes, or backwards 126 bytes although this
     generally isn't something you can calculate easily. JP on the other
     hand, can jump to anywhere in memory you want, even outside your
     program.
@@ -50,7 +50,7 @@ Example:
         ADD    A, B
     SkipOver:            ; JR branches to here.
         JR     Exit      ; Results in an error because the exit label is too far away.
-        ; Pretend a whole lotta stuff is here. ;
+        ; Large codeblock (130 bytes or more)
     Exit:
         RET
 
@@ -90,7 +90,7 @@ To jump conditionally, modify the JP/JR syntax:
 
 Four instructions can be used conditionally: CALL (discussed later on),
 RET, JP, and JR. JR is handicapped in that it can only be used with the
-conditions hilighted in blue.
+conditions highlighted in blue.
 
 One of the best ways to set off a conditional jump is to use the CP
 instruction. CP is identical to the SUB instruction except that the
@@ -98,8 +98,8 @@ accumulator is left intact. Its only job is to compare how the
 accumulator relates to another value.
 
 `CP { imm8 | reg8 | (HL) }`
-:    Subtracts the operand from the accumulator, but does not actually *affect*
-     the accumulator.
+:    Subtracts the operand from the accumulator, but does not modify the
+     accumulator's value.
 
      S
      :    affected
@@ -146,13 +146,6 @@ success that should be executed if the condition passes, and a label
 called fail that should be executed if the condition fails.
 
 ### Conjunction (AND)
-
-> Conjunction junction, what's your function?[^conjunction]
-
-[^conjunction]: Sorry, couldn't resist. Come to think of it, *I'm* too young to
-know what that is. Next I'll be talking about some crappily animated piece of
-legislation bitching about how a bunch of corrupt Uncle Sam-types won't ratify
-him. :D
 
 If we have two conditions, and we want success to be executed only if
 both conditions are true, then check each condition in any order, and
@@ -216,7 +209,7 @@ else
     goto fail;
 ```
 
-Let's see? Looking at the expression, because it's OR, if A equals 1
+Looking at the expression, because it's OR, if A equals 1
 then the entire expression will be true, so:
 
         CP     1
@@ -268,7 +261,7 @@ structures:
         ADD   A, (IX + dx)
         LD    (IX + x), A
 
-You ought to see that there is a set of three instructions (four if you
+You should to see that there is a set of three instructions (four if you
 append an extra ADD) that are repeated over and over. In cases like
 these it is simply not practical to write out the code again and again
 for as many times as we require, and furthermore the number of

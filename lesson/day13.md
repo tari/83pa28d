@@ -262,14 +262,9 @@ run DrawLine, then you would use
 
 Jump tables are very useful for shells (the `b_call` addresses are part
 of one *big* jump table (or vector table, does it really make a
-difference?)). Suppose you made this new shell called
-"StratocumulusOS"[^stratocumulus] that was so freakin' awesome it made MirageOS
-look like the
-dog it is (well that remains to be seen ;)), and all its library functions were
-referenced through a jump table that the shell stored at, oh, let's say \$8000.
+difference?)). Suppose you made a shell whose library functions were
+referenced through a jump table that the shell stored at \$8000.
 
-[^stratocumulus]: Little joke there for the boys at
-[United-TI](http://www.unitedti.org). :D
 
 | Address | Jump |
 |---------|------|
@@ -286,7 +281,7 @@ libraries
         CALL    stratocumulus_routines + 3 * 3
 
 This will call \$8009 which will then jump to \$9436. But, one month
-later you release StratocumulusOS v1.1 which, owing to a truly brilliant
+later you release a new version of the shell which, owing to a truly brilliant
 optimization on your part, has a much smaller library size; as well, you
 store the routines somewhere else (but the jump table is still stored at
 \$8000):
@@ -300,7 +295,7 @@ store the routines somewhere else (but the jump table is still stored at
 | \$800C | `JP $A631` |
 | \$800F | `JP $A66B` |
 
-When that original v1.0 program is run under v1.1, then that CALL
+When that original program is run under the new version, then that CALL
 `$8009` will still jump to the right routine.
 
 If you don't mind the size difference, you can also use a jump table as
@@ -311,10 +306,10 @@ Relocation
 ----------
 
 For reasons of security, the TI-83 Plus will crash if PC is ever \$C000
-or greater. This is a *mega-bitch*, because it means the executable part
-of a program can never exceed 8811 bytes. You can get a partial reprieve
-by copying code to the scrap RAM areas. But if this code references an
-address within itself with 16-bit addresses, you have to relocate them.
+or greater. This  means the executable part of a program can never exceed
+8811 bytes. You can get a partial reprieve by copying code to the scrap
+RAM areas. But if this code references an address within itself with 16-bit
+addresses, you have to relocate them.
 
         LD     A, 40
     Loop:

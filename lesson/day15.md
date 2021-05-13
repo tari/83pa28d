@@ -265,11 +265,9 @@ To begin with, let's add `7695` and `2182` on "paper":
 
 In the tens position, 9 + 8 = 17, which "overflowed". So you write down
 '7' and *carry* the '1'. Add 6 + 1 with the carry to compensate, and
-everything works out all right. This is exactly how ADC is meant to work
-(amazing, eh? All those years in elementary school, you were learning
-assembly and didn't even know it). In an assembly implementation, you
-work on bytes or words instead of digits, but the theory is the same. So
-let's try it.
+everything works out all right. This is exactly how ADC is meant to work.
+In an assembly implementation, you work on bytes or words instead of digits,
+but the theory is the same. So, let's try it.
 
 Example: Add 32-bit number dword1 with 32-bit number dword2.
 
@@ -340,11 +338,10 @@ replace ADC with SBC.
     result:    .DB    $00, $00, $00, $00
 
 This routine looks okay, but it has a subtle bug in it, and maybe the
-more observant of you have noticed. Maybe you're thinking, "Gee, Sean,
-what happens if the carry flag is set at the start?" and the answer to
-that is, "The answer's gonna be off by one." And now maybe you're
-thinking "Gee, Sean, doesn't that make us screwed?" and the answer to
-that is, "Yes, it does."\
+more observant of you have noticed. Maybe you're thinking, "What happens
+if the carry flag is set at the start?" and the answer to that is, "The
+answer will be off by one." And now maybe you're thinking "That is the
+bug." and the answer to that is, "Yes!"\
  Hmmm... it seems that the best way to fix this problem is to ensure
 that the carry flag is always reset before going into the loop. How do
 we do that? Maybe you'd like [a hint?](day08.html#bit-logic-instructions)
@@ -413,9 +410,8 @@ lot more work to do.
 
 ### Multiprecision Boolean
 
-Boolean operations (and one's complement) are the simplest. Just perform
-the operation, and store the value to memory. No messing with flags,
-shifts, or other crap.
+Boolean operations (and one's complement) are the simplest operations.
+You just have to perform the operation and store the value to memory.
 
         LD     HL, qword1
         LD     DE, qword2
@@ -566,8 +562,8 @@ multiplier into B. Finally save all the pointers.
         ADC    A, (IX + 1)
         LD     (IX + 1), A
 
-Okay, we get one byte of the multiplier into H and multiply H by C using
-the routine below, getting the product in HL. Now we take this partial
+We get one byte of the multiplier into H and multiply H by C using
+the routine below, getting the product in HL. Now, we take this partial
 product and integrate it into the current full product.
 
         JR     NC, _EndB
@@ -587,11 +583,11 @@ two bytes of the product, but there might have been a carry out of this
 addition, so the next byte of the product is incremented. However the
 product could be something like \$12FFFFFFFFFF, so we need to keep
 propagating the carry as far as necessary. This brings up a slight
-problem in that INC does not affect the carry flag. *But* this can be
+problem in that INC does not affect the carry flag. This, however, can be
 remedied with a little trick. Imagine for a second that INC actually did
 affect carry. You should quickly discover that the only circumstance
 under which carry will be set is when the incremented byte goes from
-\$FF to \$00, and in this case zero will be set! Sooooo, all we need to
+\$FF to \$00, and in this case zero will be set! So, all we need to
 do is to just blindly increment bytes as long as INC (HL) sets Z.
 
     _EndB:
@@ -600,8 +596,8 @@ do is to just blindly increment bytes as long as INC (HL) sets Z.
         DJNZ   _LoopB
 
 We're done with the current byte of the multiplier so we increment the
-pointer, and we increment the product pointer to work in the next
-partial product. And do our calculations again.
+pointer, increment the product pointer to work in the next partial
+product, and do our calculations again.
 
         POP    DE
         POP    IX
@@ -612,8 +608,8 @@ partial product. And do our calculations again.
         JP     NZ, _LoopA
         RET
 
-So we're finished with the entire multiplier at this point and we pop
-the original values of all our pointers back. Now we increment our
+So, we are finished with the entire multiplier at this point, and we pop
+the original values of all our pointers back. Now, we increment our
 multiplicand pointer to get the next byte, and increment the product
 pointer (analogous to indenting a partial product when multiplying on
 paper).
@@ -703,8 +699,8 @@ Signed Multiplication and Division
 All of the multiplication and division routines that have been presented
 will only calculate correct results if the inputs are unsigned. To
 perform a signed operation takes a little more work, but fortunately the
-same routines can be used. And hey, you don't need to code for an
-overflow of A when dividing. Bonus!
+same routines can be used. A bonus with these routines is that you don't
+need to allow for an overflow of A when dividing.
 
 1.  Take the absolute value (i.e. negate if the sign bit is set) of both
     inputs.
@@ -736,7 +732,7 @@ Fixed-Point Arithmetic
 ----------------------
 
 There are many programming tasks for which pure integers are just not
-sufficient, and we are forced to delve into the sordid world of the real
+sufficient, and we are forced to delve into the world of the real
 numbers. The usual option in such cases is to use floating-point
 numbers. However, this is only feasible for ultra-fast computers with
 coprocessors. The reason is that floating-point calculations are very
@@ -870,14 +866,13 @@ q = (q + x) >> 4;
 q = (q + x) >> 4;
 ```
 
-Did you get all that? Heh-heh-heh, okay, here's a blow-by-blow analysis
-of each operation.
+Let's break this down step-by-step.
 
 ```c
 q = x >> 4
 ```
 
-Okay, when we start, q = x × m, where m is initially 1 and will
+When we start, q = x × m, where m is initially 1 and will
 eventually become the reciprocal. A right shift by four will make m =
 .0001.
 
@@ -888,19 +883,17 @@ q = (q + x) >> 4
 If we add the original number, we get a multiplier m = 1.0001, see? If
 this is then shifted right by four, where the first shift is shifting in
 the carry from (q + x), m now equals 0.00010001. If we do it again, we
-get a multiplier of 0.000100010001. Isn't that just magickal?
+get a multiplier of 0.000100010001. Isn't that just magical?
 
-Were you the cautious type you might want to quit while we're ahead, but
-forget it! The next step is to go the whole nine yards and get the
-remainder too. It's straightforward enough, remultiply the remainder by
-15.
+The next step is to get the remainder. It's straightforward enough:
+re-multiply the remainder by 15.
 
 ```c
 r = (q << 4) - q;
 r = x - r;
 ```
 
-Enough of all this C, let's see it in assembler already.
+In assembly, this routine would look like the following.
 
     Div_15:
     ; IN    A   dividend

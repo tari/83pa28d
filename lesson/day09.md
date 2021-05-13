@@ -19,8 +19,8 @@ of them are almost useless to us, and a third is barely available.
 
 ##Logical Shifts
 
-A logical shift will grab each bit in a register and shift them. No
-fuss, no muss.
+A logical shift will move all of the bits in a byte to the left or right
+by one position.
 
 `SRL { reg8 | (HL) } `
 :    Logical right shift. All bits move one place right. 0 to b~7~, b~0~ to
@@ -69,8 +69,7 @@ use it, you can add these directives near the top of your program.
     .addinstr    SLL L       CB35 2 NOP 1
 
 An SLL is like multiplying by 2 and adding 1. An SRL is like dividing by
-2 and giving the remainder the finger (two-finger salute, to you
-Aussies, Limeys, et al.). If you want to do a left shift that is an
+2 and discarding the remainder. If you want to do a left shift that is an
 exact multiplication, you can use the arithmetic left shift.
 
 ##Arithmetic Shifts
@@ -188,11 +187,11 @@ HL`, `HL is basically SLA HL. Furthermore, by using shifts and rotates:
             SRL    D            SLA    B
             RR     E            RL     L
 
-##What Was the Point of All This!?
+##Applications of Bit-Shifting
 
 
-Shifting is like, the most potent tool you have to manipulate data, man.
-It's a good way to multiply or divide by 2... but that alone is a gross
+Shifting is the most potent tool you have to manipulate data. It is a
+good way to multiply or divide by 2... but that alone is a gross
 underuse of their power. One nice little trick is that, since an
 outgoing bit is always sent to the carry, you can use a loop to check
 which bits in a register are set and reset (Bonus hint: use rotates to

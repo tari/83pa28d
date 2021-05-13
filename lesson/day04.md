@@ -7,13 +7,13 @@ prev-lesson: day03
 next-lesson: day05
 ---
 
-We briefly touched on the F register yesterday. Today we'll take a more
+We briefly touched on the F register yesterday. Today we will take a more
 in-depth look.
 
 Flags
 -----
 
-As you learned on Day 3, The individual bits of the F register are
+As you learned on Day 3, the individual bits of the F register are
 called flags. Each flag signifies whether or not the last instruction
 triggered a particular event.
 
@@ -23,7 +23,7 @@ These are the flags, from bit 7 of the F register to bit 0:
 |---|---|---|---|---|---|---|---|
 | S | Z | - | H | - |P/V| N | C |
 
-The lowdown:
+Flag Definitions:
 
 ### S - Sign
 
@@ -46,13 +46,12 @@ These two bits aren't used as flags.
 Functions exactly like the carry flag (below) except that the carry is
 detected in the least-significant *nibble* (hence the name). Half-Carry
 is used exclusively with the DAA instruction, which is used for binary
-coded decimal numbers. Not something we need to be concerned about, and
-from now on we'll pretend it dosen't exist for the sake of simplicity.
+coded decimal numbers. We will not use this flag in this guide.
 
 ### P / V - Parity/Overflow
 
-This flag serves double duty by detecting overflows and partity. An
-overflow is where a register winds up having a value that exceeeds
+This flag serves double duty by detecting overflows and parity. An
+overflow occurs when a register is asked to hold a value that exceeeds
 signed 8-bit range. You could also consider an overflow to be when a
 register's sign bit changes through an operation. Either way you look at
 it, the flag is set.
@@ -66,7 +65,7 @@ instruction was used.
 
 If the last instruction was an addition instruction, this flag is reset.
 If the last instruction was a subtraction instruction, this flag is set.
-As with H, it is used exclusively with DAA, and again we'll ignore it.
+As with H, it is used exclusively with DAA, and again we will ignore it.
 
 ### C - Carry
 

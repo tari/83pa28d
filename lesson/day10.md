@@ -48,11 +48,11 @@ complicated structures, such as you saw on Day 5.
 
 ###Index Register Halves
 
-You know, you can access the high and low bytes of IX and IY. It's a
+As you know, you can access the high and low bytes of IX and IY. It's a
 little more complicated because the instructions aren't officially
 supported by ZiLog, and it is a little on the unelegant side.
 Nevertheless they can be useful in some circumstances, like when all
-your registers are locked up and you need an 8-bit counter *bad*.
+your registers are locked up and you desperately need an 8-bit counter.
 
 The high byte of IX is called either IXH or HX (remember these are
 unofficial registers so there are no standard names). The low byte is
@@ -138,10 +138,10 @@ off register pushes to the stack, and while you could use POP, INC will
 not store the data on the stack anywhere, which is really nice if you
 are in a situation where all the registers contain vital data.
 
-###Fast Load With SP
+###Fast Load with SP
 
-I could go on for pages talking about all the filthy hacks you can do
-with SP. Here are just a couple examples.
+There are many useful hacks you can do with SP.Here are just a couple
+of examples.
 
 We can load a block of memory with one or two values really fast with
 SP. The DI and EI instructions are needed because the calculator will
@@ -203,8 +203,8 @@ could be later restored and followed with RET to stop the program:
         LD     SP, (save_sp)
         RET
 
-This could be useful if, say, you had to exit from deep within the
-program because of an error, and you're unable to remove all the stack
+This could be useful if you had to exit from deep within the program
+because of an error, and you're unable to remove all the stack
 pushes (such as from within a procedure).
 
 ##Memory Refresh Register
