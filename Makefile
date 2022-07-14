@@ -8,19 +8,24 @@ PANDOC_OPTS := -f $(MD_DIALECT) -t html5 --syntax-definition=stuff/z80-syntax.xm
 MARKDOWN := $(shell find . -name '*.md')
 HTML := $(addprefix $(DESTDIR)/,$(addsuffix .html,$(basename $(MARKDOWN))))
 CSS := $(wildcard stuff/*.css)
+RESOURCES := $(addprefix stuff/,$(addsuffix .inc,ti83plus ti84pce ti84pcse))
 IMG := $(wildcard img/*)
 
 CSS_OUT := $(addprefix $(DESTDIR)/,$(CSS))
+RESOURCES_OUT := $(addprefix $(DESTDIR)/,$(RESOURCES))
 IMG_OUT := $(addprefix $(DESTDIR)/,$(IMG))
 
 .PHONY: all, clean, clean-highlighter
 
-all: $(DESTDIR) $(HTML) $(CSS_OUT) $(IMG_OUT)
+all: $(DESTDIR) $(HTML) $(CSS_OUT) $(RESOURCES_OUT) $(IMG_OUT)
 
 # Short circuit circular dependency if destdir is unset
 ifneq ($(DESTDIR),.)
 $(CSS_OUT): $(CSS) $(DESTDIR)/stuff
 	cp $(CSS) $(DESTDIR)/stuff
+
+$(RESOURCES_OUT): $(RESOURCES) $(DESTDIR)/stuff
+	cp $(RESOURCES) $(DESTDIR)/stuff
 
 $(IMG_OUT): $(IMG) $(DESTDIR)
 	cp -r img $(DESTDIR)
