@@ -38,21 +38,23 @@ assembler's output- package it into a file that can be sent to a calculator
 In this tutorial, we will use [Brass](http://www.benryves.com/bin/brass/),
 which is a more modern assembler capable of running on all major operating
 systems. In addition, Brass can perform the linking step on its own, so we
-don't need any more programs. The next section will guide you through setting
-up Brass on your operating system- simply select from the list below.
+don't need any more programs. The next sections will guide you through setting
+up Brass and .
 
-ED NOTE: OS autodetection from user agent expected here, with fallback to this
-list.
+#### Getting Brass
 
-Your current OS has been automatically detected as UNKNOWN. If this is
-incorrect or you want to set things up on a different system, select the
-desired operating system from the list below.
+Brass was written by Ben Ryves and is thoroughly documented at
+http://benryves.com/bin/brass/. It is a self-contained binary (a single .exe
+file) that doesn't require any installation. Download a copy of it from
+http://benryves.com/bin/brass/Brass.exe and put it somewhere convenient.
 
-#### Windows
+#### Non-Windows operating systems
 
-#### Linux
-
-#### Mac OS X
+Brass is a .NET program so it can be run on most operating systems (not just
+Windows), but doing so usually requires some setup that this tutorial currently
+makes no effort to document because it varies pretty significantly between
+OSes. Typically this will involve installing Mono or another .NET runtime
+implementation.
 
 ### Editor
 
@@ -60,22 +62,21 @@ For writing source code, you will need a text editor. The source code is just
 plain text, so nearly any program will do. Some common choices are given in
 the table below, with the supported operating systems for each.
 
-1. Notepad
+1. [VS Code](https://code.visualstudio.com/)
+    - OS Support: most
+    - A common choice for all kinds of programming, with lots of extensions
+       available (including ones that help with programming in Z80).
+    - Somewhat complex to get acquainted with
+2. [Notepad++](https://notepad-plus-plus.org/)
+    - OS Support: Windows
+    - A variety of features, and easy to use. 
+3. Notepad
     - OS Support: Windows
     - Included with every installation of Windows, but not many features.
-2. Notepad++
-    - OS Support: Windows
-    - Lots of features, and easy to use. 
-    - Recommended for inexperienced programmers.
-3. Geany
-    - OS Support: Windows, Linux
-    - Similar featureset to Notepad++ while being cross platform.
-    - only depends on GTK+ without further toolkit dependancys.
 4. Vim
     - OS Support: Windows, Mac, Linux
-    - The hacker's editor. Extremely powerful, but has a very steep learning curve.
-
-ED NOTE: Editor recommendations welcome.
+    - Used by many curmudgeonly UNIX users. Extremely powerful, but has a very
+       steep learning curve.
 
 ### Emulator
 
@@ -141,116 +142,48 @@ msg:
 .end
 ```
 
-**TODO: Discuss the potential optimizations: `xor a`, or `ld (CurRow), hl` after
-zeroing HL.**
+Experienced readers may note that this program could be optimized some, but
+those are omitted in this example because it is meant to be easy to understand
+rather than maximally efficient.
 
-Save this file as hello.asm. This should be easy if you're using a competent
-editor, but some programs (notably Notepad) make it annoyingly difficult. Need
-more information on this for Windows users.
+Save this file as `hello.asm`. This should be easy if you're using a competent
+editor, but some programs (notably Notepad) make it annoyingly difficult. (Need
+more information on this for Windows users.)
 
-Hand-hold through invoking the assembler and running in the emulator.  
-The first step is to create the source code in a text editor. Use Notepad for
-this, because it saves its files in ASCII text format. As your programs get
-more involved, it might be a good idea to switch to a specialized IDE (Crimson
-Editor is a good one). When you save your source file, give it a name
-descriptive of its function, and add a .z80 extension.
+You'll want to put this file in the same directory[^directory] as you saved
+Brass.exe, since we want to use Brass to "assemble" the program.
 
-The next step in development is to transform the source code (called "assembling") into machine language that makes sense to the calculator, using a program called (of all things) an Assembler. The assembler we will be using is called TASM (this is not Borland's Turbo Assembler).
+[^directory]: If you're not used to programmer-style terminology you can translate
+    "directory" to "folder": they refer to the same thing.
 
-Once the program is assembled, a linker is used to alter the machine language
-slightly in order for the calculator to be able to read it. We will be using a
-linker called DevPac8x.
+Save a copy of [ti83plus.inc](../stuff/ti83plus.inc) in this directory as well.
+This file contains a very large number of definitions for things about the
+calculator that are much easier to write as names rather than numbers.
 
-Finally, you ship the program to the calculator and run it.
+### Assembling the program
 
-## Assembling
+Open a terminal and navigate to the directory where you have Brass.exe
+and hello.asm. On recent versions of Windows (10 and later) you can do this
+directly from menus in Windows Explorer: find an option like "Open Windows
+PowerShell here." In your terminal, then enter the following command:
 
-If you didn't do it while you were viewing the readme file, create a new
-folder off the C:\ drive and call it `Asm`. In this folder create three new
-folders:
-
-`Source`
-
-Put your source files here
-
-`Tasm`
-
-Put `TASM.EXE, TASM80.TAB, TI83PLUS.INC, DEVPAC8X.COM `here
-
-`Exec`
-
-Look here for compiled programs
-
-In the `Tasm` folder, make a new text file and type in this:
-
-    
-```batch
-@echo off
-echo ==== Now assembling %1.z80 for the TI-83 Plus ====
-tasm -80 -i -b c:\asm\source\%1.z80 c:\asm\exec\%1.bin
-if errorlevel 1 goto ERRORS
-rem This is necessary because of a DevPac8x bug
-cd c:\asm\exec
-c:\asm\tasm\devpac8x %1
-cd c:\asm\tasm
-echo ==== Job finished. Program saved as %1.8xp ====
-goto DONE
-:ERRORS
-echo ==== Errors!!! ====
-:DONE
-del c:\asm\source\%1.lst > NUL
-del c:\asm\exec\%1.bin > NUL
-echo ==== Done ====
+```
+.\Brass.exe hello.asm hello.8xp
 ```
 
-And save as `asm.bat`. What you just made is called a batch file and is
-similar in purpose to TI-BASIC programs.
+This command runs `Brass.exe` and tells it to assemble `hello.asm` into
+`HELLO.8xp`, turning the text (source code) we wrote into a binary
+(machine code) that can be run on a calculator.
 
-## Sample Z80 Program
+If it *doesn't* generate
+a `HELLO.8xp` file, read the messages that appear on the console carefully
+because those will tell you what went wrong. In this simple example, you've
+probably failed to put all the required files in the same directory.
 
-Now to make sure that everything has been set up satisfactorialy, we are going
-to write, assemble, link, and send a little do-nothing program. Enter the
-following source code and don't bother trying to understand it... yet. And
-save as `hello.z80` in the `source` directory  
-to compile, open up DOS (try Start menu, Run, then whichever of `command.com`
-or `cmd.exe` works) and go to the TASM directory. Type `asm hello` and press
-Enter.
+## Run the demo program
 
-After a second or two (or more, depending on your computer's speed), assembly
-will finish, and the program is ready to be transmitted to the calculator.
-
-### Navigating Within DOS
-
-Since Windows completely replaced DOS as the operating system for PCs, most
-newer computer users will be at somewhat of a loss when confronted with the
-DOS command prompt. Here are a few things about DOS that you will find helpful
-when navigating through your directory structure. I presume that you have
-enough experience with file managers like Explorer to know what things like
-"subdirectory" and "parent directory" mean.
-
-Command Prompt
-
-At the extreme left of the screen is the command prompt. This is the name of
-the current drive, current directory, and all parent directories. The format of
-internet URLs are directly based on the command prompt (although not
-specifically the DOS prompt), so you shouldn't have any trouble interpreting
-it.
-
-`cd _directory_`     Changes the current directory. The directory changed to
-must be a subdirectory of the current one.
-
-`cd ..`     Moves to the parent directory of the current directory.
-
-`cd \`     Moves to the root directory.
-
-`dir /p`     Displays a list of all files in the current directory. Useful for
-getting your bearings.
-
-## Sending to the Calculator
-
-Start the Graph Link software. Other programs like TI-Connect I am unfamiliar
-with and cannot give any help. Click on `_L_ink`, `_S_end To >`, then `_R_AM`.
-Navigate to the `C:\Asm\Exec` folder and send `hello.8xp` over.
+With your emulator running, you can drag and drop the 8xp file we created
+into the emulator to load it into the emulated calculator's memory
 
 To run the program, paste `Asm(` from the catalog and `HELLO` from the PRGM
 menu...
@@ -265,7 +198,18 @@ program that's caused the calculator to crash. All you can do is turn the
 calculator back on and be greeted by a "RAM Cleared" message, which means
 exactly what you think it does. [Crashes](../ref/crash.html) wipe out the RAM
 and reset the calculator's defaults (fortunately, archived variables are
-safe). Go back to the "Sample Z80 Program" section and try again.
+safe). Go back to the [Creating your first program](#creating-your-first-program)
+section and try again..
+
+### Sending to a Calculator
+
+Although it's usually easier to test programs in an emulator, theres nothing
+stopping you from running them on a real calculator as well.
+
+Start the Graph Link software. Other programs like TI-Connect I am unfamiliar
+with and cannot give any help. Click on `_L_ink`, `_S_end To >`, then `_R_AM`.
+Navigate to the `C:\Asm\Exec` folder and send `hello.8xp` over, then run the
+`Asm(prgmHELLO` in the same way as described in the previous section.
 
 ## One Last Important Thing
 
