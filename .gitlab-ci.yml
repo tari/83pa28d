@@ -1,7 +1,7 @@
 
 pages:
   stage: deploy
-  image: tari/83pa28d-build
+  image: registry.gitlab.com/taricorp/83pa28d/build:latest
   script:
   - make DESTDIR=public
   artifacts:
