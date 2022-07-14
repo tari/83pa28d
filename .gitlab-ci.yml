@@ -1,7 +1,9 @@
 
 pages:
   stage: deploy
-  image: registry.gitlab.com/taricorp/83pa28d/build:latest
+  image:
+    name: registry.gitlab.com/taricorp/83pa28d/build:latest
+    entrypoint: [""]
   script:
   - make DESTDIR=public
   artifacts:
