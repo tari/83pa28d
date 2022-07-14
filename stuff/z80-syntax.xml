@@ -71,7 +71,6 @@
     <list name="data_instructions">
       <item>ex</item>
       <item>exx</item>
-      <item>kld</item> <!-- actually a macro -->
       <item>ld</item>
       <item>ldd</item>
       <item>lddr</item>
@@ -125,15 +124,13 @@
       <item>srl</item>
     </list>
     <list name="control_instructions">
+      <item>b_call</item> <!-- actually a macro -->
+      <item>b_jump</item> <!-- actually a macro -->
       <item>call</item>
-      <item>corelib</item> <!-- actually a macro -->
       <item>djnz</item>
       <item>jp</item>
       <item>jr</item>
-      <item>kcall</item> <!-- actually a macro -->
-      <item>kjp</item> <!-- actually a macro -->
       <item>nop</item>
-      <item>pcall</item> <!-- actually a macro -->
       <item>ret</item>
       <item>reti</item>
       <item>retn</item>
