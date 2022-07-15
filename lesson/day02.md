@@ -12,6 +12,7 @@ we will take a look at these sections, using the program from yesterday as an
 example. For the sake of clarity, I have colorized common parts.
     
 ```z80
+.binarymode TI8X
 .nolist
 #include "ti83plus.inc"
 #define  ProgStart    $9D95
@@ -39,13 +40,26 @@ you want. Here are some very candid descriptions of the functions of the
 directives used above.
 
 ```z80
+.binarymode TI8X
+```
+
+This tells Brass that it should output a calculator program file instead of
+any other file type.
+
+Some other assemblers determine this in other ways (such
+as by guessing the desired format from the output filename) or only support
+emitting raw binary files (that you'd have to run through another program to
+turn into a 8xp file). If you ever want to use a different assembler, you'll
+probably need to use something other than this directive.
+
+```z80
 .nolist  
 
 .list
 ```
 
-These affect something called a listing file that TASM creates. Not really
-important, but have them in anyway.
+These affect something called a listing file that the assembler creates. Not
+really important, but have them in anyway.
 
 ```z80
 #define text1 text2
@@ -77,9 +91,13 @@ Specifies data.
 .end
 ```
 
-Signifies the end of the source code. There are two here because TASM has this
-annoying tendency to ignore the last line in a file. the second one is
-redundant, but oh well.
+Signifies the end of the source code. There are two here because some old
+assemblers (particularly TASM, which was used by old versions of this guide)
+have this annoying tendency to ignore the last line in a file. the second
+one is redundant, but oh well.[^enddirective]
+
+[^enddirective]: Most modern assemblers don't need this directive (they'll stop
+    automatically at the end of the file), but it doesn't hurt to leave it in.
 
 ```z80
 .org number
@@ -168,6 +186,7 @@ Programs always need some assembler commands in order to work right. When
 making your own programs, all you need to do is follow this format:
     
 ```z80
+.binarymode TI8X
 .nolist
 #include    "ti83plus.inc"
 .list

@@ -121,6 +121,7 @@ time to actually create one. Create a new file with your text editor, and
 paste the following code into it.
 
 ```z80
+.binarymode TI8X    ; Tells Brass we want to get a 8xp file out
 .nolist
 #include "ti83plus.inc"
 #define ProgStart $9D95
@@ -173,12 +174,15 @@ PowerShell here." In your terminal, then enter the following command:
 
 This command runs `Brass.exe` and tells it to assemble `hello.asm` into
 `HELLO.8xp`, turning the text (source code) we wrote into a binary
-(machine code) that can be run on a calculator.
+(machine code) that can be run on a calculator. By default Brass will emit
+a bare binary file, but we want a 8xp (calculator program) file so we included
+the `.binarymode` directive in our code.
 
-If it *doesn't* generate
-a `HELLO.8xp` file, read the messages that appear on the console carefully
+If it *doesn't* generate a small `HELLO.8xp` file, read the messages that
+appear on the console carefully
 because those will tell you what went wrong. In this simple example, you've
-probably failed to put all the required files in the same directory.
+probably failed to put all the required files in the same directory or made a
+mistake in transcribing the code.
 
 ## Run the demo program
 
@@ -203,7 +207,7 @@ section and try again..
 
 ### Sending to a Calculator
 
-Although it's usually easier to test programs in an emulator, theres nothing
+Although it's usually easier to test programs in an emulator, there's nothing
 stopping you from running them on a real calculator as well.
 
 Start the Graph Link software. Other programs like TI-Connect I am unfamiliar
