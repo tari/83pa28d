@@ -1,0 +1,13 @@
+baseURL = 'http://example.org/'
+languageCode = 'en-us'
+title = 'Learn TI-83+ Assembly in 28 Days'
+
+theme = "relearn"
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[params]
+  editURL = "https://gitlab.com/taricorp/83pa28d/-/edit/master/content/"
+  collapsibleMenu = true
+  disableInlineCopyToClipBoard = true

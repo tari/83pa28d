@@ -164,42 +164,13 @@ pre > code {
     font-style: oblique;
 }
 
-kbd {
-    color: white;
-    background-color: black;
-    padding: .2em;
-    border-radius: .5em;
-}
+
 
 img {
     max-width: 100%;
 }
 
-dt {
-    float: left;
-    clear: none;
-    text-align: right;
-    font-weight: bold;
-    margin-right: .5em;
-}
-dt:after {
-    content: ":";
-}
-dd {
-    margin-left: 5em;
-}
-dd p {
-    margin: 0;
-}
 
-dl, .pop {
-    background-color: rgb(51, 74, 140);
-    color: white;
-    padding: .5em;
-}
-dl a, .pop a {
-    color: #aaa;
-}
 .no-pop dl {
     background-color: #F5F5F5;
     color: black;

@@ -8,14 +8,13 @@ The latest version of this guide can always be found at
 ## Compilation
 
 If you did not acquire this guide from a distribution package, you will need
-to compile the components which are written in Markdown into HTML for viewing.
-First ensure [Pandoc] is installed on your system, then run either `make.bat`
-(on Windows) or `make` (most UNIX-like systems) to compile all the Markdown
-files.
+to compile the site into a collection of HTML files. For this we use [Hugo][hugo].
 
-Once compiled, any or all of the `.md` files can be safely deleted.
+[hugo]: https://gohugo.io/
 
-[Pandoc]: http://johnmacfarlane.net/pandoc/
+From the root directory of the project (where this file lives), simply run
+`hugo` to generate the web site to a `public` directory. You can also use
+`hugo serve` to serve the contents "on the fly."
 
 ## Viewing
 
@@ -53,10 +52,3 @@ hypertext markup language, write to
       59 Temple Place - Suite 330
       Boston, MA 02111-1307
       USA
-
----
-title: README
-subtitle: 83PA28D
-stylesheet: stuff/style.css
-tocpath:
----
