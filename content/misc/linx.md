@@ -32,6 +32,11 @@ god" for what the CPU should do (though it's not always correct!).
 
 ## Community
 
+**[WikiTI](https://wikiti.brandonw.net/)** is *the* premier community reference
+resource for all TI calculators. Things that TI have documented are mostly
+not covered on WikiTI, but it has a huge amount of reverse-engineered hardware
+and OS documentation.
+
 While communities of calculator programmers have waned in the decades since the
 devices were first introduced, there are still some active ones:
 
