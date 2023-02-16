@@ -70,8 +70,10 @@ an opcode. The calculator cannot use mode 0.
 
 ### Mode 1
 
-At a frequency of about 140Hz or less, the CPU executes a RST `38H`
-instruction. The TI-83 Plus uses this interrupt to detect keys, blink
+The CPU executes a `RST 38h` instruction when an external interrupt
+occurs; normally this is triggered by a [hardware timer](#interrupt-maintenance) that ticks at
+about 140 Hz.
+The TI-83 Plus uses this interrupt to detect keys, blink
 the cursor, check the linkport, etc.
 
 The system interrupt uses SP (naturally) and IY, so if you want to use
@@ -161,9 +163,11 @@ port (\#3).
 | 1   | Timer interrupts are serviced             | Timer interrupts are ignored             |
 | 4   | Linkport interrupts are serviced          | Linkport interrupts are ignored          |
 
-The meanings of bits 2 and 3 are not known. When the interrupt is
-entered, output %00000000 to disable all interrupts and prevent an
-infinite loop. To return, output %00001011, restore the registers,
+Bits 2 and 3 are usually unimportant, so we're ignoring them here. Just know they should
+usually be set to 0 and 1, respectively.
+
+When the interrupt is entered, output %00000000 to disable all interrupts
+and prevent an infinite loop. To return, output %00001011, restore the registers,
 re-enable interrupts, and then finally return.
 
 Detecting Interrupts
