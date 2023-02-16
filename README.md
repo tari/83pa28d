@@ -2,9 +2,6 @@
 
 **Read the most recent version of the guide online:** https://taricorp.gitlab.io/83pa28d/
 
-The latest version of this guide can always be found at
-<https://gitlab.com/taricorp/83pa28d>
-
 ## Compilation
 
 If you did not acquire this guide from a distribution package, you will need
