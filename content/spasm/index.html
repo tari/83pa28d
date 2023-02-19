@@ -1,0 +1,282 @@
+---
+title: Assembler
+weight: 30
+---
+<!doctype html>
+<!-- SPDX-License-Identifier: BSD-2-Clause -->
+<html>
+    <head>
+        <title>spasm-ng Z80 assembler</title>
+        <style>
+        section {
+            margin: .5em;
+        }
+        #editor {
+            right: 0;
+            left: 0;
+            min-height: 20em;
+            resize: vertical;
+            border: 1px solid #aaa;
+        }
+        #includes {
+            display: flex;
+            flex-wrap: wrap;
+            column-gap: .5em;
+        }
+        textarea {
+            width: 100%;
+            min-height: 20em;
+            font-family: monospace;
+            white-space: pre;
+        }
+        input:invalid {
+            outline: 2px solid red;
+        }
+        #busy-loading-includes {
+            color: red;
+        }
+        #log {
+            padding: .25em;
+            outline: 1px solid #888;
+        }
+        #log > * {
+            padding: .2em;
+            margin: .2em;
+        }
+        #log > a {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        #log > a:hover {
+            text-decoration: none;
+        }
+        #log > .error {
+            background-color: #faa;
+        }
+        #log > .warning {
+            background-color: #ffa;
+        }
+        footer {
+            border-top: 1px solid #888;
+            padding: .25em;
+        }
+        details {
+            display: block;
+        }
+        </style>
+    </head>
+    <body>
+        <section>
+            <h2><label for="editor">Source code</label></h2>
+            <div id="editor">.nolist
+#include "ti83plus.inc"
+.list
+
+.org userMem
+.db t2ByteTok, tAsmCmp
+
+start:
+    ld hl, message
+    bcall(_PutS)
+    ret
+
+message:
+    .db "Hello, world!",0</div>
+        </section>
+        <script src="ace.js"></script>
+        <section>
+            <label for="program-name">Program name:</label>
+            <input id="program-name" required type="text" pattern="[A-Z][0-9A-Z]{0,7}"
+                   placeholder="HELLO" value="A"></input>
+            <button id="assemble-button" onclick="assemble()">Assemble!</button>
+            <button id="download-button" onclick="download()" disabled="disabled">Save .8xp</button>
+            <div hidden>
+                <a id="download-link" href="" download='program.8xp'>Save .8xp</a>
+            </div>
+            <p>
+                Write code in the source code box above, enter the desired program name
+                and press the Assemble! button to run the assembler. The resulting listing
+                file will be displayed below, alongside any output from the assembler
+                (such as error and informational messages) in the Command Output box.
+                <br>
+                After a successful assembly, press the Save .8xp button to save the resulting
+                program file to your device.
+            </p>
+        </section>
+        <section>
+            <h2><label for="log">Command output</label></h2>
+            <pre id="log"></pre>
+        </section>
+        <section>
+            <h2><label for="listing">Listing</label></h2>
+            <textarea id="listing" readonly="readonly" autocomplete="off"></textarea>
+        </section>
+        <h2>Includes</h2>
+        <div id="includes">
+            <section style="flex: 1 15em;">
+                These include files are built-in and can be used directly,
+                such as <code>#include "ti83plus.inc"</code>:
+                <ul>
+                    <li>ti83plus.inc</li>
+                    <li>ti84pcse.inc</li>
+                    <li>ti84pce.inc</li>
+                    <li>dcs7.inc</li>
+                    <li>dcse8.inc</li>
+                </ul>
+            </section>
+            <section style="flex: 1 15em;">
+                You may also add your own include files that can then be used in the same way:<br>
+                <input type="file" multiple onchange="addInclude(this.files)"></input>
+                <span hidden id="busy-loading-includes">Loading files, please wait..</span>
+                <ul id="includes-available">
+                </ul>
+                If a file has the same name as one of the built-in ones, the built-in
+                file will be replaced.
+            </section>
+        </div>
+
+        <script type="text/javascript">
+            var editor = ace.edit("editor");
+            var log = [];
+
+            function download() {
+                document.getElementById('download-link').click();
+            }
+
+            function assemble() {
+                var programName = document.getElementById('program-name');
+                var download = document.getElementById('download-button');
+                var downloadLink = document.getElementById('download-link');
+                var listingElement = document.getElementById('listing');
+
+                log = [];
+                if (!download.disabled) {
+                    download.disabled = true;
+                    URL.revokeObjectURL(download.href);
+                }
+                listingElement.value = '';
+
+                programName = programName.checkValidity() ? programName.value : 'A';
+                var destFile = programName + '.8xp';
+                var lstFile = programName + '.lst';
+                SPASM.FS.writeFile('/source.asm', editor.getValue());
+                var returnCode = SPASM.Module.callMain(['-T', '-N', '-I', '/inc', '/source.asm', destFile]);
+
+                var log_elem = document.getElementById('log');
+                log_elem.innerHTML = '';
+                log.forEach(function(e) {
+                    var m = /source\.asm:(\d+): (error|warning)/.exec(e.innerHTML);
+                    if (m) {
+                        var a = document.createElement('a');
+                        a.onclick = function() {
+                            editor.gotoLine(m[1]);
+                        };
+                        a.appendChild(e);
+                        a.className = m[2];
+                        e = a;
+                    }
+                    log_elem.appendChild(e);
+                    log_elem.appendChild(document.createElement('br'));
+                });
+
+                if (returnCode === 0) {
+                    var file = new Blob([SPASM.FS.readFile('/' + destFile).buffer],
+                        {'type': 'application/x-ti83plus-program'});
+                    downloadLink.href = URL.createObjectURL(file);
+                    download.disabled = false;
+
+                    listingElement.value = SPASM.FS.readFile('/' + lstFile, {'encoding': 'utf8'});
+                }
+            }
+
+            function addInclude(files) {
+                var pendingLoads = 0;
+
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    var name = file.name;
+                    var reader = new FileReader();
+                    var loading = document.getElementById('busy-loading-includes');
+
+                    reader.onload = function(evt) {
+                        var contents = new DataView(evt.target.result);
+                        SPASM.FS.writeFile('/inc/' + name, contents, {'encoding': 'binary'});
+
+                        var li = document.createElement('li');
+                        li.innerHTML = name;
+                        document.getElementById('includes-available').appendChild(li);
+
+                        pendingLoads--;
+                        if (pendingLoads == 0) {
+                            loading.hidden = true;
+                        }
+                    };
+
+                    reader.readAsArrayBuffer(file)
+                    pendingLoads++;
+                    loading.hidden = false;
+                }
+            }
+
+            if (window.location.hash == '#jonimus') {
+                document.getElementById('assemble-button').innerHTML = 'Avengers Assemble!';
+            }
+        </script>
+        <script type="text/javascript" src="spasm.js"></script>
+
+        <footer>
+            This assembler is powered by
+            <a href="https://github.com/alberthdev/spasm-ng">
+                <abbr title="Spencer's Assembler">SPASM-ng</abbr></a>,
+            created by Spencer Putt and other contributors.
+            SPASM-ng is provided under the terms of the
+            <a href="https://spdx.org/licenses/GPL-2.0-or-later.html">
+                GNU General Public License v2.0 or later</a>.
+            <a href="https://gitlab.com/taricorp/spasm-emscripten">This version</a>
+            (compiled to run in a browser) was created by Peter Marheine
+            and the web-specific components are provided under the terms of the
+            <a href="https://spdx.org/licenses/BSD-2-Clause.html">"Simplified" 2-Clause BSD license</a>.
+
+            <details>
+                <summary>Web components license</summary>
+                <pre>Copyright (c) 2023 Peter Marheine
+
+1. Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.</pre>
+            </details>
+            <details>
+                <summary>SPASM-ng license</summary>
+                <pre>SPASM-ng - a z80 assembler with extra features to support dev for TI calcs!
+Copyright (C) 2015 Spencer Putt and Don Straney
+Copyright (C) 2015 Chris Shappell and James Montelongo
+Copyright (C) 2015 Albert Huang (fixes to SPASM)
+Copyright (C) 2015 Brendan Fletcher (eZ80 support)
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</pre>
+            </details>
+        </footer>
+    </body>
+</html>
+

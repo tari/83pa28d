@@ -1,0 +1,34 @@
+kbd {
+    color: white;
+    background-color: black;
+    padding: .2em;
+    border-radius: .5em;
+}
+
+.infobox dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+}
+.infobox dt {
+    font-weight: bold;
+}
+.infobox dt:after {
+    content: ":";
+}
+.infobox dd {
+    display: block;
+    margin-left: .5em;
+}
+
+.infobox {
+    background-color: rgb(51, 74, 140);
+    color: white;
+    padding: .5em;
+    margin: .25em;
+}
+.infobox a {
+    color: #aaa;
+}
+.infobox table {
+    color: var(--INTERNAL-MAIN-TEXT-color);
+}

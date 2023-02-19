@@ -1,0 +1,218 @@
+main input {
+  display: block;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 1em;
+  z-index: 2;
+  width: 20em;
+  margin: 2em auto 0 auto;
+  border: 0.1em solid #467286;
+  border-radius: 0.2em;
+  outline: 0.2em solid #d2d7d9;
+  background-color: #a6b8c1;
+  color: inherit;
+  padding: 0.3em 0.4em;
+  font-size: 2em;
+  font-family: inherit;
+}
+main input:hover,
+main input:focus {
+  border-color: #232627;
+}
+main ul {
+  margin: 4em 0 2em 0;
+  padding: 0;
+  text-align: center;
+  font-size: 1.25em;
+}
+main li {
+  display: inline-block;
+  margin-right: 2em;
+}
+main li::before,
+main td {
+  background-color: #a6b8c1;
+}
+main li::before {
+  content: "";
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin: 0 1em;
+  border: 0.1em solid #232627;
+  vertical-align: -0.2em;
+}
+main li.link::before,
+main td a {
+  border-color: #a6b8c1;
+  background-color: #467286;
+  color: #d2d7d9;
+}
+main li.undocumented::before,
+main td.undocumented {
+  border-color: #6a2635;
+  background-color: #c08c98;
+  color: #6a2635;
+}
+main li.z180::before,
+main td.z180 {
+  border-color: #5d2e77;
+  background-color: #b8a6c2;
+  color: #5d2e77;
+}
+main td.unmatched {
+  background-color: #617078;
+  color: #232627;
+}
+h2 {
+  margin: 2em 0 1em 0;
+  text-align: center;
+  font-size: 2em;
+}
+main table {
+  table-layout: fixed;
+  position: relative;
+  margin: auto;
+  border-spacing: 0.1875em;
+  line-height: 1;
+}
+main th,
+main td {
+  padding: 0.5em;
+}
+main th,
+main emph,
+main td::before {
+  background-color: #374952;
+}
+main th {
+  height: 3em;
+  color: #a6b8c1;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+main td {
+  position: relative;
+  color: #232627;
+}
+main tr:first-child th,
+main tr:first-child td {
+  height: 1em;
+}
+main tr:first-child td {
+  width: 1em;
+  background-color: transparent;
+}
+main emph,
+main tr + tr td::before {
+  content: "";
+  display: none;
+  opacity: 0.2;
+}
+main emph {
+  position: absolute;
+  right: 0.1875em;
+  left: 2.1875em;
+  z-index: 1;
+  height: 4em;
+  margin-top: -2.5em;
+}
+main tr:first-child emph {
+  top: 2.1875em;
+  right: auto;
+  bottom: 0.1875em;
+  left: auto;
+  width: 5em;
+  height: auto;
+  margin-top: 0;
+  margin-left: -0.5em;
+}
+main th:hover emph,
+main td:hover::before {
+  display: block;
+}
+main th emph:hover {
+  display: none;
+}
+main td::before,
+main td a {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 100%;
+}
+main code {
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  font-weight: bold;
+}
+main dl {
+  display: none;
+  position: absolute;
+  top: 4em;
+  left: -5em;
+  z-index: 1;
+  width: 13em;
+  margin-top: 1em;
+  padding: 1em 1em 0.7em 1em;
+  -webkit-box-shadow: 0 0 0.2em #806d15;
+     -moz-box-shadow: 0 0 0.2em #806d15;
+          box-shadow: 0 0 0.2em #806d15;
+  background-color: #e4ddb9;
+  color: #806d15;
+}
+main td:hover dl {
+  display: block;
+}
+main dl::before,
+main dl::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: -1em;
+}
+main dl::before {
+  left: 0;
+  right: 0;
+  height: 1em;
+}
+main dl::after {
+  left: 6.8em;
+  border-width: 0 0.7em 1em 0.7em;
+  border-style: solid;
+  border-color: #e4ddb9 transparent;
+}
+main dt {
+  float: left;
+  font-weight: bold;
+}
+main dt::after {
+  content: ": ";
+  white-space: pre-wrap;
+}
+main dd {
+  margin: 0 0 0.3em 0;
+}
+main td a {
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  line-height: 4em;
+}
+main td a:hover {
+  background-color: #27556c;
+}
+
+/* Override theme settings that conflict with assumed defaults */
+main code {
+    background-color: initial;
+    border: initial;
+}
+main table {
+    border-collapse: initial;
+    width: auto;
+}
+
