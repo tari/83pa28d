@@ -47,7 +47,7 @@ Display 'I' at location (3, 4).
         LD     A, 4
         LD     (CurCol), A    ; Set column 4
         LD     A, 'I'         ; Use a character constant instead of
-        b_call(_PutC)        ; giving a cryptic ASCII code.
+        bcall(_PutC)        ; giving a cryptic ASCII code.
         RET
 
 At the end of this program, the cursor is at (3, 5) because `PutC` will
@@ -62,7 +62,7 @@ Display 'I' at location (3, 4) with different coordinate setup.
         LD     HL, 4*256+3    ; Could also be $0403
         LD     (CurRow), HL   ; Set coordinates
         LD     A, 'I'
-        b_call(_PutC)
+        bcall(_PutC)
         RET
 
 Other ways to affect the cursor position:
@@ -104,7 +104,7 @@ This is the general procedure to follow when displaying text.
 
         ; Set up the cursor coordinates here
         LD    HL, text    ;This loads our pointer to the string.
-        b_call(_PutS)
+        bcall(_PutS)
         .
         .
         .
@@ -146,7 +146,7 @@ Display the character 'q' in small font at (26, 31):
         LD     HL, $1F1A
         LD     (PenCol), HL      ; PenCol comes before PenRow
         LD     A, 'q'
-        b_call(_VPutMap)
+        bcall(_VPutMap)
         RET
 
 ### Displaying Strings
@@ -167,7 +167,7 @@ Notice how the code is almost identical to that for large-font strings.
 
         ; Set up the pen coordinates here
         LD    HL, text    ; This loads our pointer to the string.
-        b_call(_VPutS)
+        bcall(_VPutS)
         .
         .
         .
@@ -206,10 +206,10 @@ after running this:
 
 ### Program 11-4
 
-        b_call(_HomeUp)
-        b_call(_ClrLCDFull)
+        bcall(_HomeUp)
+        bcall(_ClrLCDFull)
         LD     A, 'K'
-        b_call(_PutC)
+        bcall(_PutC)
         RET
 
 You should see the homescreen from before running has returned. To

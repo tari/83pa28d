@@ -501,15 +501,15 @@ changed only slightly to accomodate horizontal clipping.
 
 ### Program 25-1
 
-            b_call(_RunIndicOff)
-            b_call(_GrBufClr)
+            bcall(_RunIndicOff)
+            bcall(_GrBufClr)
 
     Show:
             CALL    PutSpr
-            b_call(_GrBufCpy)
+            bcall(_GrBufCpy)
 
     KeyLoop:
-            b_call(_GetKey)
+            bcall(_GetKey)
             CP      kClear
             RET     Z
 

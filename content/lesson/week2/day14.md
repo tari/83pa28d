@@ -64,7 +64,7 @@ program to loop forever.
         LD     B, 5
     Loop:
         CALL   PrintSpc
-        b_call(_NewLine)
+        bcall(_NewLine)
         DJNZ   Loop
         RET
 
@@ -72,7 +72,7 @@ program to loop forever.
         LD     A, 'X'
         LD     B, 6
     PrintLoop:
-        b_call(_PutC)
+        bcall(_PutC)
         DJNZ   PrintLoop
         RET
 
@@ -86,7 +86,7 @@ Procedure preserves registers.
         LD     B, 5
     Loop:
         CALL   PrintSpc
-        b_call(_NewLine)
+        bcall(_NewLine)
         DJNZ   Loop
         RET
 
@@ -97,7 +97,7 @@ Procedure preserves registers.
         LD     A, 'X'
         LD     B, 6
     PrintLoop:
-        b_call(_PutC)
+        bcall(_PutC)
         DJNZ   PrintLoop
 
         POP    AF
@@ -113,7 +113,7 @@ Calling code preserves registers.
         PUSH   BC
         CALL   PrintSpc
         POP    BC
-        b_call(_NewLine)
+        bcall(_NewLine)
         DJNZ   Loop
         RET
 
@@ -121,7 +121,7 @@ Calling code preserves registers.
         LD     A, 'X'
         LD     B, 6
     PrintLoop:
-        b_call(_PutC)
+        bcall(_PutC)
         DJNZ   PrintLoop
         RET
 
@@ -210,7 +210,7 @@ input data over the procedure.
     ; (not entirely true, but just play along), it can't be modified
         AND   $0F
         XOR   $07
-        b_call(_PutC)
+        bcall(_PutC)
         RET
 
     val:    .DB    99
@@ -309,14 +309,14 @@ anyway.
         INC    HL
         OR     A
         JR     Z, _Done
-        b_call(_PutC)
+        bcall(_PutC)
         JR     _Loop
     _Done:
     ; Much better than POP HL \ RET
         JP     (HL)
 
 You have no excuse for not understanding the code stream mechanism —
-you've been using it all this time! `b_call(xxxx)` is macro (you should
+you've been using it all this time! `bcall(xxxx)` is macro (you should
 know at least that much by now) that expands to
 
         RST    28h
@@ -588,15 +588,15 @@ I'm sure that C.A.R. Hoare's QuickSort is the most famous and impressive
 example of a recursive procedure, so here is how to do a 16-bit
 factorial.
 
-        b_call(_ClrLCDFull)
-        b_call(_HomeUp)
+        bcall(_ClrLCDFull)
+        bcall(_HomeUp)
         LD     HL, 8          ; Do not try passing inputs greater than 8, 
                              ; it will make the routine unhappy
         PUSH   HL
         CALL   Factorial
         POP    HL
-        b_call(_DispHL)
-        b_call(_NewLine)
+        bcall(_DispHL)
+        bcall(_NewLine)
         RET
 
     Factorial:

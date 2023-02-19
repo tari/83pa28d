@@ -56,14 +56,14 @@ off.
 This program couldn't be simpler. It waits for a key, then outputs the
 keycode.
 
-        b_call(_ClrLCDFull)
+        bcall(_ClrLCDFull)
         LD     HL, 0
         LD     (CurRow), HL
-        b_call(_GetKey)    ; Get a key
+        bcall(_GetKey)    ; Get a key
         LD     H, 0
         LD     L, A         ; Store A in HL
-        b_call(_DispHL)
-        b_call(_NewLine)   ; This will shift the "Done" message down one line.
+        bcall(_DispHL)
+        bcall(_NewLine)   ; This will shift the "Done" message down one line.
         RET
 
 ## Run Indicator
@@ -89,13 +89,13 @@ This program will demonstrate using `GetKey` in a loop. You use the up
 and down arrow keys to change the number, and press <kbd>CLEAR</kbd> to
 terminate.
 
-        b_call(_RunIndicOff)       ; Kill the run indicator.
-        b_call(_ClrLCDFull)
+        bcall(_RunIndicOff)       ; Kill the run indicator.
+        bcall(_ClrLCDFull)
         LD     B, 127
         JR     Display    ; Display initial value of B.
     KeyLoop:
         PUSH   BC         ; This will prevent B from being destroyed by _GetKey.
-        b_call(_GetKey)
+        bcall(_GetKey)
         POP    BC
         CP     kUp        ; If the up arrow key was pressed.
         JR     Z, Increase
@@ -120,7 +120,7 @@ terminate.
         LD     (CurRow), HL
         LD     L, B
         PUSH   BC         ; Prevent B from destruction at the hands of _DispHL.
-        b_call(_DispHL)
+        bcall(_DispHL)
         POP    BC
         JR     KeyLoop    ; Get another key.
 
@@ -144,12 +144,12 @@ also doesn't support 2nd or Alpha shift keys. It is a little faster than
 Okay, Program 12-3 will do the exact same thing as Program 12-2, except
 now `GetCSC` will be used.
 
-        b_call(_RunIndicOff)
-        b_call(_ClrLCDFull)
+        bcall(_RunIndicOff)
+        bcall(_ClrLCDFull)
         LD     B, 127
         JR     Display    ; Display initial value of B.
     KeyLoop:
-        b_call(_GetCSC)
+        bcall(_GetCSC)
         CP     skUp       ; If the up arrow key was pressed.
         JR     Z, Increase
         CP     skDown     ; If the down arrow key was pressed.
@@ -174,7 +174,7 @@ now `GetCSC` will be used.
         LD     (CurRow), HL
         LD     L, B
         PUSH   BC         ; Prevent B from destruction at the hands of _DispHL.
-        b_call(_DispHL)
+        bcall(_DispHL)
         POP    BC
         JR     KeyLoop    ; Get another key.
 

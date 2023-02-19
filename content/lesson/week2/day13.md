@@ -254,7 +254,7 @@ run DrawLine, then you would use
 
     CALL JumpTbl + 3 * 2
 
-Jump tables are very useful for shells (the `b_call` addresses are part
+Jump tables are very useful for shells (the `bcall` addresses are part
 of one *big* jump table (or vector table, does it really make a
 difference?)). Suppose you made this new shell called
 "StratocumulusOS"[^stratocumulus] that was so freakin' awesome it made MirageOS

@@ -15,7 +15,7 @@ still exists and can be easily browsed on the Internet Archive.
  * The [SDK Guide](https://archive.org/details/83psdk/sdk83pguide) describes the
    overall system architecture.
  * The [System Routines Reference](https://archive.org/details/83psdk/83psysroutines)
-   documents many of the available `b_call`s, but not all of them (presumably
+   documents many of the available `bcall`s, but not all of them (presumably
    because TI didn't intend the undocumented ones for use outside of the OS).
  * Some additional [unsupported
    documentation](https://web.archive.org/web/20050410221541/http://education.ti.com/us/resources/developer/83/download/unsupported.html)

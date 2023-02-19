@@ -181,12 +181,12 @@ enter <kbd>x</kbd> or <kbd>-></kbd>, because I said so.
 
     Minus:
         LD     HL, zs_minus
-        b_call(_PutS)
+        bcall(_PutS)
         RET
 
     Up:
         LD     HL, zs_up
-        b_call(_PutS)
+        bcall(_PutS)
         RET
 
     zs_up:    .DB "You pressed UP !", 0
@@ -259,16 +259,16 @@ down, then you'd have to either use CP, or have a kind of a BIT chain.
 Demonstration of multiple keypresses.
 
      
-        b_call(_RunIndicOff)
+        bcall(_RunIndicOff)
         LD     HL, $1C23
         LD     (x_pos), HL
 
     DispText:
-        b_call(_ClrLCDFull)
+        bcall(_ClrLCDFull)
         LD     HL, (x_pos)
         LD     (PenCol), HL
         LD     HL, string
-        b_call(_VPutS)
+        bcall(_VPutS)
 
         LD     C, 1
 
@@ -380,7 +380,7 @@ pressed by writing `$80` and checking if any bits in the read value are clear
 
 ## Keyboard b\_calls and debouncing
 
-The calculator's `b_call`s for receiving input do some additional work that may
+The calculator's `bcall`s for receiving input do some additional work that may
 not be obvious when thinking about low-level input. Try running Program 22-4 and
 holding down various keys (one at a time- `_GetCSC` returns nothing if you're
 pressing more than one key) while comparing how fast dots are displayed.
@@ -388,7 +388,7 @@ pressing more than one key) while comparing how fast dots are displayed.
 ### Program 22-4
 
     Loop:
-        b_call(_GetCSC)
+        bcall(_GetCSC)
         or a            ; Any key pressed?
         jr z, Loop      ; No, keep waiting
 
@@ -396,7 +396,7 @@ pressing more than one key) while comparing how fast dots are displayed.
         ret z           ; Press CLEAR to exit
 
         ld a, '.'
-        b_call(_PutC)   ; Display a dot for a keypress
+        bcall(_PutC)   ; Display a dot for a keypress
         jr Loop
 
 You should notice that the arrow keys and <kbd>DEL</kbd> will be returned

@@ -14,12 +14,12 @@ Fully working programs are titled **Program *chapter*-X**.
     .list
     .org ProgStart - 2
     .DB  t2ByteTok,tAsmCmp
-        b_call(_ClrLCDFull)
+        bcall(_ClrLCDFull)
         ld   hl,0
         ld   (PenCol),hl
         ld   hl,msg
-        b_call(_PutS)       ; Display the text
-        b_call(_NewLine)
+        bcall(_PutS)       ; Display the text
+        bcall(_NewLine)
         ret
     msg:
         .db "Hello world!",0

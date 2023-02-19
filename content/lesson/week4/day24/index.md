@@ -72,7 +72,7 @@ I'm such a sycophant...
         LD     DE, PlotSScreen+(19*12)    ;Start at nineteenth row of display
         LD     BC, 25*12                  ;25 rows of data
         LDIR                      
-        b_call(_GrBufCpy)
+        bcall(_GrBufCpy)
         RET
 
     picdata:

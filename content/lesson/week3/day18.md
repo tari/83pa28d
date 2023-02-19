@@ -118,7 +118,7 @@ This is what you do:\
  Example: Store *e* into OP1.
 
         LD     HL, exp
-        b_call(_Mov9ToOP1)
+        bcall(_Mov9ToOP1)
         RET
 
     exp:       .DB    $00, $80, $27, $18, $28, $18, $28, $45, $94    ;2.7182818284594

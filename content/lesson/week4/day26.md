@@ -39,7 +39,7 @@ about 100.
 Location
 : `$000B`
 
-For this routine, you use a CALL instead of the normal `b_call()`.
+For this routine, you use a CALL instead of the normal `bcall()`.
 {{% /infobox %}}
 
 Driver RAM
@@ -111,7 +111,7 @@ variable) to `Pic0`
         RST    10h
         JR     NC, ExistError
 
-        b_call(_CreatePict)
+        bcall(_CreatePict)
         EX     DE, HL
         INC    HL
         INC    HL
@@ -161,15 +161,15 @@ variable) to `Pic0`
 
     ExistError:
         ; Display an error message if Pic0 already exists
-        b_call(_ClrLCDFull)
+        bcall(_ClrLCDFull)
         LD     HL, 0
         LD     (CurRow), HL
         LD     HL, ExistErrorMsg
         SET    TextInverse, (IY + TextFlags)
-        b_call(_PutS)
+        bcall(_PutS)
         RES    TextInverse, (IY + TextFlags)
-        b_call(_PutS)
-        b_call(_GetKey)
+        bcall(_PutS)
+        bcall(_GetKey)
         RET
 
     Pic0Name:
@@ -201,8 +201,8 @@ cross-dissolvers!).
     #define    DEC_A_OP    $3D
     #define    INC_A_OP    $3C
 
-        b_call(_RunIndicOff)
-        b_call(_GrBufClr)
+        bcall(_RunIndicOff)
+        bcall(_GrBufClr)
 
         LD     A, (contrast)
         LD     B, A             ; Number of times to decrease contrast
@@ -326,8 +326,8 @@ make a custom large font routine?
 
 ### Program 26-4
 
-        b_call(_ClrLCDFull)
-        b_call(_HomeUp)
+        bcall(_ClrLCDFull)
+        bcall(_HomeUp)
         LD     HL, text
         CALL   CustomStr
         RET
@@ -387,7 +387,7 @@ make a custom large font routine?
         JR     DoneChar
 
     NormalChar:
-        b_call(_PutC)
+        bcall(_PutC)
 
     DoneChar:
         INC    HL

@@ -42,12 +42,12 @@ the `GetStr` and `GetChar` procedures developed on [Day 27]({{% ref "day27.md" %
         LD     D, 0
         LD     E, A
         ADD    HL, DE
-        b_call(_LdHLInd)
+        bcall(_LdHLInd)
         JP     (HL)
 
     Clear:
-        b_call(_ClrScrnFull)
-        b_call(_HomeUp)
+        bcall(_ClrScrnFull)
+        bcall(_HomeUp)
         RET
 
     Quit:
@@ -55,10 +55,10 @@ the `GetStr` and `GetChar` procedures developed on [Day 27]({{% ref "day27.md" %
         JR     Clear
 
     ErrCommand:
-        b_call(_NewLine)
+        bcall(_NewLine)
         LD     HL, errcmd_text
-        b_call(_PutS)
-        b_call(_NewLine)
+        bcall(_PutS)
+        bcall(_NewLine)
         RET
     errcmd_text:
         .DB    "ERR: Command", 0
@@ -165,28 +165,28 @@ used quite a bit.)
         JR     C, _Digit
         ADD    A, 7
     _Digit:
-        b_call(_PutC)
+        bcall(_PutC)
         RET
 
 That was the routine to display a number in HL or A as hex.
 
     HexDump:
-        b_call(_NewLine)
+        bcall(_NewLine)
         CALL   Read_HLDE
         JP     C, ErrArgument
     DumpLoopA:
         LD     B, 4
         CALL   OutHex_HL
         LD     A, ':'
-        b_call(_PutC)
+        bcall(_PutC)
     DumpLoopB:
         LD     A, (HL)
         CALL   OutHex_A
-        b_call(_CpHLDE)
+        bcall(_CpHLDE)
         JR     Z, DumpEnd
         INC    HL
         LD     A, ' '
-        b_call(_PutC)
+        bcall(_PutC)
         DJNZ   DumpLoopB
         XOR    A
         LD     (CurCol), A
@@ -204,10 +204,10 @@ That was the routine to display a number in HL or A as hex.
         DJNZ   HaltLoop
         JR     DumpLoopA
     DumpEnd:
-        b_call(_NewLine)
+        bcall(_NewLine)
         RET
     Pause:
-        b_call(_RunIndicOn)
+        bcall(_RunIndicOn)
     Pause_Loop:
         HALT
         LD     A, $FD
@@ -215,18 +215,18 @@ That was the routine to display a number in HL or A as hex.
         IN     A, (1)
         CP     $BF
         JR     NZ, Pause_Loop
-        b_call(_RunIndicOff)
+        bcall(_RunIndicOff)
         RET
 
 So how does this work? First, we try reading the two addresses that have
 been supplied. If there is a problem, we escape to a new error handler:
 
     ErrCommand:
-        b_call(_NewLine)
+        bcall(_NewLine)
         LD     HL, errcmd_text
     ErrGeneral:
-        b_call(_PutS)
-        b_call(_NewLine)
+        bcall(_PutS)
+        bcall(_NewLine)
         RET
     ErrArgument:
         LD     HL, errarg_text
@@ -300,11 +300,11 @@ error.
         BIT    7, H
         JP     Z, ErrFlash
         LD     (HL), E        ; Since we only want a one-byte value
-        b_call(_NewLine)
+        bcall(_NewLine)
         RET
 
     ErrFlash:
-        b_call(_NewLine)
+        bcall(_NewLine)
         LD     HL, errfls_text
         JR     ErrGeneral
 
@@ -343,7 +343,7 @@ it's mostly the theory from the previous versions.
         BIT    7, H
         JP     Z, ErrFlash
         LD     (HL), C
-        b_call(_CpHLDE)
+        bcall(_CpHLDE)
         RET    Z
         INC    HL
         JR     LoadLoop
@@ -379,7 +379,7 @@ go into ROM). Here is the code:
 
     Enter_LoopA:
         PUSH   DE
-        b_call(_NewLine)
+        bcall(_NewLine)
         CALL   GetStr
         POP    DE
     Enter_LoopB:
@@ -454,7 +454,7 @@ first occurrence of a given byte. It is invoked as:
         CPIR
         DEC    HL
         PUSH   HL
-        b_call(_NewLine)
+        bcall(_NewLine)
         POP    HL
         JP     Z, OutHex_HL
         LD     HL, find_text
@@ -475,7 +475,7 @@ move the data]({{% ref "day16.md#moving-strings" %}}).
         JP     C, ErrArgument
 
         ADD    HL, BC
-        b_call(_CpHLDE)
+        bcall(_CpHLDE)
         JR     C, Forward
         EX     DE, HL
         ADD    HL, BC

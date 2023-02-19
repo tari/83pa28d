@@ -88,7 +88,7 @@ overwriting important information.
 Invoke `GetCSC`. Because `GetCSC` destroys HL, we have to preserve its value.
 
         EX    DE, HL
-        b_call(_GetCSC)
+        bcall(_GetCSC)
         EX    DE, HL
 
 If there wasn't a key pressed, Goto "D".
@@ -177,7 +177,7 @@ The character is in A and the place to put it to is in HL.
 
 Write the letter to the screen
 
-       b_call(_PutC)
+       bcall(_PutC)
 
 Goto "D"
 
@@ -203,7 +203,7 @@ them into one routine.
 
     KeyLoop:
         EX    DE, HL         ; Get a character
-        b_call(_GetCSC)
+        bcall(_GetCSC)
         EX    DE, HL
         OR    A             ; If no character recieved, restart
         JR    Z, KeyLoop
@@ -234,7 +234,7 @@ them into one routine.
         LD    A, (HL)
         POP   HL
 
-        b_call(_PutC)      ; Echo it
+        bcall(_PutC)      ; Echo it
 
         LD    (HL), A       ; Write char to buffer
         INC   HL          ; Increment pointer
@@ -293,7 +293,7 @@ the buffer.
         PUSH  DE
         LD    HL, (buf_ptr)
         LD    DE, buffer     ; See that the buffer pointer is not
-        b_call(_CpHLDE)     ; at the start of the buffer
+        bcall(_CpHLDE)     ; at the start of the buffer
         SCF                 ; Set carry to indicate error status
         JR    Z, Ungetc_Done
         DEC   HL
@@ -371,7 +371,7 @@ take care of this. The updated code looks like this:
         LD    (CurCol), A
 
     KeyLoop:
-        b_call(_GetCSC)       ; Get a character.
+        bcall(_GetCSC)       ; Get a character.
         OR    A               ; If no character received, restart
         JR    Z, KeyLoop
 
@@ -403,7 +403,7 @@ take care of this. The updated code looks like this:
         DEC   DE              ; Backup one char in buffer
         DEC   B               ; Decrease char counter
         LD    A, ' '           ; Erase char on screen
-        b_call(_PutMap)       ; without affecting position
+        bcall(_PutMap)       ; without affecting position
         JR    KeyLoop
         
     NotDel:
@@ -431,7 +431,7 @@ take care of this. The updated code looks like this:
         LD    A, ' '
         
     ClearLoop:
-        b_call(_PutC)         ; Draw spaces to clear everything
+        bcall(_PutC)         ; Draw spaces to clear everything
         DJNZ   ClearLoop      ; Will reset char counter
 
         LD    (HL), B          ; Reset column to zero
@@ -457,7 +457,7 @@ take care of this. The updated code looks like this:
         ADD   HL, DE
         LD    A, (HL)
         POP   DE
-        b_call(_PutC)         ; Echo it
+        bcall(_PutC)         ; Echo it
 
         LD    (DE), A          ; Write char to buffer
         INC   DE              ; Increment pointer    INC   B               ; Increment counter
@@ -494,7 +494,7 @@ ShiftAlpha.
         LD    (CurCol), A
 
     KeyLoop:
-        b_call(_GetCSC)       ; Get a character.
+        bcall(_GetCSC)       ; Get a character.
         OR    A               ; If no character received, restart
         JR    Z, KeyLoop
 
@@ -537,7 +537,7 @@ ShiftAlpha.
         DEC   DE              ; Backup one char in buffer
         DEC   B               ; Decrease char counter
         LD    A, ' '           ; Erase char on screen
-        b_call(_PutMap)       ; without affecting position
+        bcall(_PutMap)       ; without affecting position
         JR    KeyLoop
         
     NotDel:
@@ -565,7 +565,7 @@ ShiftAlpha.
         LD    A, ' '
         
     ClearLoop:
-        b_call(_PutC)         ; Draw spaces to clear everything
+        bcall(_PutC)         ; Draw spaces to clear everything
         DJNZ   ClearLoop      ; Will reset char counter
 
         LD    (HL), B          ; Reset column to zero
@@ -598,7 +598,7 @@ ShiftAlpha.
         ADD   HL, DE
         LD    A, (HL)
         POP   DE
-        b_call(_PutC)         ; Echo it
+        bcall(_PutC)         ; Echo it
 
         LD    (DE), A          ; Write char to buffer
         INC   DE              ; Increment pointer    INC   B               ; Increment counter

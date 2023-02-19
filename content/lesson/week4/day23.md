@@ -36,7 +36,7 @@ routines.
 : Execute system routine `Mov9ToOP1`.
 
 28h
-: Part of the `b_call()` macro.
+: Part of the `bcall()` macro.
 
 30h
 : Execute system routine `FPAdd`.
@@ -45,7 +45,7 @@ routines.
 : System interrupt routine.
 {{% /infobox %}}
 
-The RST commands are two bytes smaller than the corresponding `b_call()`
+The RST commands are two bytes smaller than the corresponding `bcall()`
 command, and are also a lot faster, so use them whenever possible. And
 yes, the arguments to RST have to be hex numbers in -`h` form.
 
@@ -190,7 +190,7 @@ Here's a sample program that demonstrates everything so far.
 
     INTRPT_MASK   .EQU   %00001011
 
-        b_call(_ClrLCDFull)
+        bcall(_ClrLCDFull)
 
         DI                     ; Turn interrupts off until we're ready
 
@@ -244,7 +244,7 @@ Here's a sample program that demonstrates everything so far.
         LD     HL, (counter)
         INC    HL
         LD     (counter), HL
-        b_call(_DispHL)
+        bcall(_DispHL)
 
         LD     A, INTRPT_MASK   ; Enable hardware
         OUT    (3), A
@@ -377,11 +377,11 @@ skip returning to mode 1 before exiting the program.
 
         LD     DE, $3300
         LD     (PenCol), DE
-        b_call(_VPutS)
+        bcall(_VPutS)
 
         LD     D, $39
         LD     (PenCol), DE
-        b_call(_VPutS)
+        bcall(_VPutS)
 
         RES    TextInverse, (IY + TextFlags)
 

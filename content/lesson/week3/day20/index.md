@@ -16,7 +16,7 @@ is run.
         LD     DE, 100
         ADD    HL, DE
         LD     (counter), HL
-        b_call(_DispHL)
+        bcall(_DispHL)
         RET
     counter:
         .DW    10000
@@ -40,14 +40,14 @@ make use of it.
 
 So, create this program and compile it.
 
-        b_call(_PushRealO1)    ;Save OP1 before we blow it away somehow
+        bcall(_PushRealO1)    ;Save OP1 before we blow it away somehow
         LD     HL, (counter)
         LD     DE, 100
         ADD    HL, DE
         LD     (counter), HL
-        b_call(_DispHL)
-        b_call(_PopRealO1)     ;Retrieve OP1 for writeback
-        b_call(_ChkFindSym)
+        bcall(_DispHL)
+        bcall(_PopRealO1)     ;Retrieve OP1 for writeback
+        bcall(_ChkFindSym)
 
         ;Find data location as offset from start of program.
         LD    HL, DataStart - $9D95 + 4    ;Have to add 4 because of tAsmCmp token
@@ -102,14 +102,14 @@ An assembly program to create this program:
 ### Program 19-3
 
         LD     HL, prog_name
-        b_call(_Mov9ToOP1)
+        bcall(_Mov9ToOP1)
 
-        b_call(_ChkFindSym)
+        bcall(_ChkFindSym)
         JR     C, IsOkay
-        b_call(_DelVarArc)
+        bcall(_DelVarArc)
     IsOkay:
         LD     HL, prog_data_end - prog_data
-        b_call(_CreateProg)
+        bcall(_CreateProg)
 
         INC    DE
         INC    DE
@@ -148,14 +148,14 @@ want to reference a label within the program, you must relocate it.
 Create an assembly program to display "Hello World!"
 
         LD     HL, prog_name
-        b_call(_Mov9ToOP1)
+        bcall(_Mov9ToOP1)
 
-        b_call(_ChkFindSym)
+        bcall(_ChkFindSym)
         JR     C, IsOkay
-        b_call(_DelVarArc)
+        bcall(_DelVarArc)
     IsOkay:
         LD     HL, prog_data_end - prog_data
-        b_call(_CreateProg)
+        bcall(_CreateProg)
 
         INC    DE
         INC    DE
@@ -171,11 +171,11 @@ Create an assembly program to display "Hello World!"
     prog_data:
         .DB    t2ByteTok, tAsmCmp
     prog_data_start:
-        b_call(_ClrLCDFull)
+        bcall(_ClrLCDFull)
         LD     HL, 0
         LD     (CurRow), HL
         LD     HL, msg - prog_data_start + $9D95
-        b_call(_PutS)
+        bcall(_PutS)
         RET
     msg:
         .DB    "Hello World!", 0
@@ -217,20 +217,20 @@ Perform a zoom standard by storing to the window system variables XMin,
 XMax, XScl, etc. using both `StoSysTok` and direct loading.
 
         LD     HL, FP_Negative10
-        b_call(_Mov9ToOP1)
+        bcall(_Mov9ToOP1)
 
         LD     A, XMINt
-        b_call(_StoSysTok)
+        bcall(_StoSysTok)
         LD     A, YMINt
-        b_call(_StoSysTok)
+        bcall(_StoSysTok)
 
         LD     HL, FP_Positive10
-        b_call(_Mov9ToOP1)
+        bcall(_Mov9ToOP1)
 
         LD     A, XMAXt
-        b_call(_StoSysTok)
+        bcall(_StoSysTok)
         LD     A, YMAXt
-        b_call(_StoSysTok)
+        bcall(_StoSysTok)
 
         LD     HL, FP_1
         LD     DE, XScl        ; Address of XScl variable

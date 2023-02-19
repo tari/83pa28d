@@ -133,7 +133,7 @@ Search for and display all programs. Try modifying it to account for
 archived programs.
 
         RES    AppTextSave, (IY + AppFlags)
-        b_call(_ClrLCDFull)
+        bcall(_ClrLCDFull)
         LD     HL, (ProgPtr)    ; Start of Symbol Table for programs
 
     MainLoop:
@@ -162,7 +162,7 @@ archived programs.
         LD     A, ' '           ; ...or space padding for a normal program
 
     DispStatus:
-        b_call(_PutC)          ; Display protection status
+        bcall(_PutC)          ; Display protection status
 
         ; At this point, HL -> [T], so we'll move back six bytes to [NL]
         LD     DE, -6
@@ -172,19 +172,19 @@ archived programs.
     DispNameLoop:
         DEC    HL
         LD     A, (HL)
-        b_call(_PutC)
+        bcall(_PutC)
         DJNZ   DispNameLoop
 
         DEC    HL              ; Move back one byte so HL -> [T] of next entry
 
-        b_call(_NewLine)
+        bcall(_NewLine)
 
         DEC    C               ; Subtract counter
         JR     NZ, FindLoop
 
         PUSH   HL
-        b_call(_GetKey)        ; Press any key...
-        b_call(_ClrLCDFull)
+        bcall(_GetKey)        ; Press any key...
+        bcall(_ClrLCDFull)
         POP    HL
 
         JR     MainLoop
@@ -200,7 +200,7 @@ archived programs.
         JR     FindLoop
 
     Done:
-        b_call(_GetKey)
+        bcall(_GetKey)
         SET    AppTextSave, (IY + AppFlags)
         RET                   ; That's all folks!
 

@@ -9,16 +9,15 @@ example. For the sake of clarity, I have colorized common parts.
 ```z80
 .nolist
 #include "ti83plus.inc"
-#define  ProgStart    $9D95
 .list
-.org    ProgStart - 2
+.org    userMem - 2
 .db     t2ByteTok, tAsmCmp
-    b_call(_homeup)
+    bcall(_homeup)
     ld     hl, 0
     ld     (CurCol), hl        ; Shortcut to setting CurCol and CurRow to 0
     ld     hl, msg
-    b_call(_PutS)        ; Display the text
-    b_call(_NewLine)
+    bcall(_PutS)        ; Display the text
+    bcall(_NewLine)
     ret
 msg:
     .db "Hello world!", 0
@@ -54,7 +53,13 @@ command.
 #include "filename"
 ```
 
-Inserts the contents of `filename` into the source code.
+Inserts the contents of `filename` into the source code. As discussed
+[yesterday]({{% ref "day01/index.md" %}}), the include file `ti83plus.inc`
+contains a very large number of definitions for things about the
+calculator that are much easier to write as names rather than numbers.
+We could write the program without it, but it would be harder to read
+(and write) because we would need to know the addresses of `bcall`s and
+similar items that we use by name.
 
 ```z80
 text .equ number
@@ -114,7 +119,7 @@ location in ROM where the code is stored, and returns to the program when
 finished. You execute a ROM call like this:
 
 ```z80
-    b_call(ROM_Call_Name)
+    bcall(ROM_Call_Name)
 ```
 
 ROM calls must be tabbed in along with instructions.
