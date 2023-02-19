@@ -109,7 +109,7 @@ message:
         </section>
         <section>
             <h2><label for="listing">Listing</label></h2>
-            <textarea id="listing" readonly="readonly"></textarea>
+            <textarea id="listing" readonly="readonly" autocomplete="off"></textarea>
         </section>
         <h2>Includes</h2>
         <div id="includes">
@@ -147,22 +147,20 @@ message:
                 var programName = document.getElementById('program-name');
                 var download = document.getElementById('download-button');
                 var downloadLink = document.getElementById('download-link');
+                var listingElement = document.getElementById('listing');
+
                 log = [];
                 if (!download.disabled) {
                     download.disabled = true;
                     URL.revokeObjectURL(download.href);
                 }
+                listingElement.value = '';
 
                 programName = programName.checkValidity() ? programName.value : 'A';
                 var destFile = programName + '.8xp';
                 var lstFile = programName + '.lst';
                 SPASM.FS.writeFile('/source.asm', editor.getValue());
-                SPASM.Module.callMain(['-T', '-N', '-I', '/inc', '/source.asm', destFile]);
-
-                var file = new Blob([SPASM.FS.readFile('/' + destFile).buffer],
-                                    {'type': 'application/x-ti83plus-program'});
-                downloadLink.href = URL.createObjectURL(file);
-                download.disabled = false;
+                var returnCode = SPASM.Module.callMain(['-T', '-N', '-I', '/inc', '/source.asm', destFile]);
 
                 var log_elem = document.getElementById('log');
                 log_elem.innerHTML = '';
@@ -181,7 +179,14 @@ message:
                     log_elem.appendChild(document.createElement('br'));
                 });
 
-                document.getElementById('listing').value = SPASM.FS.readFile('/' + lstFile, {'encoding': 'utf8'});
+                if (returnCode === 0) {
+                    var file = new Blob([SPASM.FS.readFile('/' + destFile).buffer],
+                        {'type': 'application/x-ti83plus-program'});
+                    downloadLink.href = URL.createObjectURL(file);
+                    download.disabled = false;
+
+                    listingElement.value = SPASM.FS.readFile('/' + lstFile, {'encoding': 'utf8'});
+                }
             }
 
             function addInclude(files) {
