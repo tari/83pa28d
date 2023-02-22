@@ -1,3 +1,5 @@
 ---
 title: Miscellanea
 ---
+
+{{% children %}}
