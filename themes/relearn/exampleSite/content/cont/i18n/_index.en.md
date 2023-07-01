@@ -10,7 +10,7 @@ The Relearn theme is fully compatible with Hugo multilingual mode.
 - Automatic menu generation from multilingual content
 - In-browser language switching
 
-![I18n menu](i18n-menu.gif?classes=shadow&width=300px)
+![I18n menu](i18n-menu.gif?classes=shadow&width=18.75rem)
 
 ## Basic configuration
 
@@ -19,7 +19,7 @@ After learning [how Hugo handle multilingual websites](https://gohugo.io/content
 For example with current English and Piratized English website.
 
 {{% notice note %}}
-Make sure your default language is defined as the first one in the `[Languages]` array, as the theme needs to make assumptions on it
+Make sure your default language is defined as the first one in the `[languages]` array, as the theme needs to make assumptions on it
 {{% /notice %}}
 
 
@@ -27,19 +27,19 @@ Make sure your default language is defined as the first one in the `[Languages]`
 # English is the default language
 defaultContentLanguage = "en"
 
-[Languages]
-[Languages.en]
+[languages]
+[languages.en]
 title = "Hugo Relearn Theme"
 weight = 1
 languageName = "English"
 
-[Languages.pir]
+[languages.pir]
 title = "Cap'n Hugo Relearrrn Theme"
 weight = 2
 languageName = "Arrr! Pirrrates"
 ```
 
-Then, for each new page, append the *id* of the language to the file.
+Then, for each new page, append the _id_ of the language to the file.
 
 - Single file `my-page.md` is split in two files:
     - in English: `my-page.md`
@@ -86,7 +86,7 @@ Keep in mind that the language code required here, is the base language code. E.
 
 ## Overwrite translation strings
 
-Translations strings are used for common default values used in the theme (*Edit* button, *Search placeholder* and so on). Translations are available in English and Piratized English but you may use another language or want to override default values.
+Translations strings are used for common default values used in the theme (_Edit_ button, _Search placeholder_ and so on). Translations are available in English and Piratized English but you may use another language or want to override default values.
 
 To override these values, create a new file in your local i18n folder `i18n/<idlanguage>.toml` and inspire yourself from the theme `themes/hugo-theme-relearn/i18n/en.toml`
 

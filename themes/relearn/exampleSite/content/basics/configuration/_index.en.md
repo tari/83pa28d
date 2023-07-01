@@ -1,4 +1,5 @@
 +++
+tags = ["config"]
 title = "Configuration"
 weight = 20
 +++
@@ -41,6 +42,8 @@ Note that some of these parameters are explained in details in other sections of
   disableGeneratorVersion = false
   # Set this to true to disable copy-to-clipboard button for inline code.
   disableInlineCopyToClipBoard = false
+  # Set this to true to disable the hover effect for copy-to-clipboard buttons for block code.
+  disableHoverBlockCopyToClipBoard = false
   # A title for shortcuts in menu is set by default. Set this to true to disable it.
   disableShortcutsTitle = false
   # If set to false, a Home button will appear below the search bar on the menu.
@@ -64,12 +67,10 @@ Note that some of these parameters are explained in details in other sections of
   customMermaidURL = "https://unpkg.com/mermaid/dist/mermaid.min.js"
   # Initialization parameter for Mermaid, see Mermaid documentation
   mermaidInitialize = "{ \"theme\": \"default\" }"
-  # If set to false, load the Swagger module on every page regardless if a Swagger shortcode is present
-  disableSwagger = false
-  # Specifies the remote location of the RapiDoc js
-  customSwaggerURL = "https://unpkg.com/rapidoc/dist/rapidoc-min.js"
-  # Initialization parameter for Swagger, see RapiDoc documentation
-  swaggerInitialize = "{ \"theme\": \"light\" }"
+  # If set to false, load the OpenAPI module on every page regardless if a OpenAPI shortcode is present
+  disableOpenapi = false
+  # Specifies the remote location of the swagger-ui js
+  customOpenapiURL = "https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"
   # Hide Next and Previous page buttons normally displayed full height beside content
   disableNextPrev = true
   # Order sections in menu by "weight" or "title". Default to "weight";
@@ -77,6 +78,8 @@ Note that some of these parameters are explained in details in other sections of
   ordersectionsby = "weight"
   # Change default color scheme with a variant one. Eg. can be "auto", "red", "blue", "green" or an array like [ "blue", "green" ].
   themeVariant = "auto"
+  # Change the breadcrumb separator. Default to ">".
+  breadcrumbSeparator = "|"
   # Change the title separator. Default to "::".
   titleSeparator = "-"
   # If set to true, the menu in the sidebar will be displayed in a collapsible tree view. Although the functionality works with old browsers (IE11), the display of the expander icons is limited to modern browsers
@@ -195,13 +198,15 @@ on the left menu. It is an alternative for clicking on the logo. To edit the
 appearance, you will have to configure two parameters for the defined languages:
 
 ```toml
-[Languages]
-[Languages.en]
+[languages]
+[languages.en]
 ...
+[languages.en.params]
 landingPageName = "<i class='fas fa-home'></i> Home"
 ...
-[Languages.pir]
+[languages.pir]
 ...
+[languages.pir.params]
 landingPageName = "<i class='fas fa-home'></i> Arrr! Homme"
 ...
 ```
@@ -215,4 +220,4 @@ landingPageName = "<i class='fas fa-home'></i> Home"
 
 The home button is going to look like this:
 
-![Default Home Button](home_button_defaults.png?classes=shadow&width=300px)
+![Default Home Button](home_button_defaults.png?classes=shadow&width=18.75rem)

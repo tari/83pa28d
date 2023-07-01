@@ -20,7 +20,7 @@ other = "방문 기록 삭제"
 other = "첨부파일"
 
 [title-404]
-other = "오류"
+other = "위치 없음"
 
 [message-404]
 other = "존재하지 않는 페이지입니다."
@@ -96,3 +96,15 @@ other = "하위 메뉴 {{.}}"
 
 [Subsections]
 other = "{{.}}의 하위 섹션"
+
+[tags]
+other = "태그"
+
+[tag]
+other = "태그"
+
+[categories]
+other = "카테고리"
+
+[category]
+other = "카테고리"

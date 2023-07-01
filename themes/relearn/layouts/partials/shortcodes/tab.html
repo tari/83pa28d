@@ -1,0 +1,17 @@
+{{- $tabs := (slice | append (dict
+    "color"   .color
+    "content" .content
+    "icon"    .icon
+    "name"    .name
+    "style"   .style
+    "title"   .title
+)) }}
+{{- partial "shortcodes/tabs.html" (dict
+    "context" .context
+    "color"   ""
+    "content" $tabs
+    "groupid" ""
+    "icon"    ""
+    "style"   ""
+    "title"   ""
+) }}

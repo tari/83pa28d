@@ -10,11 +10,24 @@
     {{- partial "meta.html" . }}
     {{- $page := . }}
     {{- $link := "<link href=\"%s\" rel=\"%s\" type=\"%s\" title=\"%s\">" }}
-    {{- $title := "" }}
-    {{- if and .Title (not (eq .Title .Site.Title)) }}
-      {{- $title = printf "%s %s " .Title (default "::" .Site.Params.titleSeparator) }}
+    {{- $title := .Title }}
+    {{- if eq $outputFormat "searchpage" }}
+      {{- $title = T "Search" }}
+    {{- else if eq .Kind "taxonomy" }}
+      {{- $title = i18n .Data.Plural }}
+      {{- if not $title }}
+        {{- $title = .Data.Plural }}
+      {{- end }}
+    {{- else if eq .Kind "term" }}
+      {{- $title = i18n .Data.Singular }}
+      {{- if not $title }}
+        {{- $title = .Data.Singular }}
+      {{- end }}
+      {{- $title = printf "%s %s %s" .Title (default "::" .Site.Params.titleSeparator) $title }}
     {{- end }}
-    {{- $title = printf "%s%s" $title .Site.Title }}
+    {{- if and $title .Site.Title (not (eq $title .Site.Title)) }}
+      {{- $title = printf "%s %s %s" $title (default "::" .Site.Params.titleSeparator) .Site.Title }}
+    {{- end }}
     <title>{{ $title }}</title>
 
     {{- if .IsTranslated -}}
@@ -52,7 +65,7 @@
     {{- partialCached "stylesheet.html" (dict "page" . "outputFormat" $outputFormat) $outputFormat }}
     {{- partial "custom-header.html" . }}
   </head>
-  <body class="mobile-support {{ $outputFormat }}{{- if .Site.Params.disableInlineCopyToClipBoard }} disableInlineCopyToClipboard{{ end }}" data-url="{{ partial "relLangPrettyUglyURL.hugo" (dict "to" .) }}">
+  <body class="mobile-support {{ $outputFormat }}{{- if .Site.Params.disableInlineCopyToClipBoard }} disableInlineCopyToClipboard{{ end }}{{- if .Site.Params.disableHoverBlockCopyToClipBoard }} disableHoverBlockCopyToClipBoard{{ end }}" data-url="{{ partial "relLangPrettyUglyURL.hugo" (dict "to" .) }}">
     <div id="body" class="default-animation">
       <div id="sidebar-overlay"></div>
       <div id="toc-overlay"></div>
@@ -143,9 +156,6 @@
       {{- $hook := "styleclass" }}
       <main id="body-inner" class="highlightable {{ partialCached "archetype.hugo" (dict "hook" $hook "page" . "parameter" . "outputFormat" $outputFormat) .RelPermalink $outputFormat $hook }}" tabindex="-1">
         <div class="flex-block-wrapper">
-          <div id="head-tags">
-{{- partial "tags.html" . }}
-          </div>
 {{- define "breadcrumb" }}
   {{- $breadcrumb := slice }}
   {{- $page := .page }}
@@ -173,7 +183,23 @@
     {{- $remaining = sub $remaining 1 }}
     {{- if $ispublished }}
       {{- $depth = add $depth 1 }}
-              <li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement">{{ if $remaining }}<a itemprop="item" href="{{ partial "relLangPrettyUglyURL.hugo" (dict "to" $to) }}">{{end}}<span itemprop="name">{{ if $to.Title }}{{ $to.Title }}{{ else }}{{ $to.Site.Title }}{{ end }}</span>{{ if $remaining }}</a>{{ end }}<meta itemprop="position" content="{{ $depth }}">{{ if $remaining }} > {{ end }}</li>
+      {{- $title := $to.Title }}
+      {{- if eq .Kind "taxonomy" }}
+        {{- $title = i18n $to.Data.Plural }}
+        {{- if not $title }}
+          {{- $title = $to.Data.Plural }}
+        {{- end }}
+      {{- else if eq .Kind "term" }}
+        {{- $title = i18n $to.Data.Singular }}
+        {{- if not $title }}
+          {{- $title = $to.Data.Singular }}
+        {{- end }}
+        {{- $title = printf "%s %s %s" $title (default "::" .Site.Params.titleSeparator) $to.Title }}
+      {{- end }}
+      {{- if not $title }}
+        {{- $title = $to.Site.Title }}
+      {{- end }}
+              <li itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement">{{ if $remaining }}<a itemprop="item" href="{{ partial "relLangPrettyUglyURL.hugo" (dict "to" $to) }}">{{end}}<span itemprop="name">{{ $title }}</span>{{ if $remaining }}</a>{{ end }}<meta itemprop="position" content="{{ $depth }}">{{ if $remaining }} {{ default ">" .Site.Params.breadcrumbSeparator }} {{ end }}</li>
     {{- end }}
   {{- end }}
 {{- end }}

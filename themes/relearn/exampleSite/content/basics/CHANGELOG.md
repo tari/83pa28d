@@ -1,5 +1,256 @@
 # Changelog
 
+## 5.17.1 (2023-06-22)
+
+### Enhancements
+
+- [**feature**][**change**] highlight: make copy to clipboard appear on hover [#574](https://github.com/McShelby/hugo-theme-relearn/issues/574)
+
+---
+
+## 5.17.0 (2023-06-22)
+
+### Enhancements
+
+- [**feature**] highlight: add configurable line breaks [#169](https://github.com/McShelby/hugo-theme-relearn/issues/169)
+
+### Fixes
+
+- [**bug**] theme: support Hugo 0.114.0 [#573](https://github.com/McShelby/hugo-theme-relearn/issues/573)
+- [**bug**] taxonomy: fix number tags [#570](https://github.com/McShelby/hugo-theme-relearn/issues/570)
+- [**bug**] highlight: improve copy to clipboard [#569](https://github.com/McShelby/hugo-theme-relearn/issues/569)
+
+---
+
+## 5.16.2 (2023-06-10)
+
+### Enhancements
+
+- [**feature**] theme: revamp 404 page [#566](https://github.com/McShelby/hugo-theme-relearn/issues/566)
+
+---
+
+## 5.16.1 (2023-06-09)
+
+### Enhancements
+
+- [**feature**] theme: add deprecation warnings [#565](https://github.com/McShelby/hugo-theme-relearn/issues/565)
+
+### Fixes
+
+- [**bug**] mermaid: allow for YAML frontmatter inside of graph [#564](https://github.com/McShelby/hugo-theme-relearn/issues/564)
+- [**bug**] alias: fix redirect URLs in case of empty BaseURL [#562](https://github.com/McShelby/hugo-theme-relearn/issues/562)
+
+---
+
+## 5.16.0 (2023-06-08)
+
+### Enhancements
+
+- [**feature**] tabs: add title and icon option [#552](https://github.com/McShelby/hugo-theme-relearn/issues/552)
+- [**feature**] shortcodes: add style option to mimic code box color scheme [#551](https://github.com/McShelby/hugo-theme-relearn/issues/551)
+- [**feature**] tabs: support color options [#550](https://github.com/McShelby/hugo-theme-relearn/issues/550)
+- [**feature**] favicon: add light & dark option for OS's prefered color scheme [#549](https://github.com/McShelby/hugo-theme-relearn/issues/549)
+
+### Fixes
+
+- [**bug**] icon: remove whitespace on start [#560](https://github.com/McShelby/hugo-theme-relearn/issues/560)
+- [**bug**] shortcodes: avoid superflous margin at start and end of content [#558](https://github.com/McShelby/hugo-theme-relearn/issues/558)
+- [**bug**] expand: fix html encoding of finishing content tag [#557](https://github.com/McShelby/hugo-theme-relearn/issues/557)
+- [**bug**] icon: fix ouput "raw HTML omitted" with goldmark config unsafe=false [#555](https://github.com/McShelby/hugo-theme-relearn/issues/555)
+
+---
+
+## 5.15.2 (2023-05-29)
+
+### Enhancements
+
+- [**feature**] taxonomy: add support for category default taxonomy [#541](https://github.com/McShelby/hugo-theme-relearn/issues/541)
+
+### Fixes
+
+- [**bug**] attachments: work for Hugo < 0.112 [#546](https://github.com/McShelby/hugo-theme-relearn/issues/546)
+
+---
+
+## 5.15.1 (2023-05-25)
+
+### Fixes
+
+- [**bug**] shortcodes: intermediately use random ids instead of .Ordinal [#543](https://github.com/McShelby/hugo-theme-relearn/issues/543)
+
+---
+
+## 5.15.0 (2023-05-25)
+
+### Enhancements
+
+- [**feature**] tab: new shortcode to display single tab [#538](https://github.com/McShelby/hugo-theme-relearn/issues/538)
+- [**feature**][**change**] tabs: treat groupid as unique if not set [#537](https://github.com/McShelby/hugo-theme-relearn/issues/537)
+- [**feature**] expand: indent expanded content [#536](https://github.com/McShelby/hugo-theme-relearn/issues/536)
+- [**feature**] notice: make boxes more prominent [#535](https://github.com/McShelby/hugo-theme-relearn/issues/535)
+
+### Fixes
+
+- [**bug**] attachments: fix build error since Hugo 0.112 [#540](https://github.com/McShelby/hugo-theme-relearn/issues/540)
+
+### Maintenance
+
+- [**task**] chore: update Mermaid to 9.4.3 [#534](https://github.com/McShelby/hugo-theme-relearn/issues/534)
+- [**task**] mermaid: update to 10.2.0 [#499](https://github.com/McShelby/hugo-theme-relearn/issues/499)
+
+---
+
+## 5.14.3 (2023-05-20)
+
+### Fixes
+
+- [**bug**] tags: show taxonomy toc for standard installation [#533](https://github.com/McShelby/hugo-theme-relearn/issues/533)
+
+---
+
+## 5.14.2 (2023-05-20)
+
+### Fixes
+
+- [**bug**] tags: translate breadcrumb and title for taxonomy [#532](https://github.com/McShelby/hugo-theme-relearn/issues/532)
+
+---
+
+## 5.14.1 (2023-05-20)
+*No changelog for this release.*
+
+---
+
+## 5.14.0 (2023-05-19)
+
+### Enhancements
+
+- [**feature**] tags: improve search index for tags [#531](https://github.com/McShelby/hugo-theme-relearn/issues/531)
+- [**feature**] tags: increase readability of taxonomy pages [#530](https://github.com/McShelby/hugo-theme-relearn/issues/530)
+- [**feature**] nav: make breadcrumb separator configurable [#529](https://github.com/McShelby/hugo-theme-relearn/issues/529)
+- [**feature**] i18n: add translation for default taxonomies [#528](https://github.com/McShelby/hugo-theme-relearn/issues/528)
+- [**feature**] theme: set appropriate defaults for all theme specific params [#516](https://github.com/McShelby/hugo-theme-relearn/issues/516)
+- [**feature**] theme: allow to display tags below article [#513](https://github.com/McShelby/hugo-theme-relearn/issues/513)
+
+### Fixes
+
+- [**bug**] shortcode: make .context always a page [#527](https://github.com/McShelby/hugo-theme-relearn/issues/527)
+
+---
+
+## 5.13.2 (2023-05-17)
+
+### Fixes
+
+- [**bug**] print: enable print for pages with _build options [#522](https://github.com/McShelby/hugo-theme-relearn/issues/522)
+
+---
+
+## 5.13.1 (2023-05-16)
+
+### Fixes
+
+- [**bug**] openapi: allow toc to scroll page [#526](https://github.com/McShelby/hugo-theme-relearn/issues/526)
+
+---
+
+## 5.13.0 (2023-05-14)
+
+### Enhancements
+
+- [**feature**][**change**] openapi: replace implementation with swagger-ui [#523](https://github.com/McShelby/hugo-theme-relearn/issues/523)
+
+### Fixes
+
+- [**bug**] variant: avoid leaking shadows in neon print style [#524](https://github.com/McShelby/hugo-theme-relearn/issues/524)
+
+---
+
+## 5.12.6 (2023-05-04)
+
+### Enhancements
+
+- [**feature**] theme: better HTML titles and breadcrumbs for search and tag pages [#521](https://github.com/McShelby/hugo-theme-relearn/issues/521)
+
+### Fixes
+
+- [**bug**] menu: avoid hiding of expander on hover when active item has children [#520](https://github.com/McShelby/hugo-theme-relearn/issues/520)
+- [**bug**] menu: showVisitedLinks not working for some theme variants [#518](https://github.com/McShelby/hugo-theme-relearn/issues/518)
+- [**bug**] theme: fix resource URLs for 404 page on subdirectories [#515](https://github.com/McShelby/hugo-theme-relearn/issues/515)
+
+---
+
+## 5.12.5 (2023-03-28)
+
+### Fixes
+
+- [**bug**] expand: not properly exanded when used in bullet point list [#508](https://github.com/McShelby/hugo-theme-relearn/issues/508)
+
+---
+
+## 5.12.4 (2023-03-24)
+
+### Fixes
+
+- [**bug**] theme: disableExplicitIndexURLs param is not working as expected [#505](https://github.com/McShelby/hugo-theme-relearn/issues/505)
+
+---
+
+## 5.12.3 (2023-03-14)
+
+### Fixes
+
+- [**bug**] attachments: fix links if only one language is present [#503](https://github.com/McShelby/hugo-theme-relearn/issues/503)
+- [**bug**] shortcodes: allow markdown for title and content [#502](https://github.com/McShelby/hugo-theme-relearn/issues/502)
+
+---
+
+## 5.12.2 (2023-03-03)
+
+### Fixes
+
+- [**bug**] menu: fix state for alwaysopen=false + collapsibleMenu=false [#498](https://github.com/McShelby/hugo-theme-relearn/issues/498)
+
+---
+
+## 5.12.1 (2023-02-26)
+
+### Enhancements
+
+- [**feature**] variant: add relearn bright theme [#493](https://github.com/McShelby/hugo-theme-relearn/issues/493)
+
+### Fixes
+
+- [**bug**] generator: fix setting of colors [#494](https://github.com/McShelby/hugo-theme-relearn/issues/494)
+
+---
+
+## 5.12.0 (2023-02-24)
+
+### Enhancements
+
+- [**feature**] frontmatter: support VSCode Front Matter extension [#481](https://github.com/McShelby/hugo-theme-relearn/issues/481)
+- [**feature**] theme: make expand and image ids stable [#477](https://github.com/McShelby/hugo-theme-relearn/issues/477)
+- [**feature**] variant: set scrollbar color to dark for dark variants [#471](https://github.com/McShelby/hugo-theme-relearn/issues/471)
+- [**feature**] i18n: add full RTL support [#470](https://github.com/McShelby/hugo-theme-relearn/issues/470)
+- [**feature**] piratify: fix some quirks, arrr [#469](https://github.com/McShelby/hugo-theme-relearn/issues/469)
+- [**feature**][**change**] theme: optimization for huge screen sizes [#466](https://github.com/McShelby/hugo-theme-relearn/issues/466)
+
+### Fixes
+
+- [**bug**] i18n: write code ltr even for rtl languages [#492](https://github.com/McShelby/hugo-theme-relearn/issues/492)
+- [**bug**] anchor: fix link in FF when served from filesystem [#482](https://github.com/McShelby/hugo-theme-relearn/issues/482)
+- [**bug**] shortcodes: don't break build and render for invalid parameters [#480](https://github.com/McShelby/hugo-theme-relearn/issues/480)
+- [**bug**] nav: restore scroll position on browser back [#476](https://github.com/McShelby/hugo-theme-relearn/issues/476)
+- [**bug**] variant: avoid style leak for auto style [#473](https://github.com/McShelby/hugo-theme-relearn/issues/473)
+
+### Maintenance
+
+- [**task**] build: add imagebot [#485](https://github.com/McShelby/hugo-theme-relearn/issues/485)
+
+---
+
 ## 5.11.2 (2023-02-07)
 
 ### Fixes
@@ -87,7 +338,7 @@
 ### Fixes
 
 - [**bug**] nav: fix left/right navigation for horizontal scrolling [#435](https://github.com/McShelby/hugo-theme-relearn/issues/435)
-- [**bug**] theme: allow pages on top level [#434](https://github.com/McShelby/hugo-theme-relearn/issues/434)
+- [**bug**][**breaking**] theme: allow pages on top level [#434](https://github.com/McShelby/hugo-theme-relearn/issues/434)
 
 ### Maintenance
 

@@ -20,6 +20,7 @@ The theme is a fork of the great [Learn theme](https://github.com/matcornic/hugo
   - Looks nice on paper (if you have to)
   - Usable offline, no external dependencies
   - [Usable from your local file system via `file://` protocol]({{%relref "basics/configuration#serving-your-page-from-the-filesystem" %}})
+  - Support for the [VSCode Front Matter extension](https://github.com/estruyf/vscode-front-matter) for on-premise CMS capabilities
   - Support for Internet Explorer 11
 - **Configurable theming and visuals**
   - [Configurable brand images]({{%relref "basics/customization#change-the-logo" %}})
@@ -27,13 +28,13 @@ The theme is a fork of the great [Learn theme](https://github.com/matcornic/hugo
   - Predefined light, dark and color variants
   - [User selectable variants]({{%relref "basics/customization#multiple-variants" %}})
   - [Stylesheet generator]({{%relref "basics/generator" %}})
-  - [Configurable syntax highlighting]({{%relref "cont/syntaxhighlight" %}})
+  - [Configurable syntax highlighting]({{%relref "shortcodes/highlight" %}})
 - **Unique theme features**
   - [Print whole chapters or even the complete site]({{%relref "basics/configuration#activate-print-support" %}})
   - In page search
   - [Site search]({{%relref "basics/configuration#activate-search" %}})
   - [Dedicated search page]({{%relref "basics/configuration#activate-dedicated-search-page" %}})
-  - [Tagging support]({{%relref "cont/tags" %}})
+  - [Taxonomy support]({{%relref "cont/taxonomy" %}})
   - Hidden pages
   - Unlimited nested menu dependend on your site structure
   - Navigation buttons dependend on your site structure
@@ -57,9 +58,10 @@ The theme is a fork of the great [Learn theme](https://github.com/matcornic/hugo
   - [Math and chemical formulae using MathJax]({{%relref "shortcodes/math" %}})
   - [Mermaid diagrams for flowcharts, sequences, gantts, pie, etc.]({{%relref "shortcodes/mermaid" %}})
   - [Colorful boxes]({{%relref "shortcodes/notice" %}})
+  - [OpenAPI specifications using Swagger UI]({{%relref "shortcodes/openapi" %}})
   - [Reveal you site's configuration parameter]({{%relref "shortcodes/siteparam" %}})
-  - [Swagger UI for your OpenAPI Specifications]({{%relref "shortcodes/swagger" %}})
   - [Tabbed panels]({{%relref "shortcodes/tabs" %}})
+  - [Single tabbed panels]({{%relref "shortcodes/tab" %}}) and [multiple tabbed panels]({{%relref "shortcodes/tabs" %}})
 
 ## Support
 

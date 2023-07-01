@@ -20,7 +20,7 @@ other = "Clear History"
 other = "Attachments"
 
 [title-404]
-other = "Error"
+other = "Not found"
 
 [message-404]
 other = "Woops. Looks like this page doesn't exist ¯\\_(ツ)_/¯."
@@ -93,3 +93,15 @@ other = "Submenu {{.}}"
 
 [Subsections]
 other = "Subsections of {{.}}"
+
+[tags]
+other = "Tags"
+
+[tag]
+other = "Tag"
+
+[categories]
+other = "Categories"
+
+[category]
+other = "Category"

@@ -18,9 +18,109 @@ This document shows you what's new in the latest release. For a detailed list of
 
 ---
 
-## 5.12.0 (not yet released)
+## 5.17.0 (2023-06-22)
 
-- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} Support for languages that are written right to left (like Arabic) is now complete and extended to the menu, the top navigation bar and print. This feature is not available in Internet Explorer 11.
+- {{% badge style="note" title=" " %}}Change{{% /badge %}} The default behavior for the copy-to-clipboard feature for code blocks has changed.
+
+  The copy-to-clipboard button for code blocks will now only be displayed if the reader hovers the code block.
+
+  If you dislike this new behavior you can turn it off and revert to the old behavior by adding `[params] disableHoverBlockCopyToClipBoard=true` to your `config.toml`.
+
+- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} Now compatible with Hugo {{% badge color="fuchsia" icon="fab fa-hackerrank" title=" " %}}0.114.0{{% /badge %}} or higher. This does not change the minimum required Hugo version.
+
+- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} The new [`highlight` shortcode]({{% relref "shortcodes/highlight" %}}) replaces Hugo's default implementation and is fully compatible. So you don't need to change anything.
+
+  In addition it offers some extensions. Currently only the `wrap` extension option is provided to control whether a code block should be wrapped or scrolled if to long to fit.
+
+---
+
+## 5.16.0 (2023-06-10)
+
+- {{% badge style="note" title=" " %}}Change{{% /badge %}} The theme now provides warnings for deprecated or now unsupported features. The warnings include hints how to fix them and an additional link to the documenation.
+
+  `DEPRECATION` warnings mark features that still work but may be removed in the future.
+
+  `UNSUPPORTED` warnings mark features that will not work anymore.
+
+- {{% badge style="note" title=" " %}}Change{{% /badge %}} The 404 error page was revamped. Hopefully you will not see this very often.
+
+- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} The [`tabs` shortcode]({{% relref "shortcodes/tabs" %}}) and the [`tab` shortcode]({{% relref "shortcodes/tab" %}}) received some love and now align with their style, color, title and icon parameter to the other shortcodes.
+
+  The visuals are now slightly different compared to previous versions. Most noteable, if you now display a single code block in a tab, its default styling will adapt to that of a code block but with a tab handle at the top.
+
+  Additionally the `name` parameter was renamed to `title` but you don't need to change anything yet as the old name will be used as a fallback. Nevertheless you will get deprecation warnings while executing Hugo.
+
+- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} The theme now optionally supports [separate favicons]({{%relref "basics/customization/#change-the-favicon" %}}) for light & dark mode.
+
+---
+
+## 5.15.0 (2023-05-29)
+
+- {{% badge style="note" title=" " %}}Change{{% /badge %}} Now compatible with Hugo {{% badge color="fuchsia" icon="fab fa-hackerrank" title=" " %}}0.112.0{{% /badge %}} or higher. This does not change the minimum required Hugo version.
+
+  The [`attachments` shortcode]({{% relref "shortcodes/attachments" %}}) has compatiblity issues with newer Hugo versions. You must switch to leaf bundles or are locked to Hugo < `0.112.0` for now.
+
+  It is [planned to refactor](https://github.com/McShelby/hugo-theme-relearn/issues/22) the `attchments` shortcode in the future. This will make it possible to use the shortcode in branch bundles again but not in simple pages anymore. This will most likely come with a breaking change.
+
+- {{% badge style="note" title=" " %}}Change{{% /badge %}} The [`tabs` shortcode]({{% relref "shortcodes/tabs" %}}) has changed behavior if you haven't set the `groupid` parameter.
+
+  Formerly all tab views without a `groupid` were treated as so they belong to the same group. Now, each tab view is treated as it was given a unique id.
+
+- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} The already known `tabs`has a new friend the [`tab` shortcode]({{% relref "shortcodes/tab" %}}) to make it easier to create a tab view in case you only need one single tab. Really handy if you want to flag your code examples with a language identifier.
+
+  Additionally for such a use case, the whitespace between a tab outline and the code is removed if only a single code block is contained.
+
+- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} Besides the _tag_ [taxonomy]({{% relref "cont/taxonomy" %}}) the theme now also provides the _category_ taxonomy out of the box and shows them in the content footer of each page.
+
+---
+
+## 5.14.0 (2023-05-20)
+
+- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} The taxonomy pages received some love in this release, making them better leverage available screen space and adding translation support for the taxonomy names.
+
+  Hugo's default taxonmies `tags` and `categories` are already contained in the theme's i18n files. If you have self-defined taxonomies, you can add translations by adding them to your own i18n files. If you don't provide translations, the singualar and plural forms are taken as configured in your `config.toml`.
+
+- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} To give you more flexibility in customizing your article layout a new partial `content-header.html` is introduced.
+
+  This came out of the requirement to customize the position of article tags, which by default are displayed above the title. A second requirement was to also show additional [taxonomies](https://gohugo.io/content-management/taxonomies/) not supported by the theme natively. While Hugo supports tags and categories by default, the theme only displays tags.
+
+  So how to adjust the position of tags starting from the theme's default where tags are only shown above the title?
+
+  1. Hide tags above title: Overwrite `content-header.html` with an empty file.
+  2. Show tags between title and content: Overwrite `heading-post.html` and add `{{- partial "tags.html" . }}` to it.
+  3. Show tags below content: Overwrite `content-footer.html` and add `{{- partial "tags.html" . }}` to it.
+
+- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} The new parameter `breadcrumbSeparator` is now available in your `config.toml` to change the - well - separator of the breadcrumb items. An appropriate default is in place if you do not configure anything.
+
+---
+
+## 5.13.0 (2023-05-17)
+
+- {{% badge style="note" title=" " %}}Change{{% /badge %}} The `swagger` shortcode was deprecated in favor for the  [`openapi` shortcode]({{% relref "shortcodes/openapi" %}}). You don't need to change anything yet as the old name will be used as a fallback. It is planned to remove the `swagger` shortcode in the next major release.
+
+  Additionally, the implemantion of this shortcode was switched from RapiDoc to [SwaggerUI](https://github.com/swagger-api/swagger-ui).
+
+---
+
+## 5.12.0 (2023-05-04)
+
+- {{% badge style="note" title=" " %}}Change{{% /badge %}} In the effort to comply with WCAG standards, the implementation of the collapsible menu was changed (again). While Internet Explorer 11 has issues in displaying it, the functionality still works.
+
+- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} Support for the great [VSCode Front Matter extension](https://github.com/estruyf/vscode-front-matter) which provides on-premise CMS capabilties to Hugo.
+
+  The theme provides Front Matter snippets for its shortcodes. Currently only English and German is supported. Put a reference into your `frontmatter.json` like this
+
+  ````json
+  {
+    ...
+    "frontMatter.extends": [
+        "./vscode-frontmatter/snippets.en.json"
+    ]
+    ...
+  }
+  ````
+
+- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} Support for languages that are written right to left (like Arabic) is now complete and extended to the menu, the top navigation bar and print. You can experience this in the [pirate translation]({{%relref path="basics/migration" lang="pir" %}}). This feature is not available in Internet Explorer 11.
 
 - {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} The scrollbars are now colored according to their variant color scheme to better fit into the visuals.
 
@@ -33,7 +133,7 @@ This document shows you what's new in the latest release. For a detailed list of
   In case you made changes to the theme that are dependend on this library you can place a copy of jQuery into your `static/js` directory and load it from your own `layouts/partials/custom-header.html` like this:
 
   ````html
-  <script src="{{"js/jquery.min.js"| relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}" defer></script>
+  <script src="{{"js/jquery.min.js"| relURL}}" defer></script>
   ````
 
 - {{% badge style="note" title=" " %}}Change{{% /badge %}} [Mermaid]({{% relref "shortcodes/mermaid#parameter" %}}) diagrams can now be configured for pan and zoom on site-, page-level or individually for each graph.
@@ -69,6 +169,30 @@ This document shows you what's new in the latest release. For a detailed list of
 ---
 
 ## 5.9.0 (2022-12-23)
+
+- {{% badge style="warning" title=" " %}}Breaking{{% /badge %}} With this version it is now possible to not only have sections on the first menu level but also pages.
+
+  It was later discovered, that this causes pages only meant to be displayed in the `More` section of the menu and stored directly inside your `content` directory to now show up in the menu aswell.
+
+  To get rid of this undesired behavior you have two choices:
+
+  1. Make the page file for the `More` section a [headless branch bundle](https://gohugo.io/content-management/page-bundles/#headless-bundle) (contained in its own subdirectory and called `_index.md`) and add the following frontmatter configuration to the file (see exampleSite's `content/showcase`). This causes its content to **not** be contained in the sitemap.
+
+      ````toml
+      [_build]
+        render = "never"
+        list = "never"
+        publishResources = false
+      ````
+
+  2. Store the page file for the `More` section below a parent headless branch bundle and add the following frontmatter to the **parent**. In this case, the file itself can be a branch bundle, leaf bundle or simple page (see exampleSite's `content/more/` and `content/more/credits`). This causes its content to be contained in the sitemap.
+
+      ````toml
+      [_build]
+        render = "always"
+        list = "never"
+        publishResources = true
+      ````
 
 - {{% badge style="note" title=" " %}}Change{{% /badge %}} The required folder name for the [`attachments` shortcode]({{% relref "shortcodes/attachments" %}}) was changed for leaf bundles.
 
@@ -166,7 +290,7 @@ This document shows you what's new in the latest release. For a detailed list of
 
 - {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} [Image formatting]({{% relref "cont/markdown#add-css-classes" %}}) has two new classes to align images to the `left` or `right`. Additionally, the already existing `inline` option is now documented.
 
-- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} Printing for the [`swagger` shortcode]({{% relref "shortcodes/swagger" %}}) was optimized to expand sections that are usually closed in interactive mode. This requires [print support]({{%relref "basics/configuration#activate-print-support" %}}) to be configured.
+- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} Printing for the [`swagger` shortcode]({{% relref "shortcodes/openapi" %}}) was optimized to expand sections that are usually closed in interactive mode. This requires [print support]({{%relref "basics/configuration#activate-print-support" %}}) to be configured.
 
 ---
 
@@ -229,7 +353,7 @@ This document shows you what's new in the latest release. For a detailed list of
 
 - {{% badge style="note" title=" " %}}Change{{% /badge %}} Previously, if the [`tabs` shortcode]({{% relref "shortcodes/tabs" %}}) could not find a tab item because, the tabs ended up empty. Now the first tab is selected instead.
 
-- {{% badge style="note" title=" " %}}Change{{% /badge %}} The `landingPageURL` was removed from `config.toml`. You can safely remove this as well from your configuration as it is not used anymore. The theme will detect the landing page URL automatically.
+- {{% badge style="note" title=" " %}}Change{{% /badge %}} The `landingPageURL` was removed from `config.toml`. You can safely remove this as well from your configuration as it is not used anymore. The theme will detect the landing page URL automatically and will point to the project's homepage. If you want to support a different link, overwrite the `logo.html` partial.
 
 - {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} All shortcodes can now be also called from your partials. Examples for this are added to the documentation of each shortcode.
 
@@ -279,7 +403,7 @@ This document shows you what's new in the latest release. For a detailed list of
 
 - {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} Introduction of new CSS variables to set the font. The theme distinguishes between `--MAIN-font` for all content text and `--CODE-font` for inline or block code. There are additional overrides for all headings. See the [theme variant generator]({{%relref "basics/generator" %}}) of the exampleSite for all available variables.
 
-- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} The new shortcode `swagger` is available to include a UI for REST OpenAPI Specifications. See the [documentation]({{% relref "shortcodes/swagger" %}}) for available features. This feature will not work with Internet Explorer 11.
+- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} The new shortcode `swagger` is available to include a UI for REST OpenAPI specifications. See the [documentation]({{% relref "shortcodes/openapi" %}}) for available features. This feature will not work with Internet Explorer 11.
 
 ---
 
@@ -305,7 +429,7 @@ This document shows you what's new in the latest release. For a detailed list of
 
 - {{% badge style="warning" title=" " %}}Breaking{{% /badge %}} We made changes to the menu footer. If you have your `menu-footer.html` [partial overridden]({{%relref "basics/customization" %}}), you may have to review the styling (eg. margins/paddings) in your partial. For a reference take a look into the `menu-footer.html` partial that is coming with the exampleSite.
 
-  This change was made to allow your own menu footer to be placed right after the so called prefooter that comes with the theme (containing the language switch and *Clear history* functionality).
+  This change was made to allow your own menu footer to be placed right after the so called prefooter that comes with the theme (containing the language switch and _Clear history_ functionality).
 
 - {{% badge style="warning" title=" " %}}Breaking{{% /badge %}} We have changed the default colors from the original Learn theme (the purple menu header) to the Relearn defaults (the light green menu header) as used in the official documentation.
 
@@ -317,7 +441,7 @@ This document shows you what's new in the latest release. For a detailed list of
 
 - {{% badge style="note" title=" " %}}Change{{% /badge %}} For consistency reasons, we renamed `--MENU-SEARCH-BOX-color` to `--MENU-SEARCH-BORDER-color`. You don't need to change anything in your custom color stylesheet as the old name will be used as a fallback.
 
-- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} With this release you are now capable to define your own *dark mode* variants.
+- {{% badge style="info" icon="plus-circle" title=" " %}}New{{% /badge %}} With this release you are now capable to define your own _dark mode_ variants.
 
   To make this possible, we have introduced a lot more color variables you can use in [your color variants]({{%relref "basics/customization/#theme-variant" %}}). Your old variants will still work and don't need to be changed as appropriate fallback values are used by the theme. Nevertheless, the new colors allow for much more customization.
 
@@ -357,15 +481,9 @@ This document shows you what's new in the latest release. For a detailed list of
 
   In this case, you must apply one of two options:
 
-  1. Copy the old implementation files `theme/hugo-theme-relearn/layouts/shortcode/ref.html` and `theme/hugo-theme-relearn/layouts/shortcode/relref.html` to your own projects `layouts/shortcode/ref.html` and `layouts/shortcode/relref.html` respectively. **This is not recommended** as your project will still rely on non-standard behavior afterwards.
+  1. Start up a text editor with regular expression support for search and replace. Search for `(ref\s+"[^"]*?)(?:/_index|/index)?(?:\.md)?(#[^"]*?)?"` and replace it by `$1$2"` in all `*.md` files. **This is the recommended choice**.
 
-  2. Start up a text editor with regular expression support for search and replace. Apply the following conversions in the given order on all `*.md` files. **This is the recommended choice**.
-
-    | Type          | Search                       | Replace by |
-    | ------------- | ---------------------------- | ---------- |
-    | Branch bundle | `(ref\s+"[^"]*)/_index\.md"` | `$1"`      |
-    | Leaf bundle   | `(ref\s+"[^"]*)/index\.md"`  | `$1"`      |
-    | Page          | `(ref\s+"[^"]*)\.md"`        | `$1"`      |
+  2. Copy the old implementation files `theme/hugo-theme-relearn/layouts/shortcode/ref.html` and `theme/hugo-theme-relearn/layouts/shortcode/relref.html` to your own projects `layouts/shortcode/ref.html` and `layouts/shortcode/relref.html` respectively. **This is not recommended** as your project will still rely on non-standard behavior afterwards.
 
 ---
 
