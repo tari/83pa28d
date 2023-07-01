@@ -121,7 +121,7 @@ compatible with programs designed for the regular TI-83+: `ti84pcse.inc`
 for the TI-84+ CSE and `ti84pce.inc` for the TI-84+ CE (as well as
 variants like the TI-83 Premium CE).
 
-{{% attachments pattern=".*\.inc" %}}
+{{% attachments pattern=".*\.inc" /%}}
 
 Assemblers typically have a way to specify where to search for files that
 are referred to by `#include` statements, but it's often easiest to put the
