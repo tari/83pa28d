@@ -29,7 +29,13 @@ Many of the programs in ASMGuru will not work correctly on the TI-83 Plus,
 some may even cause a very hideous crash.
 
 (Invisible anti-AsmGuru flame follows. Not really necessary anymore; kept for
-hysterical reasons)  
+hysterical reasons)[^asmguru]
+
+[^asmguru]: [AsmGuru](https://www.ticalc.org/archives/files/fileinfo/69/6961.html)
+            is another set of tutorials targeting assembly for TI calculators
+            that was [first published several years prior](http://tistory.wikidot.com/asm-guru)
+            to the [first version of this tutorial](http://tistory.wikidot.com/83pa28);
+            in 1999 compared to this tutorial's 2002.
 
 Furthermore--and I know I'm going to piss off at least a few of you--but I
 think ASMGuru is a horribly written tutorial. For one thing, the tutorial
