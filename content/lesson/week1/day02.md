@@ -197,7 +197,7 @@ making your own programs, all you need to do is follow this format:
 .end
 ```
 
-The stuff in blue is required for every program. To save space, all example
+This code, besides the comment, is required for every program. To save space, all example
 programs in this guide will omit it. If you want to test an example program,
 you will have to supply the required parts yourself. I would suggest you make
 a template file, then copy and rename it every time you want to test
