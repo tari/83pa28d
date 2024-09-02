@@ -43,11 +43,28 @@ complicated structures, such as you saw on Day 5.
 
 ### Index Register Halves
 
-You know, you can access the high and low bytes of IX and IY. It's a
-little more complicated because the instructions aren't officially
-supported by ZiLog, and it is a little on the unelegant side.
-Nevertheless they can be useful in some circumstances, like when all
-your registers are locked up and you need an 8-bit counter *bad*.
+You know, you can access the high and low bytes of IX and IY. It's a little
+more complicated because the instructions are undocumented,[^undocumented] and
+it is a little on the unelegant side. Nevertheless they can be useful in some
+circumstances, like when all your registers are locked up and you need an 8-bit
+counter *bad*.
+
+[^undocumented]: When we say an instruction is undocumented, we mean that it's
+    not described by the CPU manual written by Zilog. Although most Z80s are
+    known to exhibit these undocumented behaviors, taking advantage of them is
+    "going off the path": you are responsible for ensuring it will work
+    correctly on every machine you want to use it on. The creators of the CPU
+    have chosen not to specify this as part of the CPU's behavior, so it might
+    change without warning.
+
+{{% notice style="warning" %}}
+Some emulators (in particular, the Z80 emulator used on the TI-Nspire
+calculators) and other Z80-compatible CPUs lack support for undocumented
+instructions like these. You should avoid using index register
+halves unless it's okay that your program won't work correctly on some
+machines.
+{{% /notice %}}
+
 
 The high byte of IX is called either IXH or HX (remember these are
 unofficial registers so there are no standard names). The low byte is
