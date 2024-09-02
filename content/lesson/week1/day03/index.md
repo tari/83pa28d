@@ -25,10 +25,11 @@ everyday system of numbers, which uses base ten.
 
 Like you learned in grade school and forgot over summer, in a base ten number,
 each digit specifies a certain power of 10, and as a consequence you need ten
-different digits to denote any number. The rightmost digit specifies 10^0^, the
-second digit specifies 10<sup>1</sup>, the third 10<sup>2</sup> and so on.  
-You can, therefore, break down a decimal number, such as 2763<sub>10</sub>, like this
-(although it does wind up to be redundant):
+different digits to denote any number. The rightmost digit specifies
+10<sup>0</sup>, the second digit specifies 10<sup>1</sup>, the third
+10<sup>2</sup> and so on.  You can, therefore, break down a decimal number,
+such as 2763<sub>10</sub>, like this (although it does wind up to be
+redundant):
 
 ```math
 $$
@@ -92,12 +93,12 @@ individual bits of a byte or word. The nomenclature:
     0", and each bit to the left is given a number one greater. 
   * The leftmost and rightmost bits are given special names: the leftmost bit
     is called the high-order bit or the most-significant bit (since it controls
-the highest power of two of the number, it makes the most significant
-contrubution to the value). The rightmost bit is called the low-order bit or
-the least-significant bit. 
+    the highest power of two of the number, it makes the most significant
+    contrubution to the value) or shortened as the "MSb". The rightmost bit is
+    called the low-order bit or the least-significant bit ("LSb").
   * We can apply these points to nibbles in a byte, bytes in a word or dword,
     etc. So for example the rightmost byte in a 64-bit quantity would be termed
-the least-significant byte. 
+    the least-significant byte.
 
 ### Hexadecimal
 
