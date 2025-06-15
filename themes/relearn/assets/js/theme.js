@@ -435,7 +435,7 @@ function initOpenapi(update, attrs) {
 <html lang="${lang}" dir="${isRtl ? 'rtl' : 'ltr'}" data-r-output-format="${format}" data-r-theme-variant="${variant}">
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="${window.relearn.themeUseOpenapi.css}">
+    <link rel="stylesheet" href="${window.relearn.themeUseOpenapi.css}${assetBuster}">
     <link rel="stylesheet" href="${relBasePath}/css/swagger${min}.css${assetBuster}">
     <link rel="stylesheet" href="${relBasePath}/css/swagger-${swagger_theme}${min}.css${assetBuster}">
     <link rel="stylesheet" href="${theme}">
@@ -565,9 +565,10 @@ function initAnchorClipboard() {
     return;
   }
 
-  document.querySelectorAll(':has(h1) :is(h2[id], h3[id], h4[id] , h5[id], h6[id])').forEach(function (element) {
-    var url = encodeURI((document.location.origin == 'null' ? document.location.protocol + '//' + document.location.host : document.location.origin) + document.location.pathname);
-    var link = url + '#' + element.id;
+  document.querySelectorAll(':has(h1) :is(h2[id], h3[id], h4[id], h5[id], h6[id])').forEach(function (element) {
+    var origin = document.location.origin == 'null' ? `${document.location.protocol}//${document.location.host}` : document.location.origin;
+    var id = encodeURIComponent(element.id);
+    var link = `${origin}${document.location.pathname}#${id}`;
     var new_element = document.createElement('button');
     new_element.classList.add('anchor');
     if (!window.relearn.disableAnchorCopy) {
