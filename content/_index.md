@@ -98,8 +98,8 @@ which grants you the right to copy and redistribute it freely. You may
 also modify it and distribute those modifications, subject to certain
 restrictions. Refer to the [full license text][gfdl] for details.
 
-[acknowledgements]: {{< ref "credit.md" >}}
-[gfdl]: {{< ref "gfdl.md" >}}
+[acknowledgements]: {{% ref "credit.md" %}}
+[gfdl]: {{% ref "gfdl.md" %}}
 
 ### Warranty disclaimer
 

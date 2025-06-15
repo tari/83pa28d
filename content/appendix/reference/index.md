@@ -12,7 +12,7 @@ guide provides you with the tools to understand and use them!
 The official documentation for the Z80 CPU, specifying in detail how the CPU
 works.
 
-{{% attachments pattern="um0080\.pdf" /%}}
+{{% resources pattern="um0080\.pdf" /%}}
 
 ## TI-83 Plus Developer Guide
 
@@ -26,7 +26,7 @@ topics such as:
  * Doing math
  * Error handling
 
-{{% attachments pattern="sdk83pguide.pdf" /%}}
+{{% resources pattern="sdk83pguide.pdf" /%}}
 
 ## TI-83 Plus System Routines
 
@@ -41,4 +41,4 @@ the routines expects as inputs and what it outputs. Categories include:
  * Memory
  * Utility
 
-{{% attachments pattern="83psysroutines.pdf" /%}}
+{{% resources pattern="83psysroutines.pdf" /%}}
