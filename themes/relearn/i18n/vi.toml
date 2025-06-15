@@ -1,11 +1,17 @@
 [Reading-direction]
 other = "ltr"
 
+[Versioning-warning]
+other = 'Bạn đang đọc phiên bản {{.pageVersion.title}} của trang này. Phiên bản hiện tại có thể được tìm thấy <a href="{{.latestUrl}}">Ở đây</a>.'
+
 [Search]
 other = "Tìm kiếm"
 
 [Search-placeholder]
 other = "Tìm kiếm..."
+
+[Clear-search]
+other = "Xóa tìm kiếm"
 
 [No-results-found]
 other = "Không tìm thấy kết quả nào cho \"{0}\""
@@ -15,6 +21,12 @@ other = "{1} kết quả được tìm thấy cho \"{0}\""
 
 [Clear-History]
 other = "Xóa lịch sử.."
+
+[Reset-view]
+other = "Đặt lại dạng xem"
+
+[View-reset]
+other = "Xem đặt lại!"
 
 [Attachments-label]
 other = "Tập tin đính kèm"
@@ -28,13 +40,25 @@ other = "Tiếc quá! Có vẻ như trang này không tồn tại ¯\\_(ツ)_/¯
 [Go-to-homepage]
 other = "Đi đến trang chủ"
 
+[home-button]
+other = "Home"
+
 [Edit-this-page]
 other = "Biên tập"
+
+[Show-Markdown]
+other = "Hiển thị Markdown"
+
+[Show-source]
+other = "Hiển thị mã nguồn"
 
 [Print-this-chapter]
 other = "In toàn bộ chương"
 
-[Shortcuts-Title]
+[More-action]
+other = "Nội dung khác"
+
+[shortcuts-menuTitle]
 other = "Nội dung khác"
 
 [Expand-title]
@@ -46,9 +70,6 @@ other = "Menu"
 [Toc-toggle]
 other = "Mục lục"
 
-[BinaryPrefix-kilobyte]
-other = "kb"
-
 [Byte-symbol]
 other = "B"
 
@@ -58,11 +79,17 @@ other = "KB"
 [Megabyte-symbol]
 other = "MB"
 
-[note]
-other = "Ghi chú"
+[caution]
+other = "Thận trọng"
+
+[important]
+other = "Quan trọng"
 
 [info]
 other = "Thông tin"
+
+[note]
+other = "Ghi chú"
 
 [tip]
 other = "Mẹo vặt"
@@ -108,3 +135,6 @@ other = "Thể loại"
 
 [category]
 other = "Loại"
+
+[Details]
+other = "Chi tiết"

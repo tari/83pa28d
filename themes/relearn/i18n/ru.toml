@@ -1,11 +1,17 @@
 [Reading-direction]
 other = "ltr"
 
+[Versioning-warning]
+other = 'Вы читаете версию {{.pageVersion.title}} этой страницы. Актуальную версию можно найти <a href="{{.latestUrl}}">здесь</a>.'
+
 [Search]
 other = "Поиск"
 
 [Search-placeholder]
 other = "Поиск..."
+
+[Clear-search]
+other = "Очистить поиск"
 
 [No-results-found]
 other = "Ничего не найдено для \"{0}\""
@@ -15,6 +21,12 @@ other = "{1} результатов найдено для \"{0}\""
 
 [Clear-History]
 other = "Очистить историю"
+
+[Reset-view]
+other = "Вид на сброс"
+
+[View-reset]
+other = "Посмотреть сброс!"
 
 [Attachments-label]
 other = "Присоединенные файлы"
@@ -28,13 +40,25 @@ other = "Упс. Выглядит будто такой страницы нет 
 [Go-to-homepage]
 other = "Перейти на главную"
 
+[home-button]
+other = "Home"
+
 [Edit-this-page]
 other = "редактировать"
+
+[Show-Markdown]
+other = "Показать Markdown"
+
+[Show-source]
+other = "Показать исходный код"
 
 [Print-this-chapter]
 other = "Печать всей главы"
 
-[Shortcuts-Title]
+[More-action]
+other = "Еще"
+
+[shortcuts-menuTitle]
 other = "Еще"
 
 [Expand-title]
@@ -55,11 +79,17 @@ other = "КБ"
 [Megabyte-symbol]
 other = "МБ"
 
-[note]
-other = "Заметка"
+[caution]
+other = "Внимание"
+
+[important]
+other = "Важно"
 
 [info]
 other = "Информация"
+
+[note]
+other = "Заметка"
 
 [tip]
 other = "Совет"
@@ -105,3 +135,6 @@ other = "Категории"
 
 [category]
 other = "Категория"
+
+[Details]
+other = "Подробности"

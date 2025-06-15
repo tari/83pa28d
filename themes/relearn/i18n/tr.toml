@@ -1,11 +1,17 @@
 [Reading-direction]
 other = "ltr"
 
+[Versioning-warning]
+other = 'Bu sayfanın {{.pageVersion.title}} sürümünü okuyorsunuz. Güncel sürüm bulunabilir <a href="{{.latestUrl}}">burada</a>.'
+
 [Search]
 other = "Ara"
 
 [Search-placeholder]
 other = "Ara..."
+
+[Clear-search]
+other = "Aramayı temizle"
 
 [No-results-found]
 other = "\"{0}\" için sonuç bulunamadı"
@@ -15,6 +21,12 @@ other = "\"{0}\" için {1} sonuç bulundu"
 
 [Clear-History]
 other = "Geçmişi Temizle"
+
+[Reset-view]
+other = "Görünümü sıfırla"
+
+[View-reset]
+other = "Görünüm sıfırlandı!"
 
 [Attachments-label]
 other = "Ekler"
@@ -28,13 +40,25 @@ other = "Uups. Görünüşe göre böyle bir sayfa yok ¯\\_(ツ)_/¯"
 [Go-to-homepage]
 other = "Anasayfaya dön"
 
+[home-button]
+other = "Home"
+
 [Edit-this-page]
 other = "Düzenlemek"
+
+[Show-Markdown]
+other = "Markdown'ı Göster"
+
+[Show-source]
+other = "Kaynak kodunu göster"
 
 [Print-this-chapter]
 other = "Bölümün tamamını yazdır"
 
-[Shortcuts-Title]
+[More-action]
+other = "Dahası Var"
+
+[shortcuts-menuTitle]
 other = "Dahası Var"
 
 [Expand-title]
@@ -55,11 +79,17 @@ other = "KB"
 [Megabyte-symbol]
 other = "MB"
 
-[note]
-other = "Not"
+[caution]
+other = "Dikkat"
+
+[important]
+other = "Önemli"
 
 [info]
 other = "Bilgi"
+
+[note]
+other = "Not"
 
 [tip]
 other = "Bahşiş"
@@ -105,3 +135,6 @@ other = "Kategoriler"
 
 [category]
 other = "Kategori"
+
+[Details]
+other = "Şey"
