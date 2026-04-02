@@ -1,3 +1,10 @@
+/* Override the theme's tr:has(th) that breaks putting the
+ * opcode info box on top by setting up a new stacking context
+ * for each row of the opcode table. */
+main tr {
+  z-index: auto;
+  position: initial;
+}
 main input {
   display: block;
   position: -webkit-sticky;
@@ -61,7 +68,8 @@ main td.z180 {
   color: #5d2e77;
 }
 main td.unmatched {
-  background-color: #617078;
+  /* Theme has a default background color for some tds that should be overridden here */
+  background-color: #617078 !important;
   color: #232627;
 }
 h2 {
@@ -195,6 +203,8 @@ main dt::after {
 }
 main dd {
   margin: 0 0 0.3em 0;
+  /* override theme's default list-style for dd */
+  list-style: none;
 }
 main td a {
   text-align: center;
